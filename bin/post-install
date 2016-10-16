@@ -4,6 +4,7 @@ SYSTEMD_NGINX_NAME = 'gogs'
 
 import sys
 from os.path import join
+from subprocess import check_output
 
 from syncloud_platform.application import api
 
@@ -16,6 +17,8 @@ app_data_dir = app.get_data_dir()
 linux.useradd(USER_NAME)
 fs.chownpath(app_dir, USER_NAME, recursive=True)
 
+gogs_executable = join(app_dir, 'gogs', 'gogs')
+check_output('chmod +x {0}'.format(gogs_executable), shell=True)
 
 log_path = join(app_data_dir, 'log')
 
