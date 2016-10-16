@@ -30,7 +30,7 @@ rm -rf build
 BUILD_DIR=${DIR}/build/${NAME}
 mkdir -p ${BUILD_DIR}
 
-coin --to ${BUILD_DIR} raw https://dl.gogs.io/${GOGS_FILENAME}
+coin --to ${BUILD_DIR} raw https://dl.gogs.io/${GOGS_FILENAME} --takefolder gogs
 
 cp -r ${DIR}/bin ${BUILD_DIR}
 cp -r ${DIR}/templates ${BUILD_DIR}
