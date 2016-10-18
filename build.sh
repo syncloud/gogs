@@ -33,7 +33,7 @@ mkdir -p ${BUILD_DIR}
 coin --to ${BUILD_DIR} raw https://dl.gogs.io/${GOGS_FILENAME} --takefolder gogs
 
 cp -r ${DIR}/bin ${BUILD_DIR}
-cp -r ${DIR}/templates ${BUILD_DIR}
+cp -r ${DIR}/config ${BUILD_DIR}/config.templates
 
 mkdir ${BUILD_DIR}/META
 echo ${NAME} >> ${BUILD_DIR}/META/app
