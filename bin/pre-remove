@@ -1,6 +1,7 @@
 APP_NAME = 'gogs'
 USER_NAME = 'git'
-SYSTEMD_NGINX_NAME = 'gogs'
+SYSTEMD_GOGS = 'gogs'
+SYSTEMD_POSTGRESQL = 'gogs-postgresql'
 
 import sys
 
@@ -11,7 +12,8 @@ app = api.get_app_setup(APP_NAME)
 
 app.unregister_web()
 
-app.remove_service(SYSTEMD_NGINX_NAME)
+app.remove_service(SYSTEMD_GOGS)
+app.remove_service(SYSTEMD_POSTGRESQL)
 
 app_dir = app.get_install_dir()
 

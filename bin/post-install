@@ -1,6 +1,8 @@
 APP_NAME = 'gogs'
 USER_NAME = 'git'
-SYSTEMD_NGINX_NAME = 'gogs'
+SYSTEMD_GOGS = 'gogs'
+SYSTEMD_POSTGRESQL = 'gogs-postgresql'
+
 
 import sys
 from os.path import join
@@ -34,7 +36,8 @@ gen.generate_files(templates_path, config_path, variables)
 fs.chownpath(app_dir, USER_NAME, recursive=True)
 fs.chownpath(app_data_dir, USER_NAME, recursive=True)
 
-app.add_service(SYSTEMD_NGINX_NAME)
+app.add_service(SYSTEMD_POSTGRESQL)
+app.add_service(SYSTEMD_GOGS)
 
 app.register_web(3000)
 
