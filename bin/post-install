@@ -5,12 +5,28 @@ SYSTEMD_POSTGRESQL = 'gogs-postgresql'
 
 
 import sys
-from os.path import join
+from os.path import isdir, join
 from subprocess import check_output
+import shutil
 
+
+def database_init(log, app_install_dir, app_data_dir, user_name):
+    database_path = join(app_data_dir, 'database')
+    if not isdir(database_path):
+        psql_initdb = join(app_install_dir, 'postgresql/bin/initdb')
+        log.info(check_output(['sudo', '-H', '-u', user_name, psql_initdb, database_path]))
+        postgresql_conf_to = join(database_path, 'postgresql.conf')
+        postgresql_conf_from = join(app_install_dir, 'config', 'postgresql.conf')
+        shutil.copy(postgresql_conf_from, postgresql_conf_to)
+    else:
+        log.info('Database path "{0}" already exists'.format(database_path))
+
+
+from syncloud_app import logger
 from syncloud_platform.application import api
-
 from syncloud_platform.gaplib import fs, linux, gen
+
+log = logger.get_logger('nextcloud_installer')
 
 app = api.get_app_setup(APP_NAME)
 app_dir = app.get_install_dir()
@@ -32,6 +48,8 @@ templates_path = join(app_dir, 'config.templates')
 config_path = join(app_dir, 'config')
 
 gen.generate_files(templates_path, config_path, variables)
+
+database_init(log, app_dir, app_data_dir, USER_NAME)
 
 fs.chownpath(app_dir, USER_NAME, recursive=True)
 fs.chownpath(app_data_dir, USER_NAME, recursive=True)
