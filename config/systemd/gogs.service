@@ -16,6 +16,7 @@ WorkingDirectory={{ app_dir }}/gogs
 ExecStart={{ app_dir }}/gogs/gogs web --config {{ app_dir }}/config/gogs.ini
 Restart=always
 Environment=USER=git HOME=/home/git
+Environment=PATH={{ app_dir }}/git/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Modify these two values and uncomment them if you have
 # repos with lots of files and get an HTTP error 500 because
