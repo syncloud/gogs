@@ -34,7 +34,7 @@ DOWNLOAD_URL=http://build.syncloud.org:8111/guestAuth/repository/download
 
 coin --to ${BUILD_DIR} raw https://dl.gogs.io/${GOGS_FILENAME} --takefolder gogs
 coin --to ${BUILD_DIR} raw ${DOWNLOAD_URL}/thirdparty_postgresql_${ARCH}/lastSuccessful/postgresql-${ARCH}.tar.gz
-coin --to ${BUILD_DIR} raw ${DOWNLOAD_URL}/thirdparty_git_${ARCH}/lastSuccessful/git-${ARCH}.tar.gz
+coin --to ${BUILD_DIR} --ignore-cache raw ${DOWNLOAD_URL}/thirdparty_git_${ARCH}/lastSuccessful/git-${ARCH}.tar.gz
 
 cp -r ${DIR}/bin ${BUILD_DIR}
 cp -r ${DIR}/config ${BUILD_DIR}/config.templates
