@@ -69,13 +69,15 @@ config_path = join(app_dir, 'config')
 gen.generate_files(templates_path, config_path, variables)
 
 database_path = database_init(app_dir, app_data_dir, DB_USER)
-db_postgres = Database(join(app_dir, PSQL_PATH), database='postgres', user=DB_USER, database_path=database_path)
-db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
 
 fs.chownpath(app_dir, USER_NAME, recursive=True)
 fs.chownpath(app_data_dir, USER_NAME, recursive=True)
 
 app.add_service(SYSTEMD_POSTGRESQL)
+
+db_postgres = Database(join(app_dir, PSQL_PATH), database='postgres', user=DB_USER, database_path=database_path)
+db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
+
 app.add_service(SYSTEMD_GOGS)
 
 app.register_web(3000)
