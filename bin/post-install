@@ -16,6 +16,10 @@ import shutil
 from syncloud_app import logger
 
 
+def installed(app_data_dir):
+    database_path = join(app_data_dir, PSQL_DATA_PATH)
+    return isdir(database_path)
+
 def database_init(app_install_dir, app_data_dir, user_name):
     log = logger.get_logger('postgres')
     database_path = join(app_data_dir, PSQL_DATA_PATH)
@@ -81,13 +85,15 @@ gen.generate_files(templates_path, config_path, variables)
 fs.chownpath(app_dir, USER_NAME, recursive=True)
 fs.chownpath(app_data_dir, USER_NAME, recursive=True)
 
-database_path = database_init(app_dir, app_data_dir, DB_USER)
+if not installed(app_data_dir):
+    database_path = database_init(app_dir, app_data_dir, DB_USER)
 
 app.add_service(SYSTEMD_POSTGRESQL)
 
-db_postgres = Database(join(app_dir, PSQL_PATH), database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
-db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
-db_postgres.execute("CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
+if not installed(app_data_dir):
+    db_postgres = Database(join(app_dir, PSQL_PATH), database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
+    db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
+    db_postgres.execute("CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
 
 app.add_service(SYSTEMD_GOGS)
 
