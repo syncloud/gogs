@@ -3,8 +3,6 @@ USER_NAME = 'git'
 SYSTEMD_GOGS = 'gogs'
 SYSTEMD_POSTGRESQL = 'gogs-postgresql'
 
-import sys
-
 from syncloud_platform.application import api
 from syncloud_platform.gaplib import fs
 

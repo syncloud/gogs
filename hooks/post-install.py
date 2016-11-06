@@ -9,20 +9,18 @@ DB_USER = 'git'
 DB_PASS = 'git'
 DB_NAME = 'gogs'
 
-import sys
 from os.path import isdir, join
 from subprocess import check_output
 import shutil
 from syncloud_app import logger
 
 
-def installed(app_data_dir):
-    database_path = join(app_data_dir, PSQL_DATA_PATH)
+def installed(database_path):
     return isdir(database_path)
 
-def database_init(app_install_dir, app_data_dir, user_name):
+
+def database_init(app_install_dir, database_path, user_name):
     log = logger.get_logger('postgres')
-    database_path = join(app_data_dir, PSQL_DATA_PATH)
     if not isdir(database_path):
         psql_initdb = join(app_install_dir, 'postgresql/bin/initdb')
         log.info(check_output(['sudo', '-H', '-u', user_name, psql_initdb, database_path]))
@@ -68,10 +66,13 @@ check_output('chmod +x {0}'.format(gogs_executable), shell=True)
 log_path = join(app_data_dir, 'log')
 fs.makepath(log_path)
 
+database_path = join(app_data_dir, PSQL_DATA_PATH)
+
 variables = {
     'app_dir': app_dir,
     'app_data_dir': app_data_dir,
-    'psql_port': PSQL_PORT,
+    'db_psql_path': database_path,
+    'db_psql_port': PSQL_PORT,
     'db_name': DB_NAME,
     'db_user': DB_USER,
     'db_password': DB_PASS
@@ -85,9 +86,9 @@ gen.generate_files(templates_path, config_path, variables)
 fs.chownpath(app_dir, USER_NAME, recursive=True)
 fs.chownpath(app_data_dir, USER_NAME, recursive=True)
 
-first_install = not installed(app_data_dir)
+first_install = not installed(database_path)
 if first_install:
-    database_path = database_init(app_dir, app_data_dir, DB_USER)
+    database_init(app_dir, database_path, DB_USER)
 
 app.add_service(SYSTEMD_POSTGRESQL)
 
