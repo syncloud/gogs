@@ -11,6 +11,7 @@ DB_NAME = 'gogs'
 
 from os.path import isdir, join
 import requests
+import time
 from subprocess import check_output
 import shutil
 from syncloud_app import logger
@@ -102,6 +103,10 @@ app.add_service(SYSTEMD_GOGS)
 
 app.register_web(3000)
 
+time.sleep(5)
+
+log.info("Making POST request to finish GOGS installation")
+
 install_response = requests.post('http://localhost:3000/install', data = {
     'db_type': 'PostgreSQL',
     'db_host': '/opt/data/gogs/database:5433',
@@ -130,7 +135,9 @@ install_response = requests.post('http://localhost:3000/install', data = {
     'admin_email': 'vladimir.sapronov@gmail.com'
 })
 
-if install_response != 200:
-    log.error("GOGS install failed")
-    log.error(install_response.text())
-
+if install_response.status_code != 200:
+    log.error('GOGS finish installation failed with status code: {}', install_response.status_code)
+    log.error('GOGS finish installation POST request response:\n{}', str(install_response))
+else:
+    log.info('GOGS finish installation succeded')
+    
