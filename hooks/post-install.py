@@ -10,6 +10,7 @@ DB_PASS = 'git'
 DB_NAME = 'gogs'
 
 from os.path import isdir, join
+import requests
 from subprocess import check_output
 import shutil
 from syncloud_app import logger
@@ -100,4 +101,36 @@ if first_install:
 app.add_service(SYSTEMD_GOGS)
 
 app.register_web(3000)
+
+install_response = requests.post('http://localhost:3000/install', data = {
+    'db_type': 'PostgreSQL',
+    'db_host': '/opt/data/gogs/database:5433',
+    'db_user': 'git',
+    'db_passwd': 'git',
+    'db_name': 'gogs',
+    'ssl_mode': 'disable',
+    'db_path': 'data/gogs.db',
+    'app_name': 'Gogs: Go Git Service',
+    'repo_root_path': '/opt/data/gogs/gogs-repositories',
+    'run_user': 'git',
+    'domain': 'localhost',
+    'ssh_port': '22',
+    'http_port': '3000',
+    'app_url': 'http://localhost:3000/',
+    'log_root_path': '/opt/data/gogs/log',
+    'smtp_host': '',
+    'smtp_from': '',
+    'smtp_email': '',
+    'smtp_passwd': '',
+    'disable_registration': 'on',
+    'require_sign_in_view': 'on',
+    'admin_name': 'gogs',
+    'admin_passwd': 'gogs',
+    'admin_confirm_passwd': 'gogs',
+    'admin_email': 'vladimir.sapronov@gmail.com'
+})
+
+if install_response != 200:
+    log.error("GOGS install failed")
+    log.error(install_response.text())
 
