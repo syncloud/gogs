@@ -24,12 +24,15 @@ from syncloud_platform.application import api
 from syncloud_platform.gaplib import fs, linux, gen
 
 
-def wait_url(url, timeout, interval = 1):
+def wait_url(url, timeout, interval=1):
     t0 = time.clock()
     while time.clock() - t0 < timeout:
-        response = requests.get(url)
-        if response.status_code == 200:
-            return True
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                return True
+        except:
+            pass
         time.sleep(interval)
     return False
 
