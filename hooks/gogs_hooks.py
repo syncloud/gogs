@@ -32,8 +32,9 @@ def wait_url(url, timeout, interval=1):
             response = requests.get(url)
             if response.status_code == 200:
                 return True
-        except:
-            pass
+            log.info(response.status_code)
+        except Exception, e:
+            log.info(e.message)
         time.sleep(interval)
     return False
 
@@ -128,7 +129,7 @@ def install():
     install_url = 'http://localhost:{}/install'.format(GOGS_PORT)
 
     if not wait_url(install_url, timeout=5):
-        log.error('Timeout waiting for url: {}', install_url)
+        log.error('Timeout waiting for url: {}'.format(install_url))
         log.error('Failed to finish GOGS installation')
     else:
         log.info("Making POST request to finish GOGS installation, url: {}".format(install_url))
