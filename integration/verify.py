@@ -10,14 +10,6 @@ import shutil
 
 from integration.util.loop import loop_device_add, loop_device_cleanup
 from integration.util.ssh import run_scp, ssh_command, SSH, run_ssh, set_docker_ssh_port
-
-app_path = join(dirname(__file__), '..')
-sys.path.append(join(app_path, 'src'))
-
-lib_path = join(app_path, 'lib')
-libs = [abspath(join(lib_path, item)) for item in listdir(lib_path) if isdir(join(lib_path, item))]
-map(lambda x: sys.path.append(x), libs)
-
 import requests
 from bs4 import BeautifulSoup
 
