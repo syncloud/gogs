@@ -73,7 +73,7 @@ def test_start(module_setup):
 
 
 def test_activate_device(auth):
-    email, password, domain, release, version, arch = auth
+    email, password, domain, release, _= auth
 
     run_ssh('/opt/app/sam/bin/sam update --release {0}'.format(release), password=DEFAULT_DEVICE_PASSWORD)
     run_ssh('/opt/app/sam/bin/sam --debug upgrade platform', password=DEFAULT_DEVICE_PASSWORD)
@@ -99,9 +99,9 @@ def test_reinstall(auth):
     __local_install(auth)
 
 
-def __local_install(auth):
-    email, password, domain, release, version, arch = auth
-    run_scp('{0}/../gogs-{1}-{2}.tar.gz root@localhost:/'.format(DIR, version, arch), password=DEVICE_PASSWORD)
-    run_ssh('/opt/app/sam/bin/sam --debug install /gogs-{0}-{1}.tar.gz'.format(version, arch), password=DEVICE_PASSWORD)
+def __local_install(app_archive_path):
+    run_scp('{0} root@localhost:/app.tar
+gz'.format(DIR, app_archive_path), password=DEVICE_PASSWORD)
+    run_ssh('/opt/app/sam/bin/sam --debug install /app.tar.gz'.format(version, arch), password=DEVICE_PASSWORD)
     set_docker_ssh_port(DEVICE_PASSWORD)
     time.sleep(3)
