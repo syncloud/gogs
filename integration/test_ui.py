@@ -34,25 +34,5 @@ def test_web_with_selenium(user_domain):
         shutil.rmtree(screenshot_dir)
     os.mkdir(screenshot_dir)
 
-    driver.get("http://{0}/index.php/login".format(user_domain))
-    user = driver.find_element_by_id("user")
-    user.send_keys(DEVICE_USER)
-    password = driver.find_element_by_id("password")
-    password.send_keys(DEVICE_PASSWORD)
+    driver.get("http://{0}".format(user_domain))
     driver.get_screenshot_as_file(join(screenshot_dir, 'login.png'))
-    password.send_keys(Keys.RETURN)
-
-    wait_driver = WebDriverWait(driver, 10)
-    wait_driver.until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, '#header #expandDisplayName'), DEVICE_USER))
-
-    wait_driver.until(EC.element_to_be_clickable((By.ID, 'closeWizard')))
-    wizard_close_button = driver.find_element_by_id("closeWizard")
-    wizard_close_button.click()
-
-    time.sleep(2)
-    driver.get_screenshot_as_file(join(screenshot_dir, 'main.png'))
-
-    driver.get("http://{0}/index.php/settings/admin".format(user_domain))
-    time.sleep(10)
-    driver.get_screenshot_as_file(join(screenshot_dir, 'admin.png'))
-
