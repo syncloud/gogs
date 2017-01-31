@@ -9,7 +9,7 @@ import pytest
 import shutil
 
 from integration.util.loop import loop_device_add, loop_device_cleanup
-from integration.util.ssh import run_scp, ssh_command, SSH, run_ssh, set_docker_ssh_port
+from integration.util.ssh import run_scp, ssh_command, SSH, run_ssh
 import requests
 from bs4 import BeautifulSoup
 
@@ -102,5 +102,4 @@ def test_reinstall(app_archive_path):
 def __local_install(app_archive_path):
     run_scp('{0} root@localhost:/app.tar.gz'.format(app_archive_path), password=DEVICE_PASSWORD)
     run_ssh('/opt/app/sam/bin/sam --debug install /app.tar.gz', password=DEVICE_PASSWORD)
-    set_docker_ssh_port(DEVICE_PASSWORD)
     time.sleep(3)
