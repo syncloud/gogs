@@ -95,8 +95,8 @@ def test_remove(syncloud_session):
     assert response.status_code == 200, response.text
 
 
-def test_reinstall(auth):
-    __local_install(auth)
+def test_reinstall(app_archive_path):
+    __local_install(app_archive_path)
 
 
 def __local_install(app_archive_path):
