@@ -1,13 +1,12 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
-ROOTFS=/tmp/nextcloud/rootfs
 APP_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
 cd ${APP_DIR}
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 1>&2
    exit 1
 fi
-
+ROOTFS=${APP_DIR}/.rootfs
 ARCH=$(dpkg-architecture -q DEB_HOST_GNU_CPU)
 
 ROOTFS_FILE=3rdparty/rootfs-${ARCH}.tar.gz
