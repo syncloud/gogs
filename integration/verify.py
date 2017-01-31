@@ -86,8 +86,8 @@ def test_activate_device(auth):
     LOGS_SSH_PASSWORD = DEVICE_PASSWORD
 
 
-def test_install(auth):
-    __local_install(auth)
+def test_install(app_archive_path):
+    __local_install(app_archive_path)
 
 
 def test_remove(syncloud_session):
