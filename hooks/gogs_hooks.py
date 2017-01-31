@@ -26,6 +26,7 @@ from syncloud_platform.gaplib import fs, linux, gen
 
 
 def wait_url(url, timeout, interval=1):
+    log = logger.get_logger('gogs_installer')
     t0 = time.clock()
     while time.clock() - t0 < timeout:
         try:
