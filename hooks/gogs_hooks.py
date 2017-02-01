@@ -80,9 +80,6 @@ def install():
     home_folder = join('/home', USER_NAME)
     linux.useradd(USER_NAME, home_folder=home_folder)
 
-    gogs_executable = join(app_dir, 'gogs', 'gogs')
-    check_output('chmod +x {0}'.format(gogs_executable), shell=True)
-
     log_path = join(app_data_dir, 'log')
     fs.makepath(log_path)
 
