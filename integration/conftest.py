@@ -23,9 +23,9 @@ def auth(request):
 
 
 @pytest.fixture(scope='module')
-def user_domain_path(auth):
+def user_domain(auth):
     _, _, domain, _, _ = auth
-    return 'nextcloud.{0}.{1}'.format(domain, SYNCLOUD_INFO)
+    return 'gogs.{0}.{1}'.format(domain, SYNCLOUD_INFO)
 
 @pytest.fixture(scope='module')
 def app_archive_path(auth):
