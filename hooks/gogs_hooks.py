@@ -138,7 +138,7 @@ def install():
         'db_user': DB_USER,
         'db_passwd': DB_PASS,
         'db_name': DB_NAME,
-        'ssl_mode': 'disable', I
+        'ssl_mode': 'disable',
         'db_path': 'data/gogs.db',
         'app_name': 'Gogs: Go Git Service',
         'repo_root_path': gogs_repos_path,
