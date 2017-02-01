@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
@@ -7,7 +7,6 @@ export TMPDIR=/tmp
 export TMP=/tmp
 
 NAME=gogs
-NEXTCLOUD_VERSION=10.0.0
 COIN_CACHE_DIR=${DIR}/coin.cache
 ARCH=$(dpkg-architecture -qDEB_HOST_GNU_CPU)
 GOGS_VERSION=0.9.128
@@ -27,7 +26,7 @@ if [ "${ARCH}" == 'armv7l' ]; then
     GOGS_ARCH=armv6
 fi
 
-GOGS_FILENAME=gogs_${GOGS_VERSION}_linux_${GOGS_ARCH}.zip
+GOGS_FILENAME=gogs_v${GOGS_VERSION}_linux_${GOGS_ARCH}.zip
 
 rm -rf build
 BUILD_DIR=${DIR}/build/${NAME}
