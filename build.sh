@@ -10,6 +10,7 @@ NAME=gogs
 NEXTCLOUD_VERSION=10.0.0
 COIN_CACHE_DIR=${DIR}/coin.cache
 ARCH=$(dpkg-architecture -qDEB_HOST_GNU_CPU)
+GOGS_VERSION=0.9.128
 if [ ! -z "$1" ]; then
     ARCH=$1
 fi
@@ -20,11 +21,13 @@ if [ ! -z "$2" ]; then
 fi
 
 if [ "${ARCH}" == 'x86_64' ]; then
-    GOGS_FILENAME="gogs_v0.9.97_linux_386.zip"
+    GOGS_ARCH=amd64
 fi
 if [ "${ARCH}" == 'armv7l' ]; then
-    GOGS_FILENAME="gogs_v0.9.97_linux_arm.zip"
+    GOGS_ARCH=armv6
 fi
+
+GOGS_FILENAME=gogs_${GOGS_VERSION}_linux_${GOGS_ARCH}.zip
 
 rm -rf build
 BUILD_DIR=${DIR}/build/${NAME}
