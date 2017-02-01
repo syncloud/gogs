@@ -8,7 +8,6 @@ PSQL_PORT = 5433
 DB_USER = 'git'
 DB_PASS = 'git'
 DB_NAME = 'gogs'
-GOG_REPOS_DIR = 'gogs-repositories'
 GOGS_PORT = 3000
 GOGS_ADMIN_USER = 'gogs'
 GOGS_ADMIN_PASSWORD = 'gogs'
@@ -88,7 +87,7 @@ def install():
     fs.makepath(log_path)
 
     database_path = join(app_data_dir, PSQL_DATA_PATH)
-    gogs_repos_path = join(app_data_dir, GOG_REPOS_DIR)
+    gogs_repos_path = app.get_storage_dir()
 
     variables = {
         'app_dir': app_dir,
