@@ -27,8 +27,8 @@ from syncloud_platform.gaplib import fs, linux, gen
 
 def wait_url(url, timeout, interval=1):
     log = logger.get_logger('gogs_installer')
-    t0 = time.clock()
-    while time.clock() - t0 < timeout:
+    t0 = time.time()
+    while time.time() - t0 < timeout:
         try:
             response = requests.get(url)
             if response.status_code == 200:
