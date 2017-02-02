@@ -45,6 +45,8 @@ mkdir ${BUILD_DIR}/META
 echo ${NAME} >> ${BUILD_DIR}/META/app
 echo ${VERSION} >> ${BUILD_DIR}/META/version
 
+chmod +x ${BUILD_DIR}/gogs/gogs
+
 echo "zipping"
 rm -rf ${NAME}*.tar.gz
 tar cpzf ${DIR}/${NAME}-${VERSION}-${ARCH}.tar.gz -C ${DIR}/build/ ${NAME}
