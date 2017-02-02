@@ -109,6 +109,7 @@ def install():
     first_install = not installed(database_path)
     if first_install:
         database_init(app_dir, database_path, DB_USER)
+        prepare_storage()
 
     app.add_service(SYSTEMD_POSTGRESQL)
 
@@ -175,3 +176,8 @@ def remove():
     app_dir = app.get_install_dir()
 
     fs.removepath(app_dir)
+
+
+def prepare_storage():
+    app = api.get_app_setup(APP_NAME)
+    app_storage_dir = app.init_storage(USER_NAME)
