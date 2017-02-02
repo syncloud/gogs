@@ -91,7 +91,7 @@ def test_install(app_archive_path):
 
 
 def test_storage_dir():
-    run_ssh('ls -la /data/gogs', password=DEFAULT_DEVICE_PASSWORD)
+    run_ssh('ls -la /data/gogs', password=DEVICE_PASSWORD)
 
 
 def test_remove(syncloud_session):
