@@ -40,9 +40,9 @@ def test_web_with_selenium(user_domain):
     print(driver.page_source.encode("utf-8"))
 
     user = driver.find_element_by_id("user_name")
-    user.send_keys(DEVICE_USER)
+    user.send_keys('gogs')
     password = driver.find_element_by_id("password")
-    password.send_keys(DEVICE_PASSWORD)
+    password.send_keys('gogs')
     driver.get_screenshot_as_file(join(screenshot_dir, 'login.png'))
     password.send_keys(Keys.RETURN)
 
