@@ -64,7 +64,7 @@ set +e
 sshpass -p syncloud ssh -o StrictHostKeyChecking=no -p 2222 root@localhost date
 while test $? -gt 0
 do
-  sleep 1
+  sleep 3
   echo "Waiting for SSH ..."
   sshpass -p syncloud ssh -o StrictHostKeyChecking=no -p 2222 root@localhost date
 done
