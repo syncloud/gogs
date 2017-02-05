@@ -94,6 +94,10 @@ def test_storage_dir():
     run_ssh('ls -la /data/gogs/gogs', password=DEVICE_PASSWORD)
 
 
+def test_git_config():
+    run_ssh('ls -la /opt/app/gogs/git/bin/git config', password=DEVICE_PASSWORD)
+
+
 def test_remove(syncloud_session):
     response = syncloud_session.get('http://localhost/rest/remove?app_id=gogs', allow_redirects=False)
     assert response.status_code == 200, response.text
