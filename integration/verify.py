@@ -95,7 +95,7 @@ def test_storage_dir():
 
 
 def test_git_config():
-    run_ssh('ls -la /opt/app/gogs/git/bin/git config', password=DEVICE_PASSWORD)
+    run_ssh('/opt/app/gogs/git/bin/git config', password=DEVICE_PASSWORD)
 
 
 def test_remove(syncloud_session):
