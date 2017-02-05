@@ -126,7 +126,7 @@ def install():
 
     install_url = 'http://localhost:{}/install'.format(GOGS_PORT)
 
-    wait_url(install_url, timeout=5)
+    wait_url(install_url, timeout=60)
 
     log.info("Making POST request to finish GOGS installation, url: {}".format(install_url))
     install_response = requests.post(install_url, data = {
