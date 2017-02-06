@@ -134,40 +134,43 @@ def install():
 
     log.info("Making POST request to finish GOGS installation, url: {}".format(install_url))
     redirect_email = app.redirect_email()
-    install_response = requests.post(install_url, timeout=10, data={
-        'db_type': 'PostgreSQL',
-        'db_host': '{}:{}'.format(database_path, PSQL_PORT),
-        'db_user': DB_USER,
-        'db_passwd': DB_PASS,
-        'db_name': DB_NAME,
-        'ssl_mode': 'disable',
-        'db_path': 'data/gogs.db',
-        'app_name': 'Gogs: Go Git Service',
-        'repo_root_path': gogs_repos_path,
-        'run_user': USER_NAME,
-        'domain': app_url,
-        'ssh_port': '22',
-        'http_port': str(GOGS_PORT),
-        'app_url': '{}/'.format(app_url),
-        'log_root_path': log_path,
-        'smtp_host': '',
-        'smtp_from': '',
-        'smtp_email': '',
-        'smtp_passwd': '',
-        'disable_registration': 'on',
-        'require_sign_in_view': 'on',
-        'admin_name': GOGS_ADMIN_USER,
-        'admin_passwd': GOGS_ADMIN_PASSWORD,
-        'admin_confirm_passwd': GOGS_ADMIN_PASSWORD,
-        'admin_email': redirect_email
-    })
+    try:
+        install_response = requests.post(install_url, timeout=10, data={
+            'db_type': 'PostgreSQL',
+            'db_host': '{}:{}'.format(database_path, PSQL_PORT),
+            'db_user': DB_USER,
+            'db_passwd': DB_PASS,
+            'db_name': DB_NAME,
+            'ssl_mode': 'disable',
+            'db_path': 'data/gogs.db',
+            'app_name': 'Gogs: Go Git Service',
+            'repo_root_path': gogs_repos_path,
+            'run_user': USER_NAME,
+            'domain': app_url,
+            'ssh_port': '22',
+            'http_port': str(GOGS_PORT),
+            'app_url': '{}/'.format(app_url),
+            'log_root_path': log_path,
+            'smtp_host': '',
+            'smtp_from': '',
+            'smtp_email': '',
+            'smtp_passwd': '',
+            'disable_registration': 'on',
+            'require_sign_in_view': 'on',
+            'admin_name': GOGS_ADMIN_USER,
+            'admin_passwd': GOGS_ADMIN_PASSWORD,
+            'admin_confirm_passwd': GOGS_ADMIN_PASSWORD,
+            'admin_email': redirect_email
+        })
 
-    if install_response.status_code != 200:
-        log.error('GOGS finish installation failed with status code: {}'.format(install_response.status_code))
-        log.error('GOGS finish installation POST request response:')
-        log.error(str(install_response))
-    else:
-        log.info('GOGS finish installation succeeded')
+        if install_response.status_code != 200:
+            log.error('GOGS finish installation failed with status code: {}'.format(install_response.status_code))
+            log.error('GOGS finish installation POST request response:')
+            log.error(str(install_response))
+        else:
+            log.info('GOGS finish installation succeeded')
+    except Exception, e:
+        log.error('error during the finish: {}'.format(e.message))
 
 
 def remove():
