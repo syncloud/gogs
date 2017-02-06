@@ -74,6 +74,9 @@ class Database:
 
 def install():
     log = logger.get_logger('gogs_installer')
+
+    linux.fix_locale()
+
     app = api.get_app_setup(APP_NAME)
     app_dir = app.get_install_dir()
     app_data_dir = app.get_data_dir()
