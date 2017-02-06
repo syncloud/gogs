@@ -24,7 +24,7 @@ from syncloud_platform.application import api
 from syncloud_platform.gaplib import fs, linux, gen
 
 
-def wait_url(url, timeout, interval=1):
+def wait_url(url, timeout, interval=3):
     log = logger.get_logger('gogs_installer')
     t0 = time.time()
     while time.time() - t0 < timeout:
@@ -36,7 +36,8 @@ def wait_url(url, timeout, interval=1):
         except Exception, e:
             log.info(e.message)
         time.sleep(interval)
-    raise Exception ('Timeout waiting for url: {}'.format(url))
+    raise Exception('Timeout waiting for url: {}'.format(url))
+
 
 def installed(database_path):
     return isdir(database_path)
@@ -114,7 +115,8 @@ def install():
     app.add_service(SYSTEMD_POSTGRESQL)
 
     if first_install:
-        db_postgres = Database(join(app_dir, PSQL_PATH), database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
+        db_postgres = Database(join(app_dir, PSQL_PATH),
+                               database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
         db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
         db_postgres.execute("CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
 
@@ -123,13 +125,13 @@ def install():
 
     app_url = app.app_url()
 
-
     install_url = 'http://localhost:{}/install'.format(GOGS_PORT)
 
     wait_url(install_url, timeout=60)
 
     log.info("Making POST request to finish GOGS installation, url: {}".format(install_url))
-    install_response = requests.post(install_url, data = {
+    redirect_email = app.redirect_email()
+    install_response = requests.post(install_url, timeout=10, data={
         'db_type': 'PostgreSQL',
         'db_host': '{}:{}'.format(database_path, PSQL_PORT),
         'db_user': DB_USER,
@@ -154,7 +156,7 @@ def install():
         'admin_name': GOGS_ADMIN_USER,
         'admin_passwd': GOGS_ADMIN_PASSWORD,
         'admin_confirm_passwd': GOGS_ADMIN_PASSWORD,
-        'admin_email': app.redirect_email()
+        'admin_email': redirect_email
     })
 
     if install_response.status_code != 200:
