@@ -77,7 +77,5 @@ def test_create_repo(user_domain, driver, screenshot_dir):
 
     name = driver.find_element_by_id("repo_name")
     name.send_keys('gogs')
-
-   
-driver.get_screenshot_as_file(join(screenshot_dir, 'repo-create.png'))
+    driver.get_screenshot_as_file(join(screenshot_dir, 'repo-create.png'))
 
