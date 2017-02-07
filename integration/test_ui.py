@@ -71,11 +71,18 @@ def test_login(user_domain, driver, screenshot_dir):
 def test_create_repo(user_domain, driver, screenshot_dir):
 
     driver.get("http://{0}/repo/create".format(user_domain))
-    time.sleep(5)
-    
     print(driver.page_source.encode("utf-8"))
+    # time.sleep(5)
+    wait_driver = WebDriverWait(driver, 10)
+    wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
     name = driver.find_element_by_id("repo_name")
     name.send_keys('gogs')
     driver.get_screenshot_as_file(join(screenshot_dir, 'repo-create.png'))
 
+    create = driver.find_element_by_css_selector(".green")
+    create.click()
+
+    time.sleep(5)
+    driver.get_screenshot_as_file(join(screenshot_dir, 'repo-create-result.png'))
+    print(driver.page_source.encode("utf-8"))
