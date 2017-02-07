@@ -96,6 +96,9 @@ def test_create_repo_init(user_domain, driver, screenshot_dir):
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
+    name = driver.find_element_by_id("repo_name")
+    name.send_keys('init')
+
     auto_init = driver.find_element_by_name("auto_init")
     auto_init.click()
     driver.get_screenshot_as_file(join(screenshot_dir, 'repo-create-init.png'))
