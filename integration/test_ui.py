@@ -17,7 +17,7 @@ DEVICE_PASSWORD = 'password'
 log_dir = join(LOG_DIR, 'nextcloud_log')
 
 
-def test_web_with_selenium(user_domain):
+def test_login(user_domain):
 
     os.environ['PATH'] = os.environ['PATH'] + ":" + join(DIR, 'geckodriver')
 
@@ -57,4 +57,13 @@ def test_web_with_selenium(user_domain):
     driver.get_screenshot_as_file(join(screenshot_dir, 'main.png'))
 
     print(driver.page_source.encode("utf-8"))
+
+
+def test_create_repo(user_domain):
+
+    driver.get("http://{0}/repo/create".format(user_domain))
+    time.sleep(5)
+    driver.get_screenshot_as_file(join(screenshot_dir, 'repo-create.png'))
+    print(driver.page_source.encode("utf-8"))
+
 
