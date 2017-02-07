@@ -1,7 +1,7 @@
 import os
 import shutil
 from os.path import dirname, join, exists
-
+import pytest
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -17,8 +17,8 @@ DEVICE_PASSWORD = 'password'
 log_dir = join(LOG_DIR, 'nextcloud_log')
 
 
-def test_login(user_domain):
-
+@pytest.fixture(scope="session"):
+def driver():
     os.environ['PATH'] = os.environ['PATH'] + ":" + join(DIR, 'geckodriver')
 
     caps = DesiredCapabilities.FIREFOX
@@ -27,7 +27,10 @@ def test_login(user_domain):
 
     profile = webdriver.FirefoxProfile()
     profile.set_preference("webdriver.log.file", "{0}/firefox.log".format(log_dir))
-    driver = webdriver.Firefox(profile, capabilities=caps)
+    return webdriver.Firefox(profile, capabilities=caps)
+
+
+def test_login(user_domain, driver):
 
     screenshot_dir = join(DIR, 'screenshot')
     if exists(screenshot_dir):
@@ -59,7 +62,7 @@ def test_login(user_domain):
     print(driver.page_source.encode("utf-8"))
 
 
-def test_create_repo(user_domain):
+def test_create_repo(user_domain, driver):
 
     driver.get("http://{0}/repo/create".format(user_domain))
     time.sleep(5)
