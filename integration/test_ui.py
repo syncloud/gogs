@@ -17,7 +17,7 @@ DEVICE_PASSWORD = 'password'
 log_dir = join(LOG_DIR, 'nextcloud_log')
 
 
-@pytest.fixture(scope="session"):
+@pytest.fixture(scope="session")
 def driver():
     os.environ['PATH'] = os.environ['PATH'] + ":" + join(DIR, 'geckodriver')
 
