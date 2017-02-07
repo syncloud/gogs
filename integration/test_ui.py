@@ -27,18 +27,18 @@ def driver():
 
     profile = webdriver.FirefoxProfile()
     profile.set_preference("webdriver.log.file", "{0}/firefox.log".format(log_dir))
-    driver=webdriver.Firefox(profile, capabilities=caps)
-    driver.maximize_window()
-    return driver
+    _driver=webdriver.Firefox(profile, capabilities=caps)
+    _driver.maximize_window()
+    return _driver
 
 
 @pytest.fixture(scope="session")
 def screenshot_dir():
-    screenshot_dir = join(DIR, 'screenshot')
-    if exists(screenshot_dir):
-        shutil.rmtree(screenshot_dir)
-    os.mkdir(screenshot_dir)
-    return screenshot_dir
+    dir = join(DIR, 'screenshot')
+    if exists(dir):
+        shutil.rmtree(dir)
+    os.mkdir(dir)
+    return dir
 
 
 def test_login(user_domain, driver, screenshot_dir):
