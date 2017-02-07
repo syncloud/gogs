@@ -30,12 +30,16 @@ def driver():
     return webdriver.Firefox(profile, capabilities=caps)
 
 
-def test_login(user_domain, driver):
-
+@pytest.fixture(scope="session")
+def screenshot_dir():
     screenshot_dir = join(DIR, 'screenshot')
     if exists(screenshot_dir):
         shutil.rmtree(screenshot_dir)
     os.mkdir(screenshot_dir)
+    return screenshot_dir
+
+
+def test_login(user_domain, driver, screenshot_dir):
 
     driver.get("http://{0}".format(user_domain))
     driver.get_screenshot_as_file(join(screenshot_dir, 'login.png'))
@@ -62,7 +66,7 @@ def test_login(user_domain, driver):
     print(driver.page_source.encode("utf-8"))
 
 
-def test_create_repo(user_domain, driver):
+def test_create_repo(user_domain, driver, screenshot_dir):
 
     driver.get("http://{0}/repo/create".format(user_domain))
     time.sleep(5)
