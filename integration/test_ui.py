@@ -27,7 +27,9 @@ def driver():
 
     profile = webdriver.FirefoxProfile()
     profile.set_preference("webdriver.log.file", "{0}/firefox.log".format(log_dir))
-    return webdriver.Firefox(profile, capabilities=caps)
+    driver=webdriver.Firefox(profile, capabilities=caps)
+    driver.maximize_window()
+    return driver
 
 
 @pytest.fixture(scope="session")
@@ -70,7 +72,12 @@ def test_create_repo(user_domain, driver, screenshot_dir):
 
     driver.get("http://{0}/repo/create".format(user_domain))
     time.sleep(5)
-    driver.get_screenshot_as_file(join(screenshot_dir, 'repo-create.png'))
+    
     print(driver.page_source.encode("utf-8"))
 
+    name = driver.find_element_by_id("repo_name")
+    name.send_keys('gogs')
+
+   
+driver.get_screenshot_as_file(join(screenshot_dir, 'repo-create.png'))
 
