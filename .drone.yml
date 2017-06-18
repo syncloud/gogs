@@ -21,7 +21,7 @@ pipeline:
     image: syncloud/gogs-build-deps-${arch}
     commands:
       - VERSION=$(cat version)
-      - NAME=nextcloud${separator}$${VERSION}${separator}${installer_arch}.${installer_ext}
+      - NAME=gogs${separator}$${VERSION}${separator}${installer_arch}.${installer_ext}
       - ./integration/test-docker.sh teamcity@syncloud.it password teamcity $NAME ${installer_version} master ${integration_test} ${installer} device
 
   upload:

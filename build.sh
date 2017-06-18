@@ -3,21 +3,17 @@
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
+
 export TMPDIR=/tmp
 export TMP=/tmp
 
 NAME=gogs
 COIN_CACHE_DIR=${DIR}/coin.cache
-ARCH=$(dpkg-architecture -qDEB_HOST_GNU_CPU)
+ARCH=$(uname -m)
 GOGS_VERSION=0.11.4
-if [ ! -z "$1" ]; then
-    ARCH=$1
-fi
+ARCH=$1
+VERSION=$2
 
-VERSION="local"
-if [ ! -z "$2" ]; then
-    VERSION=$2
-fi
 
 if [ "${ARCH}" == 'x86_64' ]; then
     GOGS_ARCH=linux_amd64
@@ -29,11 +25,11 @@ rm -rf build
 BUILD_DIR=${DIR}/build/${NAME}
 mkdir -p ${BUILD_DIR}
 
-DOWNLOAD_URL=http://build.syncloud.org:8111/guestAuth/repository/download
+DOWNLOAD_URL=http://artifact.syncloud.org/3rdparty
 
 coin --to ${BUILD_DIR} raw https://dl.gogs.io/${GOGS_VERSION}/${GOGS_ARCH}.zip --takefolder gogs
-coin --to ${BUILD_DIR} raw ${DOWNLOAD_URL}/thirdparty_postgresql_${ARCH}/lastSuccessful/postgresql-${ARCH}.tar.gz
-coin --to ${BUILD_DIR} --ignore-cache raw ${DOWNLOAD_URL}/thirdparty_git_${ARCH}/lastSuccessful/git-${ARCH}.tar.gz
+coin --to ${BUILD_DIR} raw ${DOWNLOAD_URL}/postgresql-${ARCH}.tar.gz
+coin --to ${BUILD_DIR} --ignore-cache raw ${DOWNLOAD_URL}/git-${ARCH}.tar.gz
 
 cp -r ${DIR}/hooks ${BUILD_DIR}
 cp -r ${DIR}/config ${BUILD_DIR}/config.templates
