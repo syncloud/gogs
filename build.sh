@@ -11,8 +11,7 @@ NAME=gogs
 COIN_CACHE_DIR=${DIR}/coin.cache
 ARCH=$(uname -m)
 GOGS_VERSION=0.11.4
-ARCH=$1
-VERSION=$2
+VERSION=$1
 
 
 if [ "${ARCH}" == 'x86_64' ]; then
