@@ -60,4 +60,6 @@ curl https://raw.githubusercontent.com/mguillem/JSErrorCollector/master/dist/JSE
 device_ip=$(getent hosts ${DEVICE_HOST} | awk '{ print $1 }')
 echo "$device_ip gogs.$DOMAIN.syncloud.info" >> /etc/hosts
 
+cat /etc/hosts
+
 xvfb-run -l --server-args="-screen 0, 1024x4096x24" py.test -x -s ${TEST_SUITE} --email=$1 --password=$2 --domain=$3 --app-archive-path=${APP_ARCHIVE_PATH} --installer=${INSTALLER} --device-host=${DEVICE_HOST} --release=$RELEASE
