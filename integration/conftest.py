@@ -24,12 +24,12 @@ def auth(request):
            config.getoption("--release")
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def user_domain(request):
     return 'gogs.{0}.{1}'.format(request.config.getoption("--domain"), SYNCLOUD_INFO)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def app_archive_path(request):
     return request.config.getoption("--app-archive-path")
 
