@@ -80,28 +80,28 @@ def test_activate_device(auth, user_domain):
     LOGS_SSH_PASSWORD = DEVICE_PASSWORD
 
 
-def test_install(app_archive_path):
-    __local_install(app_archive_path)
+def test_install(app_archive_path, user_domain):
+    __local_install(app_archive_path, user_domain)
 
 
-def test_storage_dir():
-    run_ssh('ls -la /data/gogs/gogs', password=DEVICE_PASSWORD)
+def test_storage_dir(user_domain):
+    run_ssh(user_domain, 'ls -la /data/gogs/gogs', password=DEVICE_PASSWORD)
 
 
-def test_git_config():
-    run_ssh('/opt/app/gogs/git/bin/git config -l', password=DEVICE_PASSWORD)
+def test_git_config(user_domain):
+    run_ssh(user_domain, '/opt/app/gogs/git/bin/git config -l', password=DEVICE_PASSWORD)
 
 
-def test_remove(syncloud_session):
-    response = syncloud_session.get('http://localhost/rest/remove?app_id=gogs', allow_redirects=False)
+def test_remove(syncloud_session, device_host):
+    response = syncloud_session.get('http://{0}/rest/remove?app_id=gogs'.format(user_domain), allow_redirects=False)
     assert response.status_code == 200, response.text
 
 
-def test_reinstall(app_archive_path):
-    __local_install(app_archive_path)
+def test_reinstall(app_archive_path, user_domain):
+    __local_install(app_archive_path, user_domain)
 
 
-def __local_install(app_archive_path):
-    run_scp('{0} root@localhost:/app.tar.gz'.format(app_archive_path), password=DEVICE_PASSWORD)
-    run_ssh('/opt/app/sam/bin/sam --debug install /app.tar.gz', password=DEVICE_PASSWORD)
+def __local_install(app_archive_path, user_domain):
+    run_scp('{0} root@{1}:/app.tar.gz'.format(app_archive_path, user_domain), password=DEVICE_PASSWORD)
+    run_ssh(user_domain, '/opt/app/sam/bin/sam --debug install /app.tar.gz', password=DEVICE_PASSWORD)
     time.sleep(3)
