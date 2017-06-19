@@ -27,7 +27,6 @@ def module_setup(request, user_domain):
 
 
 def module_teardown(user_domain):
-    os.mkdir(LOG_DIR)
     platform_log_dir = join(LOG_DIR, 'platform')
     os.mkdir(platform_log_dir)
     run_scp('root@{0}:/opt/data/platform/log/* {1}'.format(user_domain, platform_log_dir), password=LOGS_SSH_PASSWORD)
@@ -64,7 +63,7 @@ def gogs_session(user_domain):
 
 def test_start(module_setup):
     shutil.rmtree(LOG_DIR, ignore_errors=True)
-
+    os.mkdir(LOG_DIR)
 
 def test_activate_device(auth, user_domain):
     email, password, domain, release = auth
