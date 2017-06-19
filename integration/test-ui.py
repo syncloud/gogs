@@ -15,7 +15,7 @@ DIR = dirname(__file__)
 LOG_DIR = join(DIR, 'log')
 DEVICE_USER = 'user'
 DEVICE_PASSWORD = 'password'
-log_dir = join(LOG_DIR, 'nextcloud_log')
+log_dir = join(LOG_DIR, 'gogs_log')
 screenshot_dir = join(DIR, 'screenshot')
 
 
@@ -37,7 +37,8 @@ def driver():
     profile.add_extension('{0}/JSErrorCollector.xpi'.format(DIR))
     profile.set_preference('app.update.auto', False)
     profile.set_preference('app.update.enabled', False)
-    driver = webdriver.Firefox(profile, capabilities=caps, log_path="{0}/firefox.log".format(LOG_DIR), firefox_binary=binary, executable_path=join(DIR, 'geckodriver/geckodriver'))
+    driver = webdriver.Firefox(profile, capabilities=caps, log_path="{0}/firefox.log".format(LOG_DIR),
+                               firefox_binary=binary, executable_path=join(DIR, 'geckodriver/geckodriver'))
     #driver.set_page_load_timeout(30)
     #print driver.capabilities['version']
     return driver

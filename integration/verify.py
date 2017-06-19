@@ -1,16 +1,13 @@
-import json
 import os
-import sys
-from os import listdir
-from os.path import dirname, join, exists, abspath, isdir
-import time
-from subprocess import check_output
-import pytest
 import shutil
+import time
+from bs4 import BeautifulSoup
+from os.path import dirname, join
+
+import pytest
+import requests
 
 from integration.util.ssh import run_scp, run_ssh
-import requests
-from bs4 import BeautifulSoup
 
 SYNCLOUD_INFO = 'syncloud.info'
 DEVICE_USER = 'user'
@@ -40,7 +37,6 @@ def module_teardown(user_domain):
     run_ssh(user_domain, 'journalctl | tail -200', password=LOGS_SSH_PASSWORD)
 
 
-
 @pytest.fixture(scope='function')
 def syncloud_session(device_host):
     session = requests.session()
@@ -64,6 +60,7 @@ def gogs_session(user_domain):
 def test_start(module_setup):
     shutil.rmtree(LOG_DIR, ignore_errors=True)
     os.mkdir(LOG_DIR)
+
 
 def test_activate_device(auth, user_domain):
     email, password, domain, release = auth
