@@ -93,7 +93,7 @@ def test_git_config(user_domain):
 
 
 def test_remove(syncloud_session, device_host):
-    response = syncloud_session.get('http://{0}/rest/remove?app_id=gogs'.format(user_domain), allow_redirects=False)
+    response = syncloud_session.get('http://{0}/rest/remove?app_id=gogs'.format(device_host), allow_redirects=False)
     assert response.status_code == 200, response.text
 
 
