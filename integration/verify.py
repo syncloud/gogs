@@ -43,9 +43,9 @@ def module_teardown(user_domain):
 
 
 @pytest.fixture(scope='function')
-def syncloud_session(user_domain):
+def syncloud_session(device_host):
     session = requests.session()
-    session.post('http://{0}/rest/login'.format(user_domain), data={'name': DEVICE_USER, 'password': DEVICE_PASSWORD})
+    session.post('http://{0}/rest/login'.format(device_host), data={'name': DEVICE_USER, 'password': DEVICE_PASSWORD})
     return session
 
 
