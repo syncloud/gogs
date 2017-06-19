@@ -9,39 +9,41 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 DIR = dirname(__file__)
 LOG_DIR = join(DIR, 'log')
 DEVICE_USER = 'user'
 DEVICE_PASSWORD = 'password'
 log_dir = join(LOG_DIR, 'nextcloud_log')
+screenshot_dir = join(DIR, 'screenshot')
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def driver():
-    os.environ['PATH'] = os.environ['PATH'] + ":" + join(DIR, 'geckodriver')
 
+    if exists(screenshot_dir):
+        shutil.rmtree(screenshot_dir)
+    os.mkdir(screenshot_dir)
+
+    firefox_path = '{0}/firefox/firefox'.format(DIR)
     caps = DesiredCapabilities.FIREFOX
     caps["marionette"] = True
-    caps["binary"] = "/usr/bin/firefox"
+    caps['acceptSslCerts'] = True
+
+    binary = FirefoxBinary(firefox_path)
 
     profile = webdriver.FirefoxProfile()
-    profile.set_preference("webdriver.log.file", "{0}/firefox.log".format(log_dir))
-    _driver=webdriver.Firefox(profile, capabilities=caps)
-    _driver.maximize_window()
-    return _driver
+    profile.add_extension('{0}/JSErrorCollector.xpi'.format(DIR))
+    profile.set_preference('app.update.auto', False)
+    profile.set_preference('app.update.enabled', False)
+    driver = webdriver.Firefox(profile, capabilities=caps, log_path="{0}/firefox.log".format(LOG_DIR), firefox_binary=binary, executable_path=join(DIR, 'geckodriver/geckodriver'))
+    #driver.set_page_load_timeout(30)
+    #print driver.capabilities['version']
+    return driver
 
 
-@pytest.fixture(scope="session")
-def screenshot_dir():
-    dir = join(DIR, 'screenshot')
-    if exists(dir):
-        shutil.rmtree(dir)
-    os.mkdir(dir)
-    return dir
-
-
-def test_login(user_domain, driver, screenshot_dir):
+def test_login(user_domain, driver):
 
     driver.get("http://{0}".format(user_domain))
     driver.get_screenshot_as_file(join(screenshot_dir, 'login.png'))
@@ -68,7 +70,7 @@ def test_login(user_domain, driver, screenshot_dir):
     print(driver.page_source.encode("utf-8"))
 
 
-def test_create_repo_empty(user_domain, driver, screenshot_dir):
+def test_create_repo_empty(user_domain, driver):
 
     driver.get("http://{0}/repo/create".format(user_domain))
     print(driver.page_source.encode("utf-8"))
@@ -88,7 +90,7 @@ def test_create_repo_empty(user_domain, driver, screenshot_dir):
     print(driver.page_source.encode("utf-8"))
 
 
-def test_create_repo_init(user_domain, driver, screenshot_dir):
+def test_create_repo_init(user_domain, driver):
 
     driver.get("http://{0}/repo/create".format(user_domain))
     print(driver.page_source.encode("utf-8"))
