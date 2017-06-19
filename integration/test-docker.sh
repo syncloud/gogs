@@ -7,6 +7,7 @@ if [ "$#" -lt 9 ]; then
     exit 1
 fi
 
+DOMAIN=$3
 APP_ARCHIVE_PATH=$(realpath "$4")
 INSTALLER_VERSION=$5
 RELEASE=$6
@@ -62,4 +63,4 @@ echo "$device_ip gogs.$DOMAIN.syncloud.info" >> /etc/hosts
 
 cat /etc/hosts
 
-xvfb-run -l --server-args="-screen 0, 1024x4096x24" py.test -x -s ${TEST_SUITE} --email=$1 --password=$2 --domain=$3 --app-archive-path=${APP_ARCHIVE_PATH} --installer=${INSTALLER} --device-host=${DEVICE_HOST} --release=$RELEASE
+xvfb-run -l --server-args="-screen 0, 1024x4096x24" py.test -x -s ${TEST_SUITE} --email=$1 --password=$2 --domain=$DOMAIN --app-archive-path=${APP_ARCHIVE_PATH} --installer=${INSTALLER} --device-host=${DEVICE_HOST} --release=$RELEASE
