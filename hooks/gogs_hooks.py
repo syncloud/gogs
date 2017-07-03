@@ -1,3 +1,5 @@
+from bs4 import BeautifulSoup
+
 APP_NAME = 'gogs'
 USER_NAME = 'git'
 SYSTEMD_GOGS = 'gogs'
@@ -171,11 +173,23 @@ def install():
             log.info('GOGS finish installation succeeded')
     except Exception, e:
         log.error('error during the finish: {}'.format(e.message))
-    
-    db = Database(join(app_dir, PSQL_PATH),
-                               database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
-    db.execute("select * from login_source;")
 
+    wait_url(install_url, timeout=60)
+
+    session = requests.session()
+    response = session.get('http://localhost:{0}/index.php/login'.format(GOGS_PORT), allow_redirects=False)
+    soup = BeautifulSoup(response.text, "html.parser")
+    requesttoken = soup.find_all('input', {'name': 'requesttoken'})[0]['value']
+    login_response = session.post('http://localhost:{0}/index.php/login'.format(GOGS_PORT),
+                                  data={'user': 'gogs', 'password': 'gogs', 'requesttoken': requesttoken},
+                                  allow_redirects=False)
+    if login_response.status_code != 200:
+        log.error(login_response.text)
+        raise Exception('unable to login')
+
+    # db = Database(join(app_dir, PSQL_PATH),
+    #               database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
+    # db.execute("select * from login_source;")
 
 
 def remove():
