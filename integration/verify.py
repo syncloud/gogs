@@ -88,6 +88,11 @@ def test_git_config(user_domain):
     run_ssh(user_domain, '/opt/app/gogs/git/bin/git config -l', password=DEVICE_PASSWORD)
 
 
+def test_login(gogs_session):
+    session, token = gogs_session
+    #assert response.status_code == 200, response.text
+
+
 def test_remove(syncloud_session, device_host):
     response = syncloud_session.get('http://{0}/rest/remove?app_id=gogs'.format(device_host), allow_redirects=False)
     assert response.status_code == 200, response.text
