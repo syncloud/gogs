@@ -122,10 +122,7 @@ def install():
                                database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
         db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
         db_postgres.execute("CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
-        db = Database(join(app_dir, PSQL_PATH),
-                               database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
-        db.execute("select * from login_source;")
-
+        
     app.add_service(SYSTEMD_GOGS)
     app.register_web(GOGS_PORT)
 
@@ -174,6 +171,11 @@ def install():
             log.info('GOGS finish installation succeeded')
     except Exception, e:
         log.error('error during the finish: {}'.format(e.message))
+    
+    db = Database(join(app_dir, PSQL_PATH),
+                               database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
+    db.execute("select * from login_source;")
+
 
 
 def remove():
