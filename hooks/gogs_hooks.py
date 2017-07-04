@@ -195,7 +195,7 @@ def install():
                                   data={'user': 'gogs', 'password': 'gogs'},
                                   allow_redirects=False)
     if login_response.status_code != 200:
-        log.error(login_response.text)
+        log.error(login_response.text.encode("utf-8"))
         raise Exception('unable to login')
 
     # db = Database(join(app_dir, PSQL_PATH),
