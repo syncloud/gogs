@@ -23,6 +23,7 @@ fi
 rm -rf build
 BUILD_DIR=${DIR}/build/${NAME}
 mkdir -p ${BUILD_DIR}
+mkdir ${BUILD_DIR}/lib
 
 DOWNLOAD_URL=http://artifact.syncloud.org/3rdparty
 
