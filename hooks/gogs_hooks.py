@@ -187,9 +187,9 @@ def install():
     wait_url(install_url, timeout=60)
 
     session = requests.session()
-    response = session.get('http://localhost:{0}/index.php/login'.format(GOGS_PORT), allow_redirects=False)
-    soup = BeautifulSoup(response.text, "html.parser")
-    requesttoken = soup.find_all('input', {'name': 'requesttoken'})[0]['value']
+    #response = session.get('http://localhost:{0}/user/auth/login'.format(GOGS_PORT), allow_redirects=False)
+    #soup = BeautifulSoup(response.text, "html.parser")
+    #requesttoken = soup.find_all('input', {'name': 'requesttoken'})[0]['value']
     login_response = session.post('http://localhost:{0}/user/auth/login'.format(GOGS_PORT),
                                   data={'user': 'gogs', 'password': 'gogs', 'requesttoken': requesttoken},
                                   allow_redirects=False)
