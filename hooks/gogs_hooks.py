@@ -184,7 +184,7 @@ def install():
     except Exception, e:
         log.error('error during the finish: {}'.format(e.message))
 
-    index_url = http://localhost:{0}'.format(GOGS_PORT)
+    index_url = 'http://localhost:{0}'.format(GOGS_PORT)
     wait_url(index_url, timeout=60)
 
     session = requests.session()
