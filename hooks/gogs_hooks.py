@@ -188,11 +188,11 @@ def install():
     wait_url(index_url, timeout=60)
 
     session = requests.session()
-    #response = session.get('http://localhost:{0}/user/auth/login'.format(GOGS_PORT), allow_redirects=False)
-    #soup = BeautifulSoup(response.text, "html.parser")
-    #requesttoken = soup.find_all('input', {'name': 'requesttoken'})[0]['value']
-    login_response = session.post('http://localhost:{0}/user/auth/login'.format(GOGS_PORT),
-                                  data={'user': 'gogs', 'password': 'gogs'},
+    main_response = session.get('http://localhost:{0}/user/login'.format(GOGS_PORT), allow_redirects=False)
+    soup = BeautifulSoup(main_response.text, "html.parser")
+    csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
+    login_response = session.post('http://localhost:{0}/user/login'.format(GOGS_PORT),
+                                  data={'user_name': 'gogs', 'password': 'gogs', '_csrf': csrf},
                                   allow_redirects=False)
     if login_response.status_code != 200:
         log.error(login_response.text.encode("utf-8"))
