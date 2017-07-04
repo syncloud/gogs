@@ -192,7 +192,7 @@ def install():
     #soup = BeautifulSoup(response.text, "html.parser")
     #requesttoken = soup.find_all('input', {'name': 'requesttoken'})[0]['value']
     login_response = session.post('http://localhost:{0}/user/auth/login'.format(GOGS_PORT),
-                                  data={'user': 'gogs', 'password': 'gogs', 'requesttoken': requesttoken},
+                                  data={'user': 'gogs', 'password': 'gogs'},
                                   allow_redirects=False)
     if login_response.status_code != 200:
         log.error(login_response.text)
