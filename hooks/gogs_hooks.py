@@ -229,10 +229,10 @@ def install():
                                       'smtp_port': '',
                                       'allowed_domains': '',
                                       'pam_service_name': '',
-                                      'is_active': 'on' },
-                                  allow_redirects=False)
+                                      'is_active': 'on'},
+                                 allow_redirects=False)
 
-    if auth_response.status_code != 200:
+    if auth_response.status_code != 302:
         log.error('status code: {}'.format(auth_response.status_code))
         log.error(auth_response.text.encode("utf-8"))
         raise Exception('unable to enable ldap')
