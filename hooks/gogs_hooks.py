@@ -198,9 +198,47 @@ def install():
         log.error(login_response.text.encode("utf-8"))
         raise Exception('unable to login')
 
-    # db = Database(join(app_dir, PSQL_PATH),
-    #               database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
-    # db.execute("select * from login_source;")
+
+    auth_response = session.post('http://localhost:{0}/admin/auths/new'.format(GOGS_PORT),
+                                  data={
+                                      'user_name': 'gogs',
+                                      'password': 'gogs', 
+                                      '_csrf': csrf,
+                                      'type': 4,
+                                      'name': 'syncloud',
+                                      'security_protocol': '',
+                                      'host': 'localhost',
+                                      'port': 389,
+                                      'bind_dn': 'dc=syncloud,dc=org',
+                                      'bind_password': 'syncloud',
+                                      'user_base': 'ou=users,dc=syncloud,dc=org',
+                                      'user_dn': '',
+                                      'filter': '(&(|(objectclass=inetOrgPerson))(uid=%s))',
+                                      'admin_filter': '',
+                                      'attribute_username': '',
+                                      'attribute_name': '',
+                                      'attribute_surname': '',
+                                      'attribute_mail': 'cn',
+                                      'group_dn': '',
+                                      'group_filter': '',
+                                      'group_member_uid': '',
+                                      'user_uid': '',
+                                      'smtp_auth': 'PLAIN',
+                                      'smtp_host': '',
+                                      'smtp_port': '',
+                                      'allowed_domains': '',
+                                      'pam_service_name': '',
+                                      'is_active=on' },
+                                  allow_redirects=False)
+
+    if auth_response.status_code != 200:
+        lpg.error('status code: {}'.format(auth_response.status_code))
+        log.error(auth_response.text.encode("utf-8"))
+        raise Exception('unable to enable ldap')
+
+    db = Database(join(app_dir, PSQL_PATH),
+                  database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
+    db.execute("select * from login_source;")
 
 
 def remove():

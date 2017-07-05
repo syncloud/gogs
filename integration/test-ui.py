@@ -112,3 +112,15 @@ def test_create_repo_init(user_domain, driver):
     time.sleep(5)
     driver.get_screenshot_as_file(join(screenshot_dir, 'repo-init.png'))
     print(driver.page_source.encode("utf-8"))
+
+def test_ldap_auth(user_domain, driver):
+
+    driver.get("http://{0}/admin/auths/1".format(user_domain))
+    print(driver.page_source.encode("utf-8"))
+    # time.sleep(5)
+    wait_driver = WebDriverWait(driver, 10)
+    wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
+
+    driver.get_screenshot_as_file(join(screenshot_dir, 'ldap-auth.png'))
+
+    
