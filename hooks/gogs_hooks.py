@@ -232,7 +232,7 @@ def install():
                                   allow_redirects=False)
 
     if auth_response.status_code != 200:
-        lpg.error('status code: {}'.format(auth_response.status_code))
+        log.error('status code: {}'.format(auth_response.status_code))
         log.error(auth_response.text.encode("utf-8"))
         raise Exception('unable to enable ldap')
 
