@@ -47,14 +47,15 @@ def syncloud_session(device_host):
 @pytest.fixture(scope='function')
 def gogs_session(user_domain):
     session = requests.session()
-    response = session.get('http://{0}/index.php/login'.format(user_domain), allow_redirects=False)
-    soup = BeautifulSoup(response.text, "html.parser")
-    requesttoken = soup.find_all('input', {'name': 'requesttoken'})[0]['value']
-    response = session.post('http://{0}/index.php/login'.format(user_domain),
-                            data={'user': DEVICE_USER, 'password': DEVICE_PASSWORD, 'requesttoken': requesttoken},
-                            allow_redirects=False)
-    assert response.status_code == 303, response.text
-    return session, requesttoken
+    main_response = session.get('http://{0}/user/login'.format(user_domain), allow_redirects=False)
+    soup = BeautifulSoup(main_response.text, "html.parser")
+    csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
+    login_response = session.post('http://{0}/user/login'.format(user_domain),
+                                  data={'user_name': 'gogs', 'password': 'gogs', '_csrf': csrf},
+                                  allow_redirects=False)
+                               
+    assert response.status_code == 302, response.text
+    return session
 
 
 def test_start(module_setup):
@@ -89,7 +90,8 @@ def test_git_config(user_domain):
 
 
 def test_login(gogs_session):
-    session, token = gogs_session
+    session = gogs_session
+    #todo
     #assert response.status_code == 200, response.text
 
 
