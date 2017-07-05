@@ -188,22 +188,23 @@ def install():
     wait_url(index_url, timeout=60)
 
     session = requests.session()
-    main_response = session.get('http://localhost:{0}/user/login'.format(GOGS_PORT), allow_redirects=False)
-    soup = BeautifulSoup(main_response.text, "html.parser")
-    csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
-    login_response = session.post('http://localhost:{0}/user/login'.format(GOGS_PORT),
-                                  data={'user_name': 'gogs', 'password': 'gogs', '_csrf': csrf},
+    login_url = 'http://localhost:{0}/user/login'.format(GOGS_PORT)
+    login_csrf = extract_csrf(session.get(login_url).text)
+    login_response = session.post(login_url,
+                                  data={'user_name': 'gogs', 'password': 'gogs', '_csrf': login_csrf},
                                   allow_redirects=False)
     if login_response.status_code != 302:
         log.error(login_response.text.encode("utf-8"))
         raise Exception('unable to login')
 
-
-    auth_response = session.post('http://localhost:{0}/admin/auths/new'.format(GOGS_PORT),
+    auth_url = 'http://localhost:{0}/admin/auths/new'.format(GOGS_PORT)
+    auth_csrf = extract_csrf(session.get(auth_url).text)
+    
+    auth_response = session.post(auth_url,
                                   data={
                                       'user_name': 'gogs',
                                       'password': 'gogs', 
-                                      '_csrf': csrf,
+                                      '_csrf': auth_csrf,
                                       'type': 4,
                                       'name': 'syncloud',
                                       'security_protocol': '',
@@ -240,6 +241,11 @@ def install():
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
     db.execute("select * from login_source;")
 
+
+def extract_csrf(reaponse):
+    soup = BeautifulSoup(main_response, "html.parser")
+    return soup.find_all('meta', {'name': '_csrf'})[0]['content']
+ 
 
 def remove():
     app = api.get_app_setup(APP_NAME)
