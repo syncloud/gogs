@@ -243,7 +243,7 @@ def install():
 
 
 def extract_csrf(reaponse):
-    soup = BeautifulSoup(main_response, "html.parser")
+    soup = BeautifulSoup(reaponse, "html.parser")
     return soup.find_all('meta', {'name': '_csrf'})[0]['content']
  
 
