@@ -228,7 +228,7 @@ def install():
                                       'smtp_port': '',
                                       'allowed_domains': '',
                                       'pam_service_name': '',
-                                      'is_active=on' },
+                                      'is_active': 'on' },
                                   allow_redirects=False)
 
     if auth_response.status_code != 200:
