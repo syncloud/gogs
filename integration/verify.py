@@ -54,7 +54,7 @@ def gogs_session(user_domain):
                                   data={'user_name': 'gogs', 'password': 'gogs', '_csrf': csrf},
                                   allow_redirects=False)
                                
-    assert response.status_code == 302, response.text
+    assert login_response.status_code == 302, login_response.text
     return session
 
 
