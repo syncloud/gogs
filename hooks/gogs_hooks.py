@@ -194,7 +194,7 @@ def install():
     login_response = session.post('http://localhost:{0}/user/login'.format(GOGS_PORT),
                                   data={'user_name': 'gogs', 'password': 'gogs', '_csrf': csrf},
                                   allow_redirects=False)
-    if login_response.status_code != 200:
+    if login_response.status_code != 302:
         log.error(login_response.text.encode("utf-8"))
         raise Exception('unable to login')
 
