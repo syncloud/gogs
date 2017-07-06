@@ -139,9 +139,10 @@ def install():
     app.add_service(SYSTEMD_GOGS)
     app.register_web(GOGS_PORT)
 
+    configure(app, database_path, log_path, log, gogs_repos_path)
     if first_install:
-        log.info('configuring')
-        configure(app, database_path, log_path, log, gogs_repos_path)
+        log.info('activating ldap')
+        activate_ldap(log)
     
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
@@ -194,6 +195,9 @@ def configure(app, database_path, log_path, log, gogs_repos_path):
             log.info('GOGS finish installation succeeded')
     except Exception, e:
         log.error('error during the finish: {}'.format(e.message))
+
+
+def activate_ldap(log):
 
     index_url = 'http://localhost:{0}'.format(GOGS_PORT)
     wait_url(index_url, timeout=60)
