@@ -130,6 +130,7 @@ def install():
     app.add_service(SYSTEMD_POSTGRESQL)
 
     if first_install:
+        log.info('creating database')
         db_postgres = Database(join(app_dir, PSQL_PATH),
                                database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
         db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
@@ -139,6 +140,7 @@ def install():
     app.register_web(GOGS_PORT)
 
     if first_install:
+        log.info('configuring')
         configure(app, database_path, log_path, log)
     
     db = Database(join(app_dir, PSQL_PATH),
