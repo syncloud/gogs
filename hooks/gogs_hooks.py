@@ -138,6 +138,15 @@ def install():
     app.add_service(SYSTEMD_GOGS)
     app.register_web(GOGS_PORT)
 
+    if first_install:
+        configure(app, database_path, log_path)
+    
+    db = Database(join(app_dir, PSQL_PATH),
+                  database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
+    db.execute("select * from login_source;")
+
+
+def configure(app, database_path, log_path, log):
     app_url = app.app_url()
 
     install_url = 'http://localhost:{}/install'.format(GOGS_PORT)
@@ -237,9 +246,6 @@ def install():
         log.error(auth_response.text.encode("utf-8"))
         raise Exception('unable to enable ldap')
 
-    db = Database(join(app_dir, PSQL_PATH),
-                  database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
-    db.execute("select * from login_source;")
 
 
 def extract_csrf(reaponse):
