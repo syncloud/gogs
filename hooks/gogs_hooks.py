@@ -240,7 +240,7 @@ def install():
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
     db.execute("select * from login_source;")
-    db.execute("select * from ldap_config;")
+
 
 def extract_csrf(reaponse):
     soup = BeautifulSoup(reaponse, "html.parser")
