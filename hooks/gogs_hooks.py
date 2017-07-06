@@ -139,7 +139,7 @@ def install():
     app.register_web(GOGS_PORT)
 
     if first_install:
-        configure(app, database_path, log_path)
+        configure(app, database_path, log_path, log)
     
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
