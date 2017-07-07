@@ -51,7 +51,7 @@ def gogs_session(user_domain):
     soup = BeautifulSoup(main_response.text, "html.parser")
     csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
     login_response = session.post('http://{0}/user/login'.format(user_domain),
-                                  data={'user_name': 'gogs', 'password': 'gogs', '_csrf': csrf},
+                                  data={'user_name': DEVICE_USER, 'password': DEVICE_PASSWORD, '_csrf': csrf},
                                   allow_redirects=False)
                                
     assert login_response.status_code == 302, login_response.text
