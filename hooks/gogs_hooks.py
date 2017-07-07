@@ -144,6 +144,8 @@ def install():
         log.info('activating ldap')
         activate_ldap(log)
     
+    delete_install_user(log)
+    
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
     db.execute("select * from login_source;")
@@ -197,8 +199,7 @@ def configure(app, database_path, log_path, log, gogs_repos_path):
         log.error('error during the finish: {}'.format(e.message))
 
 
-def activate_ldap(log):
-
+def login():
     index_url = 'http://localhost:{0}'.format(GOGS_PORT)
     wait_url(index_url, timeout=60)
 
@@ -206,19 +207,36 @@ def activate_ldap(log):
     login_url = 'http://localhost:{0}/user/login'.format(GOGS_PORT)
     login_csrf = extract_csrf(session.get(login_url).text)
     login_response = session.post(login_url,
-                                  data={'user_name': 'gogs', 'password': 'gogs', '_csrf': login_csrf},
+                                  data={'user_name': GOGS_ADMIN_USER, 'password': GOGS_ADMIN_PASSWORD, '_csrf': login_csrf},
                                   allow_redirects=False)
     if login_response.status_code != 302:
         log.error(login_response.text.encode("utf-8"))
         raise Exception('unable to login')
 
+    return session
+    
+
+def delete_install_user():
+    session = login(log)
+    user_url = 'http://localhost:{0}/admin/users/{1}'.format(GOGS_PORT, GOGS_ADMIN_USER)
+    auth_csrf = extract_csrf(session.get(user_url).text)
+    
+    response = session.delete(user_url, allow_redirects=False)
+
+    if response.status_code != 204:
+        log.error('status code: {}'.format(response.status_code))
+        log.error(response.text.encode("utf-8"))
+        raise Exception('unable to enable ldap')
+
+
+def activate_ldap(log):
+    session = login(log)
+    
     auth_url = 'http://localhost:{0}/admin/auths/new'.format(GOGS_PORT)
     auth_csrf = extract_csrf(session.get(auth_url).text)
     
     auth_response = session.post(auth_url,
-                                  data={
-                                      'user_name': 'gogs',
-                                      'password': 'gogs', 
+                                  data={ 
                                       '_csrf': auth_csrf,
                                       'type': 2,
                                       'name': 'syncloud',
