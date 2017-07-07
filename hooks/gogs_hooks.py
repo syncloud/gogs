@@ -141,7 +141,6 @@ def install():
 
     configure(app, database_path, log_path, log, gogs_repos_path)
     if first_install:
-        log.info('activating ldap')
         activate_ldap(log)
     
     delete_install_user(log)
@@ -217,10 +216,12 @@ def login(log):
     
 
 def delete_install_user(log):
+    log.info('deleting install user')
     session = login(log)
-    user_url = 'http://localhost:{0}/admin/users/{1}'.format(GOGS_PORT, GOGS_ADMIN_USER)
-    auth_csrf = extract_csrf(session.get(user_url).text)
+    user_view_url = 'http://localhost:{0}/user'.format(GOGS_PORT)
+    auth_csrf = extract_csrf(session.get(user_view_url).text)
     
+    user_url = 'http://localhost:{0}/admin/users/{1}'.format(GOGS_PORT, GOGS_ADMIN_USER)
     response = session.delete(user_url, allow_redirects=False)
 
     if response.status_code != 204:
@@ -230,6 +231,7 @@ def delete_install_user(log):
 
 
 def activate_ldap(log):
+    log.info('activating ldap')
     session = login(log)
     
     auth_url = 'http://localhost:{0}/admin/auths/new'.format(GOGS_PORT)
