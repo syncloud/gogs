@@ -95,6 +95,19 @@ def test_login(gogs_session):
     #assert response.status_code == 200, response.text
 
 
+def test_install_user_disabled(user_domain):
+    session = requests.session()
+    main_response = session.get('http://{0}/user/login'.format(user_domain), allow_redirects=False)
+    soup = BeautifulSoup(main_response.text, "html.parser")
+    csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
+    login_response = session.post('http://{0}/user/login'.format(user_domain),
+                                  data={'user_name': 'gogs', 'password': 'gogs', '_csrf': csrf},
+                                  allow_redirects=False)
+                               
+    assert login_response.status_code != 302, login_response.text
+    return session
+
+
 def test_remove(syncloud_session, device_host):
     response = syncloud_session.get('http://{0}/rest/remove?app_id=gogs'.format(device_host), allow_redirects=False)
     assert response.status_code == 200, response.text
