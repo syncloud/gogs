@@ -199,7 +199,7 @@ def configure(app, database_path, log_path, log, gogs_repos_path):
         log.error('error during the finish: {}'.format(e.message))
 
 
-def login():
+def login(log):
     index_url = 'http://localhost:{0}'.format(GOGS_PORT)
     wait_url(index_url, timeout=60)
 
