@@ -13,7 +13,7 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 DIR = dirname(__file__)
 LOG_DIR = join(DIR, 'log')
-DEVICE_USER = 'user'
+DEVICE_USER = 'gogs_user'
 DEVICE_PASSWORD = 'password'
 log_dir = join(LOG_DIR, 'gogs_log')
 screenshot_dir = join(DIR, 'screenshot')
@@ -52,9 +52,9 @@ def test_login(user_domain, driver):
     print(driver.page_source.encode("utf-8"))
 
     user = driver.find_element_by_id("user_name")
-    user.send_keys('gogs')
+    user.send_keys(DEVICE_USER)
     password = driver.find_element_by_id("password")
-    password.send_keys('gogs')
+    password.send_keys(DEVICE_PASSWORD)
     driver.get_screenshot_as_file(join(screenshot_dir, 'login.png'))
     password.send_keys(Keys.RETURN)
 

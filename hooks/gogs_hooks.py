@@ -230,7 +230,7 @@ def activate_ldap(log):
                                       'user_base': 'ou=users,dc=syncloud,dc=org',
                                       'user_dn': '',
                                       'filter': '(&(|(objectclass=inetOrgPerson))(uid=%s))',
-                                      'admin_filter': '',
+                                      'admin_filter': '(objectClass=inetOrgPerson)',
                                       'attribute_username': '',
                                       'attribute_name': '',
                                       'attribute_surname': '',
