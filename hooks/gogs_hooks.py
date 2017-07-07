@@ -216,7 +216,7 @@ def login(log):
     return session
     
 
-def delete_install_user():
+def delete_install_user(log):
     session = login(log)
     user_url = 'http://localhost:{0}/admin/users/{1}'.format(GOGS_PORT, GOGS_ADMIN_USER)
     auth_csrf = extract_csrf(session.get(user_url).text)
