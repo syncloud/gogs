@@ -39,15 +39,12 @@ def driver():
     profile.set_preference('app.update.enabled', False)
     driver = webdriver.Firefox(profile, capabilities=caps, log_path="{0}/firefox.log".format(LOG_DIR),
                                firefox_binary=binary, executable_path=join(DIR, 'geckodriver/geckodriver'))
-    #driver.set_page_load_timeout(30)
-    #print driver.capabilities['version']
     return driver
 
 
 def test_login(user_domain, driver):
 
     driver.get("http://{0}".format(user_domain))
-    driver.get_screenshot_as_file(join(screenshot_dir, 'login.png'))
 
     print(driver.page_source.encode("utf-8"))
 
@@ -58,24 +55,26 @@ def test_login(user_domain, driver):
     driver.get_screenshot_as_file(join(screenshot_dir, 'login.png'))
     password.send_keys(Keys.RETURN)
 
-    wait_driver = WebDriverWait(driver, 10)
-    #wait_driver.until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, '#header #expandDisplayName'), DEVICE_USER))
-
-    #wait_driver.until(EC.element_to_be_clickable((By.ID, 'closeWizard')))
-    #wizard_close_button = driver.find_element_by_id("closeWizard")
-    #wizard_close_button.click()
-
     time.sleep(2)
     driver.get_screenshot_as_file(join(screenshot_dir, 'main.png'))
 
     print(driver.page_source.encode("utf-8"))
 
 
+def test_users(user_domain, driver):
+
+    driver.get("http://{0}/admin/users".format(user_domain))
+    print(driver.page_source.encode("utf-8"))
+    wait_driver = WebDriverWait(driver, 10)
+    wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.blue')))
+
+    driver.get_screenshot_as_file(join(screenshot_dir, 'users.png'))
+
+
 def test_create_repo_empty(user_domain, driver):
 
     driver.get("http://{0}/repo/create".format(user_domain))
     print(driver.page_source.encode("utf-8"))
-    # time.sleep(5)
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
@@ -112,6 +111,7 @@ def test_create_repo_init(user_domain, driver):
     time.sleep(5)
     driver.get_screenshot_as_file(join(screenshot_dir, 'repo-init.png'))
     print(driver.page_source.encode("utf-8"))
+
 
 def test_ldap_auth(user_domain, driver):
 
