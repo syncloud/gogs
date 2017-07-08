@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
 if [ -z "$ARTIFACT_SSH_KEY" ]; then
-  echo "ARTIFACT_SSH_KEY must be set"
-  exit 1
+  echo "ARTIFACT_SSH_KEY must be set, not uploading"
+  exit 0
 fi
 
 if [ -z "$2" ]; then

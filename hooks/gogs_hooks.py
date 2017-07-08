@@ -139,11 +139,10 @@ def install():
     app.add_service(SYSTEMD_GOGS)
     app.register_web(GOGS_PORT)
 
-    configure(app, database_path, log_path, log, gogs_repos_path)
     if first_install:
+        configure(app, database_path, log_path, log, gogs_repos_path)
         activate_ldap(log)
-
-    delete_install_user(log)
+        delete_install_user(log)
 
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)

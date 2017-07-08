@@ -82,7 +82,7 @@ def test_install(app_archive_path, user_domain):
 
 
 def test_storage_dir(user_domain):
-    run_ssh(user_domain, 'ls -la /data/gogs/gogs', password=DEVICE_PASSWORD)
+    run_ssh(user_domain, 'ls -la /data/gogs', password=DEVICE_PASSWORD)
 
 
 def test_git_config(user_domain):
