@@ -39,6 +39,11 @@ def driver():
     profile.set_preference('app.update.enabled', False)
     driver = webdriver.Firefox(profile, capabilities=caps, log_path="{0}/firefox.log".format(LOG_DIR),
                                firefox_binary=binary, executable_path=join(DIR, 'geckodriver/geckodriver'))
+    desktop_w = 1280
+    desktop_h = 2000
+    driver.set_window_position(0, 0)
+    driver.set_window_size(desktop_w, desktop_h)
+
     return driver
 
 
