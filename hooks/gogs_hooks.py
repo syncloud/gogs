@@ -135,16 +135,16 @@ def install():
                                database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
         db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
         db_postgres.execute("CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
-        
+
     app.add_service(SYSTEMD_GOGS)
     app.register_web(GOGS_PORT)
 
     configure(app, database_path, log_path, log, gogs_repos_path)
     if first_install:
         activate_ldap(log)
-    
+
     delete_install_user(log)
-    
+
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
     db.execute("select * from login_source;")
@@ -213,32 +213,33 @@ def login(log):
         raise Exception('unable to login')
 
     return session
-    
+
 
 def delete_install_user(log):
     log.info('deleting install user')
     session = login(log)
-    user_view_url = 'http://localhost:{0}/user'.format(GOGS_PORT)
-    auth_csrf = extract_csrf(session.get(user_view_url).text)
-    
-    user_url = 'http://localhost:{0}/admin/users/{1}'.format(GOGS_PORT, GOGS_ADMIN_USER)
-    response = session.delete(user_url, allow_redirects=False)
+    user_url = 'http://localhost:{0}/admin/users/1'.format(GOGS_PORT)
+    csrf = extract_csrf(session.get(user_url).text)
 
-    if response.status_code != 204:
+    log.info('deleting install user')
+    response = session.post(user_url, allow_redirects=False,
+                            data={'id': 1, '_csrf': csrf})
+
+    if response.status_code != 200:
         log.error('status code: {}'.format(response.status_code))
         log.error(response.text.encode("utf-8"))
-        raise Exception('unable to enable ldap')
+        raise Exception('unable to delete install user')
 
 
 def activate_ldap(log):
     log.info('activating ldap')
     session = login(log)
-    
+
     auth_url = 'http://localhost:{0}/admin/auths/new'.format(GOGS_PORT)
     auth_csrf = extract_csrf(session.get(auth_url).text)
-    
+
     auth_response = session.post(auth_url,
-                                  data={ 
+                                  data={
                                       '_csrf': auth_csrf,
                                       'type': 2,
                                       'name': 'syncloud',
@@ -277,7 +278,7 @@ def activate_ldap(log):
 def extract_csrf(reaponse):
     soup = BeautifulSoup(reaponse, "html.parser")
     return soup.find_all('meta', {'name': '_csrf'})[0]['content']
- 
+
 
 def remove():
     app = api.get_app_setup(APP_NAME)
