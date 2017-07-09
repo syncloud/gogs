@@ -51,7 +51,7 @@ def test_login(user_domain, driver):
 
     driver.get("http://{0}".format(user_domain))
 
-    print(driver.page_source.encode("utf-8"))
+    # print(driver.page_source.encode("utf-8"))
 
     user = driver.find_element_by_id("user_name")
     user.send_keys(DEVICE_USER)
@@ -63,13 +63,13 @@ def test_login(user_domain, driver):
     time.sleep(2)
     driver.get_screenshot_as_file(join(screenshot_dir, 'main.png'))
 
-    print(driver.page_source.encode("utf-8"))
+    # print(driver.page_source.encode("utf-8"))
 
 
 def test_users(user_domain, driver):
 
     driver.get("http://{0}/admin/users".format(user_domain))
-    print(driver.page_source.encode("utf-8"))
+    # print(driver.page_source.encode("utf-8"))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.blue')))
 
@@ -79,7 +79,7 @@ def test_users(user_domain, driver):
 def test_create_repo_empty(user_domain, driver):
 
     driver.get("http://{0}/repo/create".format(user_domain))
-    print(driver.page_source.encode("utf-8"))
+    # print(driver.page_source.encode("utf-8"))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
@@ -92,13 +92,13 @@ def test_create_repo_empty(user_domain, driver):
 
     time.sleep(5)
     driver.get_screenshot_as_file(join(screenshot_dir, 'repo-empty.png'))
-    print(driver.page_source.encode("utf-8"))
+    # print(driver.page_source.encode("utf-8"))
 
 
 def test_create_repo_init(user_domain, driver):
 
     driver.get("http://{0}/repo/create".format(user_domain))
-    print(driver.page_source.encode("utf-8"))
+    # print(driver.page_source.encode("utf-8"))
     # time.sleep(5)
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
@@ -115,17 +115,15 @@ def test_create_repo_init(user_domain, driver):
 
     time.sleep(5)
     driver.get_screenshot_as_file(join(screenshot_dir, 'repo-init.png'))
-    print(driver.page_source.encode("utf-8"))
+    # print(driver.page_source.encode("utf-8"))
 
 
 def test_ldap_auth(user_domain, driver):
 
     driver.get("http://{0}/admin/auths/1".format(user_domain))
-    print(driver.page_source.encode("utf-8"))
+    # print(driver.page_source.encode("utf-8"))
     # time.sleep(5)
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
     driver.get_screenshot_as_file(join(screenshot_dir, 'ldap-auth.png'))
-
-    

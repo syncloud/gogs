@@ -7,8 +7,17 @@ app_path = abspath(join(dirname(__file__), '..'))
 lib_path = join(app_path, 'lib')
 libs = [join(lib_path, item) for item in listdir(lib_path) if isdir(join(lib_path, item))]
 map(sys.path.append, libs)
-print(sys.path)
 from bs4 import BeautifulSoup
+
+from os.path import isdir, join
+import requests
+import time
+from subprocess import check_output
+import shutil
+from syncloud_app import logger
+
+from syncloud_platform.application import api
+from syncloud_platform.gaplib import fs, linux, gen
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
@@ -23,17 +32,6 @@ DB_NAME = 'gogs'
 GOGS_PORT = 3000
 GOGS_ADMIN_USER = 'gogs'
 GOGS_ADMIN_PASSWORD = 'gogs'
-
-
-from os.path import isdir, join
-import requests
-import time
-from subprocess import check_output
-import shutil
-from syncloud_app import logger
-
-from syncloud_platform.application import api
-from syncloud_platform.gaplib import fs, linux, gen
 
 
 def wait_url(url, timeout, interval=3):
@@ -158,43 +156,40 @@ def configure(app, database_path, log_path, log, gogs_repos_path):
 
     log.info("Making POST request to finish GOGS installation, url: {}".format(install_url))
     redirect_email = app.redirect_email()
-    try:
-        install_response = requests.post(install_url, timeout=10, data={
-            'db_type': 'PostgreSQL',
-            'db_host': '{}:{}'.format(database_path, PSQL_PORT),
-            'db_user': DB_USER,
-            'db_passwd': DB_PASS,
-            'db_name': DB_NAME,
-            'ssl_mode': 'disable',
-            'db_path': 'data/gogs.db',
-            'app_name': 'Gogs: Go Git Service',
-            'repo_root_path': gogs_repos_path,
-            'run_user': USER_NAME,
-            'domain': app_url,
-            'ssh_port': '22',
-            'http_port': str(GOGS_PORT),
-            'app_url': '{}/'.format(app_url),
-            'log_root_path': log_path,
-            'smtp_host': '',
-            'smtp_from': '',
-            'smtp_email': '',
-            'smtp_passwd': '',
-            'disable_registration': 'on',
-            'require_sign_in_view': 'on',
-            'admin_name': GOGS_ADMIN_USER,
-            'admin_passwd': GOGS_ADMIN_PASSWORD,
-            'admin_confirm_passwd': GOGS_ADMIN_PASSWORD,
-            'admin_email': redirect_email
-        })
+    install_response = requests.post(install_url, timeout=120, data={
+        'db_type': 'PostgreSQL',
+        'db_host': '{}:{}'.format(database_path, PSQL_PORT),
+        'db_user': DB_USER,
+        'db_passwd': DB_PASS,
+        'db_name': DB_NAME,
+        'ssl_mode': 'disable',
+        'db_path': 'data/gogs.db',
+        'app_name': 'Gogs: Go Git Service',
+        'repo_root_path': gogs_repos_path,
+        'run_user': USER_NAME,
+        'domain': app_url,
+        'ssh_port': '22',
+        'http_port': str(GOGS_PORT),
+        'app_url': '{}/'.format(app_url),
+        'log_root_path': log_path,
+        'smtp_host': '',
+        'smtp_from': '',
+        'smtp_email': '',
+        'smtp_passwd': '',
+        'disable_registration': 'on',
+        'require_sign_in_view': 'on',
+        'admin_name': GOGS_ADMIN_USER,
+        'admin_passwd': GOGS_ADMIN_PASSWORD,
+        'admin_confirm_passwd': GOGS_ADMIN_PASSWORD,
+        'admin_email': redirect_email
+    })
 
-        if install_response.status_code != 200:
-            log.error('GOGS finish installation failed with status code: {}'.format(install_response.status_code))
-            log.error('GOGS finish installation POST request response:')
-            log.error(str(install_response))
-        else:
-            log.info('GOGS finish installation succeeded')
-    except Exception, e:
-        log.error('error during the finish: {}'.format(e.message))
+    if install_response.status_code != 200:
+        log.error('GOGS finish installation failed with status code: {}'.format(install_response.status_code))
+        log.error('GOGS finish installation POST request response:')
+        log.error(str(install_response))
+    else:
+        log.info('GOGS finish installation succeeded')
 
 
 def login(log):
