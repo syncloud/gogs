@@ -212,7 +212,7 @@ def login(log):
 def delete_install_user(log):
     log.info('getting csrf to delete install user')
     session = login(log)
-    user_url = 'http://localhost:{0}/admin/users/1'.format(GOGS_PORT)
+    user_url = 'http://localhost:{0}/admin/users/1/delete'.format(GOGS_PORT)
     csrf = extract_csrf(session.get(user_url).text)
 
     log.info('deleting install user')
@@ -266,7 +266,6 @@ def activate_ldap(log):
         log.error('status code: {}'.format(auth_response.status_code))
         log.error(auth_response.text.encode("utf-8"))
         raise Exception('unable to enable ldap')
-
 
 
 def extract_csrf(reaponse):

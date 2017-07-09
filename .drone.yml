@@ -50,15 +50,9 @@ services:
       - /var/run/dbus:/var/run/dbus
  
 matrix:
-  include:
-    - arch: arm
-      installer: sam
-      
-    - arch: amd64
-      installer: sam
-
-#    - arch: arm
-#      installer: snapd
-
-#    - arch: amd64
-#      installer: snapd
+  arch:
+    - arm
+    - amd64
+  installer:
+    - sam
+#    - snapd
