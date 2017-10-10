@@ -53,13 +53,13 @@ def installed(database_path):
     return isdir(database_path)
 
 
-def database_init(app_install_dir, database_path, user_name):
+def database_init(app_dir, app_data_dir, database_path, user_name):
     log = logger.get_logger('postgres')
     if not isdir(database_path):
-        psql_initdb = join(app_install_dir, 'postgresql/bin/initdb')
+        psql_initdb = join(app_dir, 'postgresql/bin/initdb')
         log.info(check_output(['sudo', '-H', '-u', user_name, psql_initdb, database_path]))
         postgresql_conf_to = join(database_path, 'postgresql.conf')
-        postgresql_conf_from = join(app_install_dir, 'config', 'postgresql.conf')
+        postgresql_conf_from = join(app_data_dir, 'config', 'postgresql.conf')
         shutil.copy(postgresql_conf_from, postgresql_conf_to)
     else:
         log.info('Database path "{0}" already exists'.format(database_path))
@@ -123,7 +123,7 @@ def install():
 
     first_install = not installed(database_path)
     if first_install:
-        database_init(app_dir, database_path, DB_USER)
+        database_init(app_dir, app_data_dir, database_path, DB_USER)
         prepare_storage()
 
     app.add_service(SYSTEMD_POSTGRESQL)
