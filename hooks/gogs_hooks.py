@@ -10,7 +10,7 @@ map(sys.path.append, libs)
 from bs4 import BeautifulSoup
 
 from os.path import isdir, join
-import requests
+import requests_unixsocket
 import time
 from subprocess import check_output
 import shutil
@@ -29,7 +29,6 @@ PSQL_PORT = 5433
 DB_USER = 'git'
 DB_PASS = 'git'
 DB_NAME = 'gogs'
-GOGS_PORT = 3000
 GOGS_ADMIN_USER = 'gogs'
 GOGS_ADMIN_PASSWORD = 'gogs'
 
@@ -39,7 +38,8 @@ def wait_url(url, timeout, interval=3):
     t0 = time.time()
     while time.time() - t0 < timeout:
         try:
-            response = requests.get(url)
+            session = requests_unixsocket.Session()
+            response = session.get(url)
             if response.status_code == 200:
                 return
             log.info(response.status_code)
@@ -78,7 +78,8 @@ class Database:
     def execute(self, sql):
         log = logger.get_logger('postgres')
         log.info("executing: {0}".format(sql))
-        command_line = '{0} -U {1} -d {2} -c "{3}" -h {4} -p {5}'.format(self.psql, self.user, self.database, sql, self.database_path, self.port)
+        command_line = '{0} -U {1} -d {2} -c "{3}" -h {4} -p {5}'.format(self.psql, self.user, self.database, sql,
+                                                                         self.database_path, self.port)
         log.info(check_output(command_line, shell=True))
 
 
@@ -113,7 +114,7 @@ def install():
     }
 
     templates_path = join(app_dir, 'config.templates')
-    config_path = join(app_dir, 'config')
+    config_path = join(app_data_dir, 'config')
 
     gen.generate_files(templates_path, config_path, variables)
 
@@ -135,28 +136,30 @@ def install():
         db_postgres.execute("CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
 
     app.add_service(SYSTEMD_GOGS)
-    app.register_web(GOGS_PORT)
+
+    socket = '{0}/web.socket'.format(app_data_dir).replace('/', '%2F')
 
     if first_install:
-        configure(app, database_path, log_path, log, gogs_repos_path)
-        activate_ldap(log)
-        delete_install_user(log)
+        configure(socket, app, database_path, log_path, log, gogs_repos_path)
+        activate_ldap(socket, log)
+        delete_install_user(socket, log)
 
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
     db.execute("select * from login_source;")
 
 
-def configure(app, database_path, log_path, log, gogs_repos_path):
+def configure(gogs_socket, app, database_path, log_path, log, gogs_repos_path):
     app_url = app.app_url()
 
-    install_url = 'http://localhost:{}/install'.format(GOGS_PORT)
+    install_url = '{0}/install'.format(gogs_socket)
 
     wait_url(install_url, timeout=60)
 
     log.info("Making POST request to finish GOGS installation, url: {}".format(install_url))
     redirect_email = app.redirect_email()
-    install_response = requests.post(install_url, timeout=120, data={
+    session = requests_unixsocket.Session()
+    install_response = session.post(install_url, timeout=120, data={
         'db_type': 'PostgreSQL',
         'db_host': '{}:{}'.format(database_path, PSQL_PORT),
         'db_user': DB_USER,
@@ -169,7 +172,6 @@ def configure(app, database_path, log_path, log, gogs_repos_path):
         'run_user': USER_NAME,
         'domain': app_url,
         'ssh_port': '22',
-        'http_port': str(GOGS_PORT),
         'app_url': '{}/'.format(app_url),
         'log_root_path': log_path,
         'smtp_host': '',
@@ -192,15 +194,16 @@ def configure(app, database_path, log_path, log, gogs_repos_path):
         log.info('GOGS finish installation succeeded')
 
 
-def login(log):
-    index_url = 'http://localhost:{0}'.format(GOGS_PORT)
-    wait_url(index_url, timeout=60)
+def login(socket, log):
+    wait_url(socket, timeout=60)
 
-    session = requests.session()
-    login_url = 'http://localhost:{0}/user/login'.format(GOGS_PORT)
+    session = requests_unixsocket.Session()
+
+    login_url = '{0}/user/login'.format(socket)
     login_csrf = extract_csrf(session.get(login_url).text)
     login_response = session.post(login_url,
-                                  data={'user_name': GOGS_ADMIN_USER, 'password': GOGS_ADMIN_PASSWORD, '_csrf': login_csrf},
+                                  data={'user_name': GOGS_ADMIN_USER, 'password': GOGS_ADMIN_PASSWORD,
+                                        '_csrf': login_csrf},
                                   allow_redirects=False)
     if login_response.status_code != 302:
         log.error(login_response.text.encode("utf-8"))
@@ -209,10 +212,10 @@ def login(log):
     return session
 
 
-def delete_install_user(log):
+def delete_install_user(socket, log):
     log.info('getting csrf to delete install user')
-    session = login(log)
-    user_url = 'http://localhost:{0}/admin/users/1/delete'.format(GOGS_PORT)
+    session = login(socket, log)
+    user_url = '{0}/admin/users/1/delete'.format(socket)
     csrf = extract_csrf(session.get(user_url).text)
 
     log.info('deleting install user')
@@ -225,15 +228,15 @@ def delete_install_user(log):
         raise Exception('unable to delete install user')
 
 
-def activate_ldap(log):
+def activate_ldap(socket, log):
     log.info('activating ldap')
-    session = login(log)
+    session = login(socket, log)
 
-    auth_url = 'http://localhost:{0}/admin/auths/new'.format(GOGS_PORT)
+    auth_url = '{0}/admin/auths/new'.format(socket)
     auth_csrf = extract_csrf(session.get(auth_url).text)
 
     auth_response = session.post(auth_url,
-                                  data={
+                                 data={
                                       '_csrf': auth_csrf,
                                       'type': 2,
                                       'name': 'syncloud',
@@ -275,8 +278,6 @@ def extract_csrf(reaponse):
 
 def remove():
     app = api.get_app_setup(APP_NAME)
-
-    app.unregister_web()
 
     app.remove_service(SYSTEMD_GOGS)
     app.remove_service(SYSTEMD_POSTGRESQL)

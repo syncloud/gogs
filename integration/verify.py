@@ -10,7 +10,7 @@ import requests
 from integration.util.ssh import run_scp, run_ssh
 
 SYNCLOUD_INFO = 'syncloud.info'
-DEVICE_USER = 'gogs_user'
+DEVICE_USER = 'gogs_user@syncloud.it'
 DEVICE_PASSWORD = 'password'
 DEFAULT_DEVICE_PASSWORD = 'syncloud'
 LOGS_SSH_PASSWORD = DEFAULT_DEVICE_PASSWORD
@@ -66,9 +66,6 @@ def test_start(module_setup):
 def test_activate_device(auth, user_domain):
     email, password, domain, release = auth
 
-    run_ssh(user_domain, '/opt/app/sam/bin/sam update --release {0}'.format(release), password=DEFAULT_DEVICE_PASSWORD)
-    run_ssh(user_domain, '/opt/app/sam/bin/sam --debug upgrade platform', password=DEFAULT_DEVICE_PASSWORD)
-
     response = requests.post('http://{0}:81/rest/activate'.format(user_domain),
                              data={'main_domain': SYNCLOUD_INFO, 'redirect_email': email, 'redirect_password': password,
                                    'user_domain': domain, 'device_username': DEVICE_USER, 'device_password': DEVICE_PASSWORD})
@@ -85,8 +82,8 @@ def test_storage_dir(user_domain):
     run_ssh(user_domain, 'ls -la /data/gogs', password=DEVICE_PASSWORD)
 
 
-def test_git_config(user_domain):
-    run_ssh(user_domain, '/opt/app/gogs/git/bin/git config -l', password=DEVICE_PASSWORD)
+def test_git_config(user_domain, app_dir):
+    run_ssh(user_domain, '{0}/git/bin/git config -l'.format(app_dir), password=DEVICE_PASSWORD)
 
 
 def test_login(gogs_session):
