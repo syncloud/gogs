@@ -46,7 +46,7 @@ def wait_url(url, timeout, interval=3):
         except Exception, e:
             log.info(e.message)
         time.sleep(interval)
-    raise Exception('Timeout waiting for url: {}'.format(url))
+    raise Exception('Timeout waiting for url: {0}'.format(url))
 
 
 def installed(database_path):
@@ -138,11 +138,11 @@ def install():
     app.add_service(SYSTEMD_GOGS)
 
     socket = '{0}/web.socket'.format(app_data_dir).replace('/', '%2F')
-
+    index_url = 'http+unix://{0}'.format(socket)
     if first_install:
-        configure(socket, app, database_path, log_path, log, gogs_repos_path)
-        activate_ldap(socket, log)
-        delete_install_user(socket, log)
+        configure(index_url, app, database_path, log_path, log, gogs_repos_path)
+        activate_ldap(index_url, log)
+        delete_install_user(index_url, log)
 
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
