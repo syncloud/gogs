@@ -156,12 +156,12 @@ def configure(gogs_socket, app, database_path, log_path, log, gogs_repos_path):
 
     wait_url(install_url, timeout=60)
 
-    log.info("Making POST request to finish GOGS installation, url: {}".format(install_url))
+    log.info("Making POST request to finish GOGS installation, url: {0}".format(install_url))
     redirect_email = app.redirect_email()
     session = requests_unixsocket.Session()
     install_response = session.post(install_url, timeout=120, data={
         'db_type': 'PostgreSQL',
-        'db_host': '{}:{}'.format(database_path, PSQL_PORT),
+        'db_host': '{0}:{1}'.format(database_path, PSQL_PORT),
         'db_user': DB_USER,
         'db_passwd': DB_PASS,
         'db_name': DB_NAME,
@@ -172,7 +172,7 @@ def configure(gogs_socket, app, database_path, log_path, log, gogs_repos_path):
         'run_user': USER_NAME,
         'domain': app_url,
         'ssh_port': '22',
-        'app_url': '{}/'.format(app_url),
+        'app_url': '{0}/'.format(app_url),
         'log_root_path': log_path,
         'smtp_host': '',
         'smtp_from': '',
@@ -187,7 +187,7 @@ def configure(gogs_socket, app, database_path, log_path, log, gogs_repos_path):
     })
 
     if install_response.status_code != 200:
-        log.error('GOGS finish installation failed with status code: {}'.format(install_response.status_code))
+        log.error('GOGS finish installation failed with status code: {0}'.format(install_response.status_code))
         log.error('GOGS finish installation POST request response:')
         log.error(str(install_response))
     else:
@@ -223,7 +223,7 @@ def delete_install_user(socket, log):
                             data={'id': 1, '_csrf': csrf})
 
     if response.status_code != 200:
-        log.error('status code: {}'.format(response.status_code))
+        log.error('status code: {0}'.format(response.status_code))
         log.error(response.text.encode("utf-8"))
         raise Exception('unable to delete install user')
 
@@ -266,7 +266,7 @@ def activate_ldap(socket, log):
                                  allow_redirects=False)
 
     if auth_response.status_code != 302:
-        log.error('status code: {}'.format(auth_response.status_code))
+        log.error('status code: {0}'.format(auth_response.status_code))
         log.error(auth_response.text.encode("utf-8"))
         raise Exception('unable to enable ldap')
 
