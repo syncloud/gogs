@@ -33,6 +33,7 @@ def module_teardown(user_domain):
 
     run_scp('root@{0}:/var/log/sam.log {1}'.format(user_domain, platform_log_dir), password=LOGS_SSH_PASSWORD)
 
+    run_ssh(user_domain, 'ls -la /opt/data/gogs', password=LOGS_SSH_PASSWORD, throw=False)
     print('systemd logs')
     run_ssh(user_domain, 'journalctl | tail -200', password=LOGS_SSH_PASSWORD)
 
