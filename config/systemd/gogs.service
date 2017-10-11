@@ -13,7 +13,7 @@ Type=simple
 User=git
 Group=git
 WorkingDirectory={{ app_dir }}/gogs
-ExecStart={{ app_dir }}/gogs/gogs web --config {{ app_data_dir }}/gogs.ini
+ExecStart={{ app_dir }}/gogs/gogs web --config {{ app_data_dir }}/config/gogs.ini
 Restart=always
 Environment=USER=git HOME=/home/git
 Environment=PATH={{ app_dir }}/git/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
