@@ -40,7 +40,7 @@ def wait_url(url, timeout, interval=3):
         try:
             session = requests_unixsocket.Session()
             response = session.get(url)
-            if response.status_code == 200:
+            if response.status_code == 200 or response.status_code == 302:
                 return
             log.info(response.status_code)
         except Exception, e:
