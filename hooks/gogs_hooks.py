@@ -150,12 +150,12 @@ def install():
     db.execute("select * from login_source;")
 
 
-def configure(gogs_socket, app, database_path, log_path, log, gogs_repos_path):
+def configure(index_url, app, database_path, log_path, log, gogs_repos_path):
     app_url = app.app_url()
 
-    install_url = '{0}/install'.format(gogs_socket)
+    install_url = '{0}/install'.format(index_url)
 
-    wait_url(log, install_url, timeout=60)
+    wait_url(log, index_url, timeout=60)
 
     log.info("Making POST request to finish GOGS installation, url: {0}".format(install_url))
     redirect_email = app.redirect_email()
