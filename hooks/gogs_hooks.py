@@ -192,7 +192,7 @@ def configure(gogs_socket, app, database_path, log_path, log, gogs_repos_path):
         log.error('GOGS finish installation POST request response:')
         log.error(str(install_response))
     else:
-        log.info('GOGS finish installation succeeded')
+        log.info('GOGS finish installation succeeded: {0}'.format(install_response.text))
 
 
 def login(socket, log):
