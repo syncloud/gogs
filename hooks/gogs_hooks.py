@@ -33,12 +33,13 @@ GOGS_ADMIN_USER = 'gogs'
 GOGS_ADMIN_PASSWORD = 'gogs'
 
 
-def wait_url(url, timeout, interval=3):
-    log = logger.get_logger('gogs_installer')
+def wait_url(log, url, timeout, interval=3):
+
     t0 = time.time()
     while time.time() - t0 < timeout:
         try:
             session = requests_unixsocket.Session()
+            log.info('waiting for url: {0}'.format(url))
             response = session.get(url)
             if response.status_code == 200 or response.status_code == 302:
                 return
@@ -154,7 +155,7 @@ def configure(gogs_socket, app, database_path, log_path, log, gogs_repos_path):
 
     install_url = '{0}/install'.format(gogs_socket)
 
-    wait_url(install_url, timeout=60)
+    wait_url(log, install_url, timeout=60)
 
     log.info("Making POST request to finish GOGS installation, url: {0}".format(install_url))
     redirect_email = app.redirect_email()
@@ -195,7 +196,7 @@ def configure(gogs_socket, app, database_path, log_path, log, gogs_repos_path):
 
 
 def login(socket, log):
-    wait_url(socket, timeout=60)
+    wait_url(log, socket, timeout=60)
 
     session = requests_unixsocket.Session()
 
