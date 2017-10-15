@@ -14,6 +14,7 @@ import requests_unixsocket
 import time
 from subprocess import check_output
 import shutil
+import uuid
 from syncloud_app import logger
 
 from syncloud_platform.application import api
@@ -111,7 +112,9 @@ def install():
         'db_user': DB_USER,
         'db_password': DB_PASS,
         'gogs_repos_path': gogs_repos_path,
-        'log_path': log_path
+        'log_path': log_path,
+        'app_url': app.app_url(),
+        'web_secret': unicode(uuid.uuid4().hex)
     }
 
     templates_path = join(app_dir, 'config.templates')
@@ -141,7 +144,7 @@ def install():
     socket = '{0}/web.socket'.format(app_data_dir).replace('/', '%2F')
     index_url = 'http+unix://{0}'.format(socket)
     if first_install:
-        configure(index_url, app, database_path, log_path, log, gogs_repos_path)
+        #configure(index_url, app, database_path, log_path, log, gogs_repos_path)
         activate_ldap(index_url, log)
         delete_install_user(index_url, log)
 
