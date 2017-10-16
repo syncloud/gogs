@@ -164,6 +164,7 @@ def create_install_user(index_url, log, email, login, password):
     response = session.post(signup_url, allow_redirects=False, timeout=120, data={
         'user_name': login,
         'password': password,
+        'retype': password,
         'email': email
     })
 
