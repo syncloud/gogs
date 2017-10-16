@@ -145,8 +145,8 @@ def install():
     index_url = 'http+unix://{0}'.format(socket)
     if first_install:
         create_install_user(index_url, log, app.redirect_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
-        activate_ldap(index_url, log)
-        delete_install_user(index_url, log)
+        activate_ldap(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
+        delete_install_user(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
 
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
@@ -171,13 +171,14 @@ def create_install_user(index_url, log, email, login, password):
         log.error('failed with status code: {0}'.format(response.status_code))
         log.error('response:')
         log.error(str(response))
+        raise Exception('unable to create install user')
     else:
-        log.info('user created: {0}'.format(response.text.encode('utf-8')))
+        log.info('install user created')
 
 
-def delete_install_user(socket, log):
+def delete_install_user(socket, log, username, password):
     log.info('getting csrf to delete install user')
-    session = login(socket, log)
+    session = login(socket, log, username, password)
     user_url = '{0}/admin/users/1/delete'.format(socket)
     csrf = extract_csrf(session.get(user_url).text)
 
@@ -191,7 +192,7 @@ def delete_install_user(socket, log):
         raise Exception('unable to delete install user')
 
 
-def login(socket, log):
+def login(socket, log, username, password):
     wait_url(log, socket, timeout=60)
 
     session = requests_unixsocket.Session()
@@ -199,7 +200,7 @@ def login(socket, log):
     login_url = '{0}/user/login'.format(socket)
     login_csrf = extract_csrf(session.get(login_url).text)
     login_response = session.post(login_url,
-                                  data={'user_name': GOGS_ADMIN_USER, 'password': GOGS_ADMIN_PASSWORD,
+                                  data={'user_name': username, 'password': password,
                                         '_csrf': login_csrf},
                                   allow_redirects=False)
     if login_response.status_code != 200:
@@ -209,9 +210,9 @@ def login(socket, log):
     return session
 
 
-def activate_ldap(socket, log):
+def activate_ldap(socket, log, username, password):
     log.info('activating ldap')
-    session = login(socket, log)
+    session = login(socket, log, username, password)
 
     auth_url = '{0}/admin/auths/new'.format(socket)
     auth_csrf = extract_csrf(session.get(auth_url).text)
