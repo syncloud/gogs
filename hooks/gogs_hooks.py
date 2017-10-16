@@ -199,13 +199,14 @@ def login(socket, log, username, password):
 
     login_url = '{0}/user/login'.format(socket)
     login_csrf = extract_csrf(session.get(login_url).text)
-    login_response = session.post(login_url,
+    response = session.post(login_url,
                                   data={'user_name': username, 'password': password,
                                         '_csrf': login_csrf},
                                   allow_redirects=False)
-    print(login_response.headers)
-    if login_response.status_code != 200:
-        log.error(login_response.text.encode("utf-8"))
+                                  
+    if response.status_code != 302:
+        log.error('status code: {0}'.format(response.status_code))
+        log.error(response.text.encode("utf-8"))
         raise Exception('unable to login')
 
     return session
