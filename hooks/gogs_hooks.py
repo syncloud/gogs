@@ -31,7 +31,7 @@ DB_USER = 'git'
 DB_PASS = 'git'
 DB_NAME = 'gogs'
 GOGS_ADMIN_USER = 'gogs'
-GOGS_ADMIN_PASSWORD = 'gogs'
+GOGS_ADMIN_PASSWORD = unicode(uuid.uuid4().hex)
 
 
 def wait_url(log, url, timeout, interval=3):
@@ -145,6 +145,7 @@ def install():
     index_url = 'http+unix://{0}'.format(socket)
     if first_install:
         #configure(index_url, app, database_path, log_path, log, gogs_repos_path)
+        # create install user
         activate_ldap(index_url, log)
         delete_install_user(index_url, log)
 
