@@ -145,7 +145,7 @@ def install():
     index_url = 'http+unix://{0}'.format(socket)
     if first_install:
         #configure(index_url, app, database_path, log_path, log, gogs_repos_path)
-        create_user(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
+        create_install_user(index_url, log, app.redirect_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         activate_ldap(index_url, log)
         delete_install_user(index_url, log)
 
@@ -199,27 +199,42 @@ def configure(index_url, app, database_path, log_path, log, gogs_repos_path):
         log.info('GOGS finish installation succeeded: {0}'.format(install_response.text))
 
 
-def create_user(index_url, log, login, password):
+def create_install_user(index_url, log, email, login, password):
 
-    users_url = '{0}/admin/users'.format(index_url)
+    signup_url = '{0}/user/auth/signup'.format(index_url)
 
     wait_url(log, index_url, timeout=60)
 
-    log.info("Creating an install user, url: {0}".format(users_url))
-    email = app.redirect_email()
+    log.info("Creating an install user, url: {0}".format(signup_url))
     session = requests_unixsocket.Session()
-    response = session.post(users_url, timeout=120, data={
+    response = session.post(signup_url, allow_redirects=False, timeout=120, data={
         'username': login,
         'password': password,
         'email': email
     })
 
-    if response.status_code != 201:
+    if response.status_code != 302:
         log.error('failed with status code: {0}'.format(response.status_code))
         log.error('response:')
         log.error(str(response))
     else:
         log.info('user created: {0}'.format(response.text))
+
+
+def delete_install_user(socket, log):
+    log.info('getting csrf to delete install user')
+    session = login(socket, log)
+    user_url = '{0}/admin/users/1/delete'.format(socket)
+    csrf = extract_csrf(session.get(user_url).text)
+
+    log.info('deleting install user')
+    response = session.post(user_url, allow_redirects=False,
+                            data={'id': 1, '_csrf': csrf})
+
+    if response.status_code != 200:
+        log.error('status code: {0}'.format(response.status_code))
+        log.error(response.text.encode("utf-8"))
+        raise Exception('unable to delete install user')
 
 
 def login(socket, log):
@@ -238,22 +253,6 @@ def login(socket, log):
         raise Exception('unable to login')
 
     return session
-
-
-def delete_install_user(socket, log):
-    log.info('getting csrf to delete install user')
-    session = login(socket, log)
-    user_url = '{0}/admin/users/1/delete'.format(socket)
-    csrf = extract_csrf(session.get(user_url).text)
-
-    log.info('deleting install user')
-    response = session.post(user_url, allow_redirects=False,
-                            data={'id': 1, '_csrf': csrf})
-
-    if response.status_code != 200:
-        log.error('status code: {0}'.format(response.status_code))
-        log.error(response.text.encode("utf-8"))
-        raise Exception('unable to delete install user')
 
 
 def activate_ldap(socket, log):
