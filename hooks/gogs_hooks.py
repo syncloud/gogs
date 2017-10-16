@@ -213,7 +213,7 @@ def create_install_user(index_url, log, email, login, password):
         'email': email
     })
 
-    if response.status_code != 302:
+    if response.status_code != 200:
         log.error('failed with status code: {0}'.format(response.status_code))
         log.error('response:')
         log.error(str(response))
