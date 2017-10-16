@@ -144,7 +144,6 @@ def install():
     socket = '{0}/web.socket'.format(app_data_dir).replace('/', '%2F')
     index_url = 'http+unix://{0}'.format(socket)
     if first_install:
-        #configure(index_url, app, database_path, log_path, log, gogs_repos_path)
         create_install_user(index_url, log, app.redirect_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         activate_ldap(index_url, log)
         delete_install_user(index_url, log)
@@ -152,51 +151,6 @@ def install():
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
     db.execute("select * from login_source;")
-
-
-def configure(index_url, app, database_path, log_path, log, gogs_repos_path):
-    app_url = app.app_url()
-
-    install_url = '{0}/install'.format(index_url)
-
-    wait_url(log, index_url, timeout=60)
-
-    log.info("Making POST request to finish GOGS installation, url: {0}".format(install_url))
-    redirect_email = app.redirect_email()
-    session = requests_unixsocket.Session()
-    install_response = session.post(install_url, timeout=120, data={
-        'db_type': 'PostgreSQL',
-        'db_host': '{0}:{1}'.format(database_path, PSQL_PORT),
-        'db_user': DB_USER,
-        'db_passwd': DB_PASS,
-        'db_name': DB_NAME,
-        'ssl_mode': 'disable',
-        'db_path': 'data/gogs.db',
-        'app_name': 'Gogs: Go Git Service',
-        'repo_root_path': gogs_repos_path,
-        'run_user': USER_NAME,
-        'domain': app_url,
-        'ssh_port': '22',
-        'app_url': '{0}/'.format(app_url),
-        'log_root_path': log_path,
-        'smtp_host': '',
-        'smtp_from': '',
-        'smtp_email': '',
-        'smtp_passwd': '',
-        'disable_registration': 'on',
-        'require_sign_in_view': 'on',
-        'admin_name': GOGS_ADMIN_USER,
-        'admin_passwd': GOGS_ADMIN_PASSWORD,
-        'admin_confirm_passwd': GOGS_ADMIN_PASSWORD,
-        'admin_email': redirect_email
-    })
-
-    if install_response.status_code != 200:
-        log.error('GOGS finish installation failed with status code: {0}'.format(install_response.status_code))
-        log.error('GOGS finish installation POST request response:')
-        log.error(str(install_response))
-    else:
-        log.info('GOGS finish installation succeeded: {0}'.format(install_response.text))
 
 
 def create_install_user(index_url, log, email, login, password):
@@ -218,7 +172,7 @@ def create_install_user(index_url, log, email, login, password):
         log.error('response:')
         log.error(str(response))
     else:
-        log.info('user created: {0}'.format(response.text))
+        log.info('user created: {0}'.format(response.text.encode('utf-8')))
 
 
 def delete_install_user(socket, log):
