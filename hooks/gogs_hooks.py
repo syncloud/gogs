@@ -201,7 +201,7 @@ def configure(index_url, app, database_path, log_path, log, gogs_repos_path):
 
 def create_install_user(index_url, log, email, login, password):
 
-    signup_url = '{0}/user/auth/signup'.format(index_url)
+    signup_url = '{0}/user/sign_up'.format(index_url)
 
     wait_url(log, index_url, timeout=60)
 
