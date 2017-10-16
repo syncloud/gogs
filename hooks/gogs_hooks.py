@@ -145,7 +145,7 @@ def install():
     index_url = 'http+unix://{0}'.format(socket)
     if first_install:
         #configure(index_url, app, database_path, log_path, log, gogs_repos_path)
-        # create install user
+        create_user(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         activate_ldap(index_url, log)
         delete_install_user(index_url, log)
 
@@ -197,6 +197,29 @@ def configure(index_url, app, database_path, log_path, log, gogs_repos_path):
         log.error(str(install_response))
     else:
         log.info('GOGS finish installation succeeded: {0}'.format(install_response.text))
+
+
+def create_user(index_url, log, login, password):
+
+    users_url = '{0}/admin/users'.format(index_url)
+
+    wait_url(log, index_url, timeout=60)
+
+    log.info("Creating an install user, url: {0}".format(users_url))
+    email = app.redirect_email()
+    session = requests_unixsocket.Session()
+    response = session.post(users_url, timeout=120, data={
+        'username': login,
+        'password': password,
+        'email': email
+    })
+
+    if response.status_code != 201:
+        log.error('failed with status code: {0}'.format(response.status_code))
+        log.error('response:')
+        log.error(str(response))
+    else:
+        log.info('user created: {0}'.format(response.text))
 
 
 def login(socket, log):
