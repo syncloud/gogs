@@ -41,7 +41,7 @@ def wait_url(log, url, timeout, interval=3):
         try:
             session = requests_unixsocket.Session()
             log.info('waiting for url: {0}'.format(url))
-            response = session.get(url)
+            response = session.get(url, allow_redirects=False)
             if response.status_code == 200 or response.status_code == 302:
                 return
             log.info(response.status_code)
