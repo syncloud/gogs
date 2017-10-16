@@ -169,8 +169,7 @@ def create_install_user(index_url, log, email, login, password):
 
     if response.status_code != 302:
         log.error('failed with status code: {0}'.format(response.status_code))
-        log.error('response:')
-        log.error(str(response))
+        log.error(response.text.encode("utf-8"))
         raise Exception('unable to create install user')
     else:
         log.info('install user created')
