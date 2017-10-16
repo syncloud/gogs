@@ -162,12 +162,12 @@ def create_install_user(index_url, log, email, login, password):
     log.info("Creating an install user, url: {0}".format(signup_url))
     session = requests_unixsocket.Session()
     response = session.post(signup_url, allow_redirects=False, timeout=120, data={
-        'username': login,
+        'user_name': login,
         'password': password,
         'email': email
     })
 
-    if response.status_code != 200:
+    if response.status_code != 302:
         log.error('failed with status code: {0}'.format(response.status_code))
         log.error('response:')
         log.error(str(response))
@@ -203,6 +203,7 @@ def login(socket, log, username, password):
                                   data={'user_name': username, 'password': password,
                                         '_csrf': login_csrf},
                                   allow_redirects=False)
+    print(login_response.headers)
     if login_response.status_code != 200:
         log.error(login_response.text.encode("utf-8"))
         raise Exception('unable to login')
