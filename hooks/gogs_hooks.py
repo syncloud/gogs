@@ -202,7 +202,7 @@ def login(socket, log):
                                   data={'user_name': GOGS_ADMIN_USER, 'password': GOGS_ADMIN_PASSWORD,
                                         '_csrf': login_csrf},
                                   allow_redirects=False)
-    if login_response.status_code != 302:
+    if login_response.status_code != 200:
         log.error(login_response.text.encode("utf-8"))
         raise Exception('unable to login')
 
