@@ -79,7 +79,7 @@ def test_users(user_domain, driver):
 def test_user(user_domain, driver):
 
     driver.get("http://{0}/admin/users/2".format(user_domain))
-    # print(driver.page_source.encode("utf-8"))
+    print(driver.page_source.encode("utf-8"))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.blue')))
 
