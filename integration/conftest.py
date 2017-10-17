@@ -49,7 +49,7 @@ def installer(request):
 def device_host(request):
     return request.config.getoption("--device-host")
 
-APP_NAME='mail'
+APP_NAME='gogs'
 
 SAM_PLATFORM_DATA_DIR='/opt/data/platform'
 SNAPD_PLATFORM_DATA_DIR='/var/snap/platform/common'
