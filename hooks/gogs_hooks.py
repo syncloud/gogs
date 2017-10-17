@@ -236,7 +236,7 @@ def activate_ldap(socket, log, username, password):
                                       'attribute_username': '',
                                       'attribute_name': '',
                                       'attribute_surname': '',
-                                      'attribute_mail': 'cn',
+                                      'attribute_mail': 'mail',
                                       'group_dn': '',
                                       'group_filter': '',
                                       'group_member_uid': '',
