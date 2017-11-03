@@ -234,7 +234,7 @@ def activate_ldap(socket, log, username, password):
                                       'user_dn': '',
                                       'filter': '(&(objectclass=inetOrgPerson)(uid=%s))',
                                       'admin_filter': '(objectClass=inetOrgPerson)',
-                                      'attribute_username': 'cn',
+                                      'attribute_username': '',
                                       'attribute_name': 'cn',
                                       'attribute_surname': '',
                                       'attribute_mail': 'mail',
