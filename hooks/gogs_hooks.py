@@ -223,7 +223,7 @@ def activate_ldap(socket, log, username, password):
     auth_response = session.post(auth_url,
                                  data={
                                       '_csrf': auth_csrf,
-                                      'type': 1,
+                                      'type': 5,
                                       'name': 'syncloud',
                                       'security_protocol': '',
                                       'host': 'localhost',
