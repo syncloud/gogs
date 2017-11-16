@@ -36,7 +36,7 @@ def module_teardown(user_domain):
     run_ssh(user_domain, 'ls -la /opt/data/gogs', password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, 'cat /opt/data/gogs/config/gogs.ini', password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, '/opt/app/gogs/git/bin/git config --global user.name', password=LOGS_SSH_PASSWORD, throw=False, env_vars='HOME=/home/git')
-    run_ssh(user_domain, '/opt/app/gogs/git/bin/git config --global user.email', password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, '/opt/app/gogs/git/bin/git config --global user.email', password=LOGS_SSH_PASSWORD, throw=False, env_vars='HOME=/home/git')
 
 
     print('systemd logs')
@@ -89,7 +89,7 @@ def test_storage_dir(user_domain):
 
 
 def test_git_config(user_domain, app_dir):
-    run_ssh(user_domain, '{0}/git/bin/git config -l'.format(app_dir), password=DEVICE_PASSWORD)
+    run_ssh(user_domain, '{0}/git/bin/git config -l'.format(app_dir), password=DEVICE_PASSWORD, env_vars='HOME=/home/git')
 
 
 def test_login(gogs_session):
