@@ -35,6 +35,10 @@ def module_teardown(user_domain):
 
     run_ssh(user_domain, 'ls -la /opt/data/gogs', password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, 'cat /opt/data/gogs/config/gogs.ini', password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, 'git config --global user.name', password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, 'git config --global user.email', password=LOGS_SSH_PASSWORD, throw=False)
+
+
     print('systemd logs')
     run_ssh(user_domain, 'journalctl | tail -200', password=LOGS_SSH_PASSWORD)
 
