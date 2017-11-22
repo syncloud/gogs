@@ -822,7 +822,7 @@ func initRepoCommit(tmpPath string, sig *git.Signature) (err error) {
 		"git", "add", "--all"); err != nil {
 		return fmt.Errorf("git add: %s", stderr)
 	}
-	author := fmt.Sprintf("--author='%s <%s>'", sig.Name, sig.Email
+	author := fmt.Sprintf("--author='%s <%s>'", sig.Name, sig.Email)
 	log.Trace(author)
 
 	if _, stderr, err = process.ExecDir(-1,
