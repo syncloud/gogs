@@ -45,7 +45,7 @@ ln -s /usr/lib/go-1.6/bin/go /usr/bin/go
 rm -rf /usr/bin/gofmt
 ln -s /usr/lib/go-1.6/bin/gofmt /usr/bin/gofmt
 
-GOPATH=$(pwd)
+export GOPATH=$(pwd)
 mkdir -p $GOPATH/src/github.com/gogits
 cd $GOPATH/src/github.com/gogits
 wget https://github.com/gogits/gogs/archive/v${GOGS_VERSION}.tar.gz --progress dot:giga -O gogs-${GOGS_VERSION}.tar.gz
