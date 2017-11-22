@@ -52,6 +52,7 @@ wget https://github.com/gogits/gogs/archive/v${GOGS_VERSION}.tar.gz --progress d
 tar xf gogs-${GOGS_VERSION}.tar.gz
 mv gogs-${GOGS_VERSION} gogs
 cd gogs
+cp.${DIR}/hacks/models/repo.go models/repo.go 
 go build 
 mkdir ${BUILD_DIR}/gogs
 cp gogs ${BUILD_DIR}/gogs/
