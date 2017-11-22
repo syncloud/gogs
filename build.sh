@@ -35,6 +35,16 @@ coin --to ${BUILD_DIR}/lib py https://pypi.python.org/packages/f3/94/67d781fb32a
 coin --to ${BUILD_DIR} raw ${DOWNLOAD_URL}/postgresql-${ARCH}.tar.gz
 coin --to ${BUILD_DIR} --ignore-cache raw ${DOWNLOAD_URL}/git-${ARCH}.tar.gz
 
+if [[ $(. /etc/os-release; echo $VERSION) =~ .*jessie.* ]]; then
+    echo "deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/backports.list
+fi
+apt-get update
+apt-get install -y golang-1.6
+rm -rf /usr/bin/go
+ln -s /usr/lib/go-1.6/bin/go /usr/bin/go
+rm -rf /usr/bin/gofmt
+ln -s /usr/lib/go-1.6/bin/gofmt /usr/bin/gofmt
+
 GOPATH=$(pwd)
 mkdir -p $GOPATH/src/github.com/gogits
 cd $GOPATH/src/github.com/gogits
