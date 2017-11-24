@@ -10,7 +10,7 @@ import requests
 from integration.util.ssh import run_scp, run_ssh
 
 SYNCLOUD_INFO = 'syncloud.info'
-DEVICE_USER = 'gogs_user'
+DEVICE_USER = 'gogs_user@syncloud.info'
 DEVICE_PASSWORD = 'password'
 DEFAULT_DEVICE_PASSWORD = 'syncloud'
 LOGS_SSH_PASSWORD = DEFAULT_DEVICE_PASSWORD
