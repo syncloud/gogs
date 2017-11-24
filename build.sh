@@ -31,35 +31,38 @@ coin --to ${BUILD_DIR}/lib py https://pypi.python.org/packages/2.7/b/beautifulso
 coin --to ${BUILD_DIR}/lib py https://pypi.python.org/packages/ea/03/92d3278bf8287c5caa07dbd9ea139027d5a3592b0f4d14abf072f890fab2/requests-2.11.1-py2.py3-none-any.whl#md5=b4269c6fb64b9361288620ba028fd385
 coin --to ${BUILD_DIR}/lib py https://pypi.python.org/packages/f3/94/67d781fb32afbee0fffa0ad9e16ad0491f1a9c303e14790ae4e18f11be19/requests-unixsocket-0.1.5.tar.gz#md5=08453c8ef7dc03863ff4a30b901e7c20
 
-#coin --to ${BUILD_DIR} raw https://dl.gogs.io/${GOGS_VERSION}/${GOGS_ARCH}.zip --takefolder gogs
 coin --to ${BUILD_DIR} raw ${DOWNLOAD_URL}/postgresql-${ARCH}.tar.gz
 coin --to ${BUILD_DIR} --ignore-cache raw ${DOWNLOAD_URL}/git-${ARCH}.tar.gz
 
-if [[ $(. /etc/os-release; echo $VERSION) =~ .*jessie.* ]]; then
-    echo "deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/backports.list
-fi
-apt-get update
-apt-get install -y golang-1.6
-rm -rf /usr/bin/go
-ln -s /usr/lib/go-1.6/bin/go /usr/bin/go
-rm -rf /usr/bin/gofmt
-ln -s /usr/lib/go-1.6/bin/gofmt /usr/bin/gofmt
+#use binaries
+coin --to ${BUILD_DIR} raw https://dl.gogs.io/${GOGS_VERSION}/${GOGS_ARCH}.zip --takefolder gogs
 
-export GOPATH=$(pwd)
-mkdir -p $GOPATH/src/github.com/gogits
-cd $GOPATH/src/github.com/gogits
-wget https://github.com/gogits/gogs/archive/v${GOGS_VERSION}.tar.gz --progress dot:giga -O gogs-${GOGS_VERSION}.tar.gz
-tar xf gogs-${GOGS_VERSION}.tar.gz
-mv gogs-${GOGS_VERSION} gogs
-cd gogs
-ls -la
-cp ${DIR}/hacks/models/repo.go models/repo.go 
-go build 
-mkdir ${BUILD_DIR}/gogs
-cp gogs ${BUILD_DIR}/gogs/
-chmod +x ${BUILD_DIR}/gogs/gogs
-cp -r templates ${BUILD_DIR}/gogs/
-cp -r public ${BUILD_DIR}/gogs/
+# or compile
+#if [[ $(. /etc/os-release; echo $VERSION) =~ .*jessie.* ]]; then
+#    echo "deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/backports.list
+#fi
+#apt-get update
+#apt-get install -y golang-1.6
+#rm -rf /usr/bin/go
+#ln -s /usr/lib/go-1.6/bin/go /usr/bin/go
+#rm -rf /usr/bin/gofmt
+#ln -s /usr/lib/go-1.6/bin/gofmt /usr/bin/gofmt
+
+#export GOPATH=$(pwd)
+#mkdir -p $GOPATH/src/github.com/gogits
+#cd $GOPATH/src/github.com/gogits
+#wget https://github.com/gogits/gogs/archive/v${GOGS_VERSION}.tar.gz --progress dot:giga -O gogs-${GOGS_VERSION}.tar.gz
+#tar xf gogs-${GOGS_VERSION}.tar.gz
+#mv gogs-${GOGS_VERSION} gogs
+#cd gogs
+#ls -la
+#cp ${DIR}/hacks/models/repo.go models/repo.go 
+#go build 
+#mkdir ${BUILD_DIR}/gogs
+#cp gogs ${BUILD_DIR}/gogs/
+#chmod +x ${BUILD_DIR}/gogs/gogs
+#cp -r templates ${BUILD_DIR}/gogs/
+#cp -r public ${BUILD_DIR}/gogs/
 
 cp -r ${DIR}/hooks ${BUILD_DIR}
 cp -r ${DIR}/config ${BUILD_DIR}/config.templates
