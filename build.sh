@@ -36,6 +36,7 @@ coin --to ${BUILD_DIR} --ignore-cache raw ${DOWNLOAD_URL}/git-${ARCH}.tar.gz
 
 #use binaries
 coin --to ${BUILD_DIR} raw https://dl.gogs.io/${GOGS_VERSION}/${GOGS_ARCH}.zip --takefolder gogs
+chmod +x ${BUILD_DIR}/gogs/gogs
 
 # or compile
 #if [[ $(. /etc/os-release; echo $VERSION) =~ .*jessie.* ]]; then
