@@ -57,7 +57,7 @@ tar xf gogs-${GOGS_VERSION}.tar.gz
 mv gogs-${GOGS_VERSION} gogs
 cd gogs
 ls -la
-cp ${DIR}/hacks/pkg/auth/ldap/ldap.go pkg/auth/ldap/ldap.go
+#cp ${DIR}/hacks/pkg/auth/ldap/ldap.go pkg/auth/ldap/ldap.go
 go build 
 mkdir ${BUILD_DIR}/gogs
 cp gogs ${BUILD_DIR}/gogs/
