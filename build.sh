@@ -35,35 +35,35 @@ coin --to ${BUILD_DIR} raw ${DOWNLOAD_URL}/postgresql-${ARCH}.tar.gz
 coin --to ${BUILD_DIR} --ignore-cache raw ${DOWNLOAD_URL}/git-${ARCH}.tar.gz
 
 #use binaries
-coin --to ${BUILD_DIR} raw https://dl.gogs.io/${GOGS_VERSION}/${GOGS_ARCH}.zip --takefolder gogs
-chmod +x ${BUILD_DIR}/gogs/gogs
+#coin --to ${BUILD_DIR} raw https://dl.gogs.io/${GOGS_VERSION}/${GOGS_ARCH}.zip --takefolder gogs
+#chmod +x ${BUILD_DIR}/gogs/gogs
 
 # or compile
-#if [[ $(. /etc/os-release; echo $VERSION) =~ .*jessie.* ]]; then
-#    echo "deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/backports.list
-#fi
-#apt-get update
-#apt-get install -y golang-1.6
-#rm -rf /usr/bin/go
-#ln -s /usr/lib/go-1.6/bin/go /usr/bin/go
-#rm -rf /usr/bin/gofmt
-#ln -s /usr/lib/go-1.6/bin/gofmt /usr/bin/gofmt
+if [[ $(. /etc/os-release; echo $VERSION) =~ .*jessie.* ]]; then
+    echo "deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/backports.list
+fi
+apt-get update
+apt-get install -y golang-1.6
+rm -rf /usr/bin/go
+ln -s /usr/lib/go-1.6/bin/go /usr/bin/go
+rm -rf /usr/bin/gofmt
+ln -s /usr/lib/go-1.6/bin/gofmt /usr/bin/gofmt
 
-#export GOPATH=$(pwd)
-#mkdir -p $GOPATH/src/github.com/gogits
-#cd $GOPATH/src/github.com/gogits
-#wget https://github.com/gogits/gogs/archive/v${GOGS_VERSION}.tar.gz --progress dot:giga -O gogs-${GOGS_VERSION}.tar.gz
-#tar xf gogs-${GOGS_VERSION}.tar.gz
-#mv gogs-${GOGS_VERSION} gogs
-#cd gogs
-#ls -la
-#cp ${DIR}/hacks/models/repo.go models/repo.go 
-#go build 
-#mkdir ${BUILD_DIR}/gogs
-#cp gogs ${BUILD_DIR}/gogs/
-#chmod +x ${BUILD_DIR}/gogs/gogs
-#cp -r templates ${BUILD_DIR}/gogs/
-#cp -r public ${BUILD_DIR}/gogs/
+export GOPATH=$(pwd)
+mkdir -p $GOPATH/src/github.com/gogits
+cd $GOPATH/src/github.com/gogits
+wget https://github.com/gogits/gogs/archive/v${GOGS_VERSION}.tar.gz --progress dot:giga -O gogs-${GOGS_VERSION}.tar.gz
+tar xf gogs-${GOGS_VERSION}.tar.gz
+mv gogs-${GOGS_VERSION} gogs
+cd gogs
+ls -la
+cp ${DIR}/hacks/pkg/auth/ldap/ldap.go pkg/auth/ldap/ldap.go
+go build 
+mkdir ${BUILD_DIR}/gogs
+cp gogs ${BUILD_DIR}/gogs/
+chmod +x ${BUILD_DIR}/gogs/gogs
+cp -r templates ${BUILD_DIR}/gogs/
+cp -r public ${BUILD_DIR}/gogs/
 
 cp -r ${DIR}/hooks ${BUILD_DIR}
 cp -r ${DIR}/config ${BUILD_DIR}/config.templates
