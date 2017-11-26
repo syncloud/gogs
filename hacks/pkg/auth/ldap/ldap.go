@@ -250,6 +250,10 @@ func (ls *Source) SearchEntry(name, passwd string, directBind bool) (string, str
 	mail := sr.Entries[0].GetAttributeValue(ls.AttributeMail)
 	uid := sr.Entries[0].GetAttributeValue(ls.UserUID)
 	log.Trace("LDAP: username '%s'", username)
+	log.Trace("LDAP: firstname '%s'", firstname)
+	log.Trace("LDAP: surname '%s'", surname)
+	log.Trace("LDAP: mail '%s'", mail)
+	log.Trace("LDAP: uid '%s'", uid)
 
 	// Check group membership
 	if ls.GroupEnabled {
