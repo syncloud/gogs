@@ -26,7 +26,7 @@ def module_setup(request, user_domain):
 def module_teardown(user_domain):
     platform_log_dir = join(LOG_DIR, 'platform')
     os.mkdir(platform_log_dir)
-    run_scp('root@{0}:/opt/data/platform/log/* {1}'.format(user_domain, platform_log_dir), password=LOGS_SSH_PASSWORD)
+    run_scp('root@{0}:/opt/data/platform/log/* {1}'.format(user_domain, platform_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
     app_log_dir = join(LOG_DIR, 'app')
     os.mkdir(app_log_dir)
     run_scp('root@{0}:/opt/data/gogs/log/*.log {1}'.format(user_domain, app_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
