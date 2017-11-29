@@ -39,15 +39,7 @@ coin --to ${BUILD_DIR} --ignore-cache raw ${DOWNLOAD_URL}/git-${ARCH}.tar.gz
 #chmod +x ${BUILD_DIR}/gogs/gogs
 
 # or compile
-if [[ $(. /etc/os-release; echo $VERSION) =~ .*jessie.* ]]; then
-    echo "deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/backports.list
-fi
-apt-get update
-apt-get install -y golang-1.6
-rm -rf /usr/bin/go
-ln -s /usr/lib/go-1.6/bin/go /usr/bin/go
-rm -rf /usr/bin/gofmt
-ln -s /usr/lib/go-1.6/bin/gofmt /usr/bin/gofmt
+export PATH=/usr/lib/go-1.6/bin:$PATH
 
 export GOPATH=$(pwd)
 mkdir -p $GOPATH/src/github.com/gogits
