@@ -8,6 +8,7 @@ import pytest
 import requests
 
 from integration.util.ssh import run_scp, run_ssh
+from integration.util.helper import local_install
 
 SYNCLOUD_INFO = 'syncloud.info'
 DEVICE_USER = 'gogs_user@syncloud.info'
@@ -17,26 +18,76 @@ LOGS_SSH_PASSWORD = DEFAULT_DEVICE_PASSWORD
 DIR = dirname(__file__)
 LOG_DIR = join(DIR, 'log')
 
+SAM_PLATFORM_DATA_DIR='/opt/data/platform'
+SNAPD_PLATFORM_DATA_DIR='/var/snap/platform/common'
+DATA_DIR=''
+
+SAM_DATA_DIR='/opt/data/gogs'
+SNAPD_DATA_DIR='/var/snap/gogs/common'
+DATA_DIR=''
+
+SAM_APP_DIR='/opt/app/gogs'
+SNAPD_APP_DIR='/snap/gogs/current'
+APP_DIR=''
+
+@pytest.fixture(scope="session")
+def platform_data_dir(installer):
+    if installer == 'sam':
+        return SAM_PLATFORM_DATA_DIR
+    else:
+        return SNAPD_PLATFORM_DATA_DIR
+        
+@pytest.fixture(scope="session")
+def data_dir(installer):
+    if installer == 'sam':
+        return SAM_DATA_DIR
+    else:
+        return SNAPD_DATA_DIR
+
+
+@pytest.fixture(scope="session")
+def app_dir(installer):
+    if installer == 'sam':
+        return SAM_APP_DIR
+    else:
+        return SNAPD_APP_DIR
+
+
+@pytest.fixture(scope="session")
+def service_prefix(installer):
+    if installer == 'sam':
+        return ''
+    else:
+        return 'snap.'
+
+
+@pytest.fixture(scope="session")
+def ssh_env_vars(installer):
+    if installer == 'sam':
+        return ''
+    if installer == 'snapd':
+        return 'SNAP_COMMON={0} '.format(SNAPD_DATA_DIR)
+
 
 @pytest.fixture(scope="session")
 def module_setup(request, user_domain):
     request.addfinalizer(lambda: module_teardown(user_domain))
 
 
-def module_teardown(user_domain):
+def module_teardown(user_domain, data_dir, platform_data_dir, app_dir):
     platform_log_dir = join(LOG_DIR, 'platform')
     os.mkdir(platform_log_dir)
-    run_scp('root@{0}:/opt/data/platform/log/* {1}'.format(user_domain, platform_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
+    run_scp('root@{0}:{1}/log/* {2}'.format(user_domain, platform_data_dir, platform_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
     app_log_dir = join(LOG_DIR, 'app')
     os.mkdir(app_log_dir)
-    run_scp('root@{0}:/opt/data/gogs/log/*.log {1}'.format(user_domain, app_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
+    run_scp('root@{0}:{1}/log/*.log {2}'.format(user_domain, data_dir, app_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
 
-    run_scp('root@{0}:/var/log/sam.log {1}'.format(user_domain, platform_log_dir), password=LOGS_SSH_PASSWORD)
+    run_scp('root@{0}:/var/log/sam.log {1}'.format(user_domain, platform_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
 
-    run_ssh(user_domain, 'ls -la /opt/data/gogs', password=LOGS_SSH_PASSWORD, throw=False)
-    run_ssh(user_domain, 'cat /opt/data/gogs/config/gogs.ini', password=LOGS_SSH_PASSWORD, throw=False)
-    run_ssh(user_domain, '/opt/app/gogs/git/bin/git config --global user.name', password=LOGS_SSH_PASSWORD, throw=False, env_vars='HOME=/home/git')
-    run_ssh(user_domain, '/opt/app/gogs/git/bin/git config --global user.email', password=LOGS_SSH_PASSWORD, throw=False, env_vars='HOME=/home/git')
+    run_ssh(user_domain, 'ls -la {0}'.format(data_dir), password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, 'cat {0}/config/gogs.ini'.format(app_dir), password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, '{0}/git/bin/git config --global user.name'.format(app_dir), password=LOGS_SSH_PASSWORD, throw=False, env_vars='HOME=/home/git')
+    run_ssh(user_domain, '{0}/git/bin/git config --global user.email'.format(app_dir), password=LOGS_SSH_PASSWORD, throw=False, env_vars='HOME=/home/git')
 
 
     print('systemd logs')
@@ -80,8 +131,8 @@ def test_activate_device(auth, user_domain):
     LOGS_SSH_PASSWORD = DEVICE_PASSWORD
 
 
-def test_install(app_archive_path, user_domain):
-    __local_install(app_archive_path, user_domain)
+def test_install(app_archive_path, user_domain, installer):
+    local_install(user_domain, DEVICE_PASSWORD, app_archive_path, installer)
 
 
 def test_storage_dir(user_domain):
@@ -116,11 +167,6 @@ def test_remove(syncloud_session, device_host):
     assert response.status_code == 200, response.text
 
 
-def test_reinstall(app_archive_path, user_domain):
-    __local_install(app_archive_path, user_domain)
+def test_reinstall(app_archive_path, user_domain, installer):
+    local_install(user_domain, DEVICE_PASSWORD, app_archive_path, installer)
 
-
-def __local_install(app_archive_path, user_domain):
-    run_scp('{0} root@{1}:/app.tar.gz'.format(app_archive_path, user_domain), password=DEVICE_PASSWORD)
-    run_ssh(user_domain, '/opt/app/sam/bin/sam --debug install /app.tar.gz', password=DEVICE_PASSWORD)
-    time.sleep(3)
