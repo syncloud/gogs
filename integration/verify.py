@@ -70,8 +70,8 @@ def ssh_env_vars(installer):
 
 
 @pytest.fixture(scope="session")
-def module_setup(request, user_domain):
-    request.addfinalizer(lambda: module_teardown(user_domain))
+def module_setup(request, user_domain, data_dir, platform_data_dir, app_dir):
+    request.addfinalizer(lambda: module_teardown(user_domain, data_dir, platform_data_dir, app_dir))
 
 
 def module_teardown(user_domain, data_dir, platform_data_dir, app_dir):
