@@ -7,8 +7,9 @@ from os.path import dirname, join
 import pytest
 import requests
 
-from integration.util.ssh import run_scp, run_ssh
-from integration.util.helper import local_install
+from syncloudlib.integration.installer import local_install, wait_for_sam, wait_for_rest, local_remove, \
+    get_data_dir, get_app_dir, get_service_prefix, get_ssh_env_vars
+from syncloudlib.integration.ssh import run_scp, run_ssh
 
 SYNCLOUD_INFO = 'syncloud.info'
 DEVICE_USER = 'gogs_user@syncloud.info'
@@ -17,56 +18,27 @@ DEFAULT_DEVICE_PASSWORD = 'syncloud'
 LOGS_SSH_PASSWORD = DEFAULT_DEVICE_PASSWORD
 DIR = dirname(__file__)
 LOG_DIR = join(DIR, 'log')
+TMP_DIR = '/tmp/syncloud'
 
-SAM_PLATFORM_DATA_DIR='/opt/data/platform'
-SNAPD_PLATFORM_DATA_DIR='/var/snap/platform/common'
-DATA_DIR=''
-
-SAM_DATA_DIR='/opt/data/gogs'
-SNAPD_DATA_DIR='/var/snap/gogs/common'
-DATA_DIR=''
-
-SAM_APP_DIR='/opt/app/gogs'
-SNAPD_APP_DIR='/snap/gogs/current'
-APP_DIR=''
 
 @pytest.fixture(scope="session")
 def platform_data_dir(installer):
-    if installer == 'sam':
-        return SAM_PLATFORM_DATA_DIR
-    else:
-        return SNAPD_PLATFORM_DATA_DIR
-        
+    return get_data_dir(installer, 'platform')
+
+    
 @pytest.fixture(scope="session")
 def data_dir(installer):
-    if installer == 'sam':
-        return SAM_DATA_DIR
-    else:
-        return SNAPD_DATA_DIR
+    return get_data_dir(installer, 'rocketchat')
 
 
 @pytest.fixture(scope="session")
 def app_dir(installer):
-    if installer == 'sam':
-        return SAM_APP_DIR
-    else:
-        return SNAPD_APP_DIR
-
+    return get_app_dir(installer, 'rocketchat')
+    
 
 @pytest.fixture(scope="session")
 def service_prefix(installer):
-    if installer == 'sam':
-        return ''
-    else:
-        return 'snap.'
-
-
-@pytest.fixture(scope="session")
-def ssh_env_vars(installer):
-    if installer == 'sam':
-        return ''
-    if installer == 'snapd':
-        return 'SNAP_COMMON={0} '.format(SNAPD_DATA_DIR)
+    return get_service_prefix(installer)
 
 
 @pytest.fixture(scope="session")
@@ -90,10 +62,19 @@ def module_teardown(user_domain, data_dir, platform_data_dir, app_dir):
     run_ssh(user_domain, '{0}/git/bin/git config --global user.email'.format(app_dir), password=LOGS_SSH_PASSWORD, throw=False, env_vars='HOME=/home/git')
 
 
-    print('systemd logs')
-    run_ssh(user_domain, 'journalctl | tail -200', password=LOGS_SSH_PASSWORD)
+    run_ssh(user_domain, 'mkdir {0}'.format(TMP_DIR), password=LOGS_SSH_PASSWORD)
+    run_ssh(user_domain, 'top -bn 1 -w 500 -c > {0}/top.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, 'ps auxfw > {0}/ps.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, 'systemctl status rocketchat-server > {0}/rocketchat.status.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, 'netstat -nlp > {0}/netstat.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, 'journalctl | tail -500 > {0}/journalctl.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, 'tail -500 /var/log/syslog > {0}/syslog.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, 'tail -500 /var/log/messages > {0}/messages.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)    
+    run_ssh(user_domain, 'ls -la /snap > {0}/snap.ls.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)    
+    run_scp('root@{0}:{1}/*.log {2}'.format(user_domain, TMP_DIR, app_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
+    
 
-
+    
 @pytest.fixture(scope='function')
 def syncloud_session(device_host):
     session = requests.session()
