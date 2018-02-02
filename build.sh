@@ -57,6 +57,7 @@ chmod +x ${BUILD_DIR}/gogs/gogs
 cp -r templates ${BUILD_DIR}/gogs/
 cp -r public ${BUILD_DIR}/gogs/
 
+cp -r ${DIR}/bin ${BUILD_DIR}
 cp -r ${DIR}/hooks ${BUILD_DIR}
 cp -r ${DIR}/config ${BUILD_DIR}/config.templates
 
