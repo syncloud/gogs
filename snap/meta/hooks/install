@@ -4,7 +4,7 @@ from os.path import join
 import os, sys
 sys.path.append(join(os.environ['SNAP'], 'hooks'))
 
-from hooks.gogs_hooks import install
+from gogs_hooks import install
 import logging
 from syncloud_app import logger
 
