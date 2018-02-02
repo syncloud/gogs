@@ -12,7 +12,7 @@ COIN_CACHE_DIR=${DIR}/coin.cache
 ARCH=$(uname -m)
 GOGS_VERSION=0.11.34
 VERSION=$1
-
+INSTALLER=$2
 
 if [ "${ARCH}" == 'x86_64' ]; then
     GOGS_ARCH=linux_amd64
