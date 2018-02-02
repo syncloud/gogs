@@ -28,12 +28,12 @@ def platform_data_dir(installer):
     
 @pytest.fixture(scope="session")
 def data_dir(installer):
-    return get_data_dir(installer, 'rocketchat')
+    return get_data_dir(installer, 'gogs')
 
 
 @pytest.fixture(scope="session")
 def app_dir(installer):
-    return get_app_dir(installer, 'rocketchat')
+    return get_app_dir(installer, 'gogs')
     
 
 @pytest.fixture(scope="session")
