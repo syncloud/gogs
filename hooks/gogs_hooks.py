@@ -1,5 +1,5 @@
 from os.path import dirname, join, abspath, isdir
-from os import listdir, path
+from os import listdir, path, environ
 import sys
 
 app_path = abspath(join(dirname(__file__), '..'))
@@ -34,6 +34,9 @@ DB_PASS = 'git'
 DB_NAME = 'gogs'
 GOGS_ADMIN_USER = 'gogs'
 GOGS_ADMIN_PASSWORD = unicode(uuid.uuid4().hex)
+
+if 'SNAP' in environ:
+    logger.init(logging.DEBUG, console=True, line_format='%(message)s')
 
 install_file = join(paths.get_data_dir(APP_NAME), 'installed')
 
@@ -132,20 +135,31 @@ def install():
 def start():
     log = logger.get_logger('gogs')
 
+    app = api.get_app_setup(APP_NAME)
+    
+    app.add_service(SYSTEMD_POSTGRESQL)
+    database_post_start()
+    
+    app.add_service(SYSTEMD_GOGS)
+
+
+def database_post_start():
+
+    log = logger.get_logger('gogs')
+    
+    if path.isfile(install_file):
+        log.info('database is already configured')
+        return
+        
     app_dir = paths.get_app_dir(APP_NAME)
     app_data_dir = paths.get_data_dir(APP_NAME)
     database_path = join(app_data_dir, PSQL_DATA_PATH)
-    app = api.get_app_setup(APP_NAME)
-    app.add_service(SYSTEMD_POSTGRESQL)
-
-    if not path.isfile(install_file):
-        log.info('creating database')
-        db_postgres = Database(join(app_dir, PSQL_PATH),
-                               database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
-        db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
-        db_postgres.execute("CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
-
-    app.add_service(SYSTEMD_GOGS)
+ 
+    log.info('creating database')
+    db_postgres = Database(join(app_dir, PSQL_PATH),
+                           database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
+    db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
+    db_postgres.execute("CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
 
 
 def configure():
@@ -153,9 +167,9 @@ def configure():
     log = logger.get_logger('gogs')
 
     if path.isfile(install_file):
-        log.info('already configured')
+        log.info('gogs is already configured')
         return
-            
+    
     app_dir = paths.get_app_dir(APP_NAME)
     app_data_dir = paths.get_data_dir(APP_NAME)
     database_path = join(app_data_dir, PSQL_DATA_PATH)
