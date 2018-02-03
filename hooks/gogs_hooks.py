@@ -35,6 +35,7 @@ DB_NAME = 'gogs'
 GOGS_ADMIN_USER = 'gogs'
 GOGS_ADMIN_PASSWORD = unicode(uuid.uuid4().hex)
 
+install_file = join(paths.get_data_dir(APP_NAME), 'installed')
 
 def wait_url(log, url, timeout, interval=3):
 
@@ -51,10 +52,6 @@ def wait_url(log, url, timeout, interval=3):
             log.info(e.message)
         time.sleep(interval)
     raise Exception('Timeout waiting for url: {0}'.format(url))
-
-
-def installed(database_path):
-    return isdir(database_path)
 
 
 def database_init(app_dir, app_data_dir, database_path, user_name):
@@ -128,8 +125,7 @@ def install():
     fs.chownpath(app_dir, USER_NAME, recursive=True)
     fs.chownpath(app_data_dir, USER_NAME, recursive=True)
 
-    first_install = not installed(database_path)
-    if first_install:
+    if not path.isfile(install_file):
         database_init(app_dir, app_data_dir, database_path, DB_USER)
         prepare_storage()
 
@@ -141,7 +137,7 @@ def start():
     app = api.get_app_setup(APP_NAME)
     app.add_service(SYSTEMD_POSTGRESQL)
 
-    if not installed(database_path):
+    if not path.isfile(install_file):
         log.info('creating database')
         db_postgres = Database(join(app_dir, PSQL_PATH),
                                database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
@@ -152,22 +148,31 @@ def start():
 
 
 def configure():
+    
     log = logger.get_logger('gogs')
 
+    if path.isfile(install_file):
+        self.log.info('already configured')
+        return
+            
     app_dir = paths.get_app_dir(APP_NAME)
     app_data_dir = paths.get_data_dir(APP_NAME)
     database_path = join(app_data_dir, PSQL_DATA_PATH)
    
     socket = '{0}/web.socket'.format(app_data_dir).replace('/', '%2F')
     index_url = 'http+unix://{0}'.format(socket)
-    if not installed(database_path):
-        create_install_user(index_url, log, app.redirect_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
-        activate_ldap(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
-        delete_install_user(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
+    
+    create_install_user(index_url, log, app.redirect_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
+    activate_ldap(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
+    delete_install_user(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
 
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
     db.execute("select * from login_source;")
+    
+    with open(install_file, 'w') as f:
+            f.write('installed\n')
+
 
 
 def create_install_user(index_url, log, email, login, password):
