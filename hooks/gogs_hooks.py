@@ -141,7 +141,7 @@ def start():
     app = api.get_app_setup(APP_NAME)
     app.add_service(SYSTEMD_POSTGRESQL)
 
-    if first_install:
+    if not installed(database_path):
         log.info('creating database')
         db_postgres = Database(join(app_dir, PSQL_PATH),
                                database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
@@ -160,7 +160,7 @@ def configure():
    
     socket = '{0}/web.socket'.format(app_data_dir).replace('/', '%2F')
     index_url = 'http+unix://{0}'.format(socket)
-    if first_install:
+    if not installed(database_path):
         create_install_user(index_url, log, app.redirect_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         activate_ldap(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         delete_install_user(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
