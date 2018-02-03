@@ -58,7 +58,7 @@ def installed(database_path):
 
 
 def database_init(app_dir, app_data_dir, database_path, user_name):
-    log = logger.get_logger('postgres')
+    log = logger.get_logger('gogs')
     if not isdir(database_path):
         psql_initdb = join(app_dir, 'postgresql/bin/initdb')
         log.info(check_output(['sudo', '-H', '-u', user_name, psql_initdb, database_path]))
@@ -88,7 +88,7 @@ class Database:
 
 
 def install():
-    log = logger.get_logger('gogs_installer')
+    log = logger.get_logger('gogs')
 
     linux.fix_locale()
   
@@ -132,7 +132,12 @@ def install():
     if first_install:
         database_init(app_dir, app_data_dir, database_path, DB_USER)
         prepare_storage()
-        
+
+
+def start():
+    app_dir = paths.get_app_dir(APP_NAME)
+    app_data_dir = paths.get_data_dir(APP_NAME)
+    database_path = join(app_data_dir, PSQL_DATA_PATH)
     app = api.get_app_setup(APP_NAME)
     app.add_service(SYSTEMD_POSTGRESQL)
 
@@ -145,6 +150,14 @@ def install():
 
     app.add_service(SYSTEMD_GOGS)
 
+
+def configure():
+    log = logger.get_logger('gogs')
+
+    app_dir = paths.get_app_dir(APP_NAME)
+    app_data_dir = paths.get_data_dir(APP_NAME)
+    database_path = join(app_data_dir, PSQL_DATA_PATH)
+   
     socket = '{0}/web.socket'.format(app_data_dir).replace('/', '%2F')
     index_url = 'http+unix://{0}'.format(socket)
     if first_install:

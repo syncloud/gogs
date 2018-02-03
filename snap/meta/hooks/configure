@@ -1,0 +1,13 @@
+#!/snap/platform/current/python/bin/python
+
+from os.path import join
+import os, sys
+sys.path.append(join(os.environ['SNAP'], 'hooks'))
+
+from gogs_hooks import configure
+import logging
+from syncloud_app import logger
+
+logger.init(logging.DEBUG, console=True, line_format='%(message)s')
+
+configure()
