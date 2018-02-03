@@ -19,6 +19,7 @@ from syncloud_app import logger
 
 from syncloud_platform.application import api
 from syncloud_platform.gaplib import fs, linux, gen
+from syncloudlib.application import paths, urls, storage
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
@@ -89,11 +90,10 @@ def install():
     log = logger.get_logger('gogs_installer')
 
     linux.fix_locale()
-
-    app = api.get_app_setup(APP_NAME)
-    app_dir = app.get_install_dir()
-    app_data_dir = app.get_data_dir()
-
+  
+    app_dir = paths.get_app_dir(APP_NAME)
+    app_data_dir = paths.get_data_dir(APP_NAME)
+  
     home_folder = join('/home', USER_NAME)
     linux.useradd(USER_NAME, home_folder=home_folder)
 
@@ -101,8 +101,9 @@ def install():
     fs.makepath(log_path)
 
     database_path = join(app_data_dir, PSQL_DATA_PATH)
-    gogs_repos_path = app.get_storage_dir()
-
+    gogs_repos_path = storage.init_storage(APP_NAME, USER_NAME)
+    app_url = urls.get_app_url(APP_NAME)
+        
     variables = {
         'app_dir': app_dir,
         'app_data_dir': app_data_dir,
@@ -113,7 +114,7 @@ def install():
         'db_password': DB_PASS,
         'gogs_repos_path': gogs_repos_path,
         'log_path': log_path,
-        'app_url': app.app_url(),
+        'app_url': app_url,
         'web_secret': unicode(uuid.uuid4().hex),
         'disable_registration': False
     }
