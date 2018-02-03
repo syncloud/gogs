@@ -138,8 +138,6 @@ def start():
     app = api.get_app_setup(APP_NAME)
     
     app.add_service(SYSTEMD_POSTGRESQL)
-    database_post_start()
-    
     app.add_service(SYSTEMD_GOGS)
 
 
