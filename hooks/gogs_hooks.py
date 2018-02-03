@@ -132,7 +132,8 @@ def install():
     if first_install:
         database_init(app_dir, app_data_dir, database_path, DB_USER)
         prepare_storage()
-
+        
+    app = api.get_app_setup(APP_NAME)
     app.add_service(SYSTEMD_POSTGRESQL)
 
     if first_install:
