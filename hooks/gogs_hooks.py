@@ -1,5 +1,5 @@
 from os.path import dirname, join, abspath, isdir
-from os import listdir
+from os import listdir, path
 import sys
 
 app_path = abspath(join(dirname(__file__), '..'))
@@ -124,7 +124,7 @@ def install():
     fs.chownpath(app_dir, USER_NAME, recursive=True)
     fs.chownpath(app_data_dir, USER_NAME, recursive=True)
 
-    if not os.path.isfile(install_file):
+    if not path.isfile(install_file):
         database_init(app_dir, app_data_dir, database_path, DB_USER)
         prepare_storage()
 
@@ -136,7 +136,7 @@ def start():
     app = api.get_app_setup(APP_NAME)
     app.add_service(SYSTEMD_POSTGRESQL)
 
-    if not os.path.isfile(install_file):
+    if not path.isfile(install_file):
         log.info('creating database')
         db_postgres = Database(join(app_dir, PSQL_PATH),
                                database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
@@ -150,7 +150,7 @@ def configure():
     
     log = logger.get_logger('gogs')
 
-    if os.path.isfile(install_file):
+    if path.isfile(install_file):
         log.info('already configured')
         return
             
