@@ -53,7 +53,6 @@ def wait_url(log, url, timeout, interval=3):
         time.sleep(interval)
     raise Exception('Timeout waiting for url: {0}'.format(url))
 
-
 def database_init(app_dir, app_data_dir, database_path, user_name):
     log = logger.get_logger('gogs')
     if not isdir(database_path):
@@ -125,7 +124,7 @@ def install():
     fs.chownpath(app_dir, USER_NAME, recursive=True)
     fs.chownpath(app_data_dir, USER_NAME, recursive=True)
 
-    if not path.isfile(install_file):
+    if not os.path.isfile(install_file):
         database_init(app_dir, app_data_dir, database_path, DB_USER)
         prepare_storage()
 
@@ -137,7 +136,7 @@ def start():
     app = api.get_app_setup(APP_NAME)
     app.add_service(SYSTEMD_POSTGRESQL)
 
-    if not path.isfile(install_file):
+    if not os.path.isfile(install_file):
         log.info('creating database')
         db_postgres = Database(join(app_dir, PSQL_PATH),
                                database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
@@ -151,8 +150,8 @@ def configure():
     
     log = logger.get_logger('gogs')
 
-    if path.isfile(install_file):
-        self.log.info('already configured')
+    if os.path.isfile(install_file):
+        log.info('already configured')
         return
             
     app_dir = paths.get_app_dir(APP_NAME)
