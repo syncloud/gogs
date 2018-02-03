@@ -17,7 +17,7 @@ post-start)
     else
         PYTHON=/opt/app/platform/python/bin/python
     fi
-    $PYTHON $DIR/hooks/postgresql-post-start.py
+    ${PYTHON} ${DIR}/hooks/postgresql-post-start.py
     ;;
 stop)
     exec ${DIR}/postgresql/bin/pg_ctl -s -D ${SNAP_COMMON}/database stop -m fast

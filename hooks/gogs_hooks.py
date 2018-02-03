@@ -1,3 +1,4 @@
+import logging
 from os.path import dirname, join, abspath, isdir
 from os import listdir, path, environ
 import sys
@@ -35,10 +36,10 @@ DB_NAME = 'gogs'
 GOGS_ADMIN_USER = 'gogs'
 GOGS_ADMIN_PASSWORD = unicode(uuid.uuid4().hex)
 
-if 'SNAP' in environ:
-    logger.init(logging.DEBUG, console=True, line_format='%(message)s')
+logger.init(logging.DEBUG, console=True, line_format='%(message)s')
 
 install_file = join(paths.get_data_dir(APP_NAME), 'installed')
+
 
 def wait_url(log, url, timeout, interval=3):
 
