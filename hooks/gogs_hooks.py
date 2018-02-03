@@ -130,6 +130,8 @@ def install():
 
 
 def start():
+    log = logger.get_logger('gogs')
+
     app_dir = paths.get_app_dir(APP_NAME)
     app_data_dir = paths.get_data_dir(APP_NAME)
     database_path = join(app_data_dir, PSQL_DATA_PATH)
