@@ -12,7 +12,7 @@ start)
     exec ${DIR}/postgresql/bin/pg_ctl -w -s -D ${SNAP_COMMON}/database start
     ;;
 post-start)
-    if [ -z "$SNAP" ]; then
+    if [ -n "$SNAP" ]; then
         PYTHON=/snap/platform/current/python/bin/python
     else
         PYTHON=/opt/app/platform/python/bin/python
