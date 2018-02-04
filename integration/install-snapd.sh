@@ -8,7 +8,7 @@ if [[ -z "$1" ]]; then
 fi
 
 ARCH=$(dpkg --print-architecture)
-VERSION=180201
+VERSION=180204
 
 SNAPD=snapd-${VERSION}-${ARCH}.tar.gz
 wget http://apps.syncloud.org/apps/${SNAPD} --progress=dot:giga
