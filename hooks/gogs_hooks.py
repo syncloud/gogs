@@ -130,8 +130,7 @@ def install():
 
     if not path.isfile(install_file):
         database_init(app_dir, app_data_dir, database_path, DB_USER)
-        prepare_storage()
-
+        
 
 def start():
     log = logger.get_logger('gogs')
@@ -307,8 +306,3 @@ def remove():
     app_dir = app.get_install_dir()
 
     fs.removepath(app_dir)
-
-
-def prepare_storage():
-    app = api.get_app_setup(APP_NAME)
-    app_storage_dir = app.init_storage(USER_NAME)
