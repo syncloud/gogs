@@ -24,14 +24,14 @@ from syncloud_platform.gaplib import fs, linux, gen
 from syncloudlib.application import paths, urls, storage
 
 APP_NAME = 'gogs'
-USER_NAME = 'gogs'
+USER_NAME = 'git'
 SYSTEMD_GOGS = 'gogs'
 SYSTEMD_POSTGRESQL = 'gogs-postgresql'
 PSQL_PATH = 'postgresql/bin/psql'
 PSQL_DATA_PATH = 'database'
 PSQL_PORT = 5433
-DB_USER = 'gogs'
-DB_PASS = 'gogs'
+DB_USER = 'git'
+DB_PASS = 'git'
 DB_NAME = 'gogs'
 GOGS_ADMIN_USER = 'gogs'
 GOGS_ADMIN_PASSWORD = unicode(uuid.uuid4().hex)

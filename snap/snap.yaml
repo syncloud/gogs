@@ -1,6 +1,6 @@
 apps:
   postgresql:
-    user: gogs
+    user: git
     command: bin/service.postgresql.sh start
     daemon: forking
     plugs:
