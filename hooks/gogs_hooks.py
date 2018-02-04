@@ -124,8 +124,8 @@ def install():
     config_path = join(app_data_dir, 'config')
 
     gen.generate_files(templates_path, config_path, variables)
-
-    fs.chownpath(app_dir, USER_NAME, recursive=True)
+    if 'SNAP' not in environ:
+        fs.chownpath(app_dir, USER_NAME, recursive=True)
     fs.chownpath(app_data_dir, USER_NAME, recursive=True)
 
     if not path.isfile(install_file):
