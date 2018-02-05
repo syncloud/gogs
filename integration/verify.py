@@ -65,12 +65,13 @@ def module_teardown(user_domain, data_dir, platform_data_dir, app_dir):
     run_ssh(user_domain, 'mkdir {0}'.format(TMP_DIR), password=LOGS_SSH_PASSWORD)
     run_ssh(user_domain, 'top -bn 1 -w 500 -c > {0}/top.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, 'ps auxfw > {0}/ps.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
-    run_ssh(user_domain, 'systemctl status rocketchat-server > {0}/rocketchat.status.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, 'systemctl status gogs > {0}/gogs.status.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, 'netstat -nlp > {0}/netstat.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, 'journalctl | tail -500 > {0}/journalctl.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, 'tail -500 /var/log/syslog > {0}/syslog.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, 'tail -500 /var/log/messages > {0}/messages.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)    
     run_ssh(user_domain, 'ls -la /snap > {0}/snap.ls.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)    
+    run_ssh(user_domain, 'ls -la /snap/gogs > {0}/snap.gogs.ls.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)    
     run_scp('root@{0}:{1}/*.log {2}'.format(user_domain, TMP_DIR, app_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
     
 
