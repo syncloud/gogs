@@ -7,7 +7,7 @@ apps:
     - network
     - network-bind
     restart-condition: always
-    post-start-command: bin/service.postgresql.sh post-srart
+    post-start-command: bin/service.postgresql.sh post-start
     before: [server]
 
   server:
