@@ -21,7 +21,7 @@ from syncloud_app import logger
 
 from syncloud_platform.application import api
 from syncloud_platform.gaplib import fs, linux, gen
-from syncloudlib.application import paths, urls, storage
+from syncloudlib.application import paths, urls, storage, users
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
@@ -57,6 +57,7 @@ def wait_url(log, url, timeout, interval=3):
         time.sleep(interval)
     raise Exception('Timeout waiting for url: {0}'.format(url))
 
+
 def database_init(app_dir, app_data_dir, database_path, user_name):
     log = logger.get_logger('gogs')
     if not isdir(database_path):
@@ -88,8 +89,6 @@ class Database:
 
 
 def install():
-    log = logger.get_logger('gogs')
-
     linux.fix_locale()
   
     app_dir = paths.get_app_dir(APP_NAME)
@@ -133,10 +132,7 @@ def install():
         
 
 def start():
-    log = logger.get_logger('gogs')
-
     app = api.get_app_setup(APP_NAME)
-    
     app.add_service(SYSTEMD_POSTGRESQL)
     app.add_service(SYSTEMD_GOGS)
 
@@ -174,10 +170,8 @@ def configure():
    
     socket = '{0}/web.socket'.format(app_data_dir).replace('/', '%2F')
     index_url = 'http+unix://{0}'.format(socket)
-    
-    app = api.get_app_setup(APP_NAME)
-   
-    create_install_user(index_url, log, app.redirect_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
+
+    create_install_user(index_url, log, users.get_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
     activate_ldap(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
     delete_install_user(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
 
@@ -187,7 +181,6 @@ def configure():
     
     with open(install_file, 'w') as f:
             f.write('installed\n')
-
 
 
 def create_install_user(index_url, log, email, login, password):
@@ -215,7 +208,7 @@ def create_install_user(index_url, log, email, login, password):
 
 def delete_install_user(socket, log, username, password):
     log.info('getting csrf to delete install user')
-    session = login(socket, log, username, password)
+    session = gogs_login(socket, log, username, password)
     user_url = '{0}/admin/users/1/delete'.format(socket)
     csrf = extract_csrf(session.get(user_url).text)
 
@@ -229,7 +222,7 @@ def delete_install_user(socket, log, username, password):
         raise Exception('unable to delete install user')
 
 
-def login(socket, log, username, password):
+def gogs_login(socket, log, username, password):
     wait_url(log, socket, timeout=60)
 
     session = requests_unixsocket.Session()
@@ -237,9 +230,9 @@ def login(socket, log, username, password):
     login_url = '{0}/user/login'.format(socket)
     login_csrf = extract_csrf(session.get(login_url).text)
     response = session.post(login_url,
-                                  data={'user_name': username, 'password': password,
-                                        '_csrf': login_csrf},
-                                  allow_redirects=False)
+                            data={'user_name': username, 'password': password,
+                                  '_csrf': login_csrf},
+                            allow_redirects=False)
                                   
     if response.status_code != 302:
         log.error('status code: {0}'.format(response.status_code))
@@ -251,7 +244,7 @@ def login(socket, log, username, password):
 
 def activate_ldap(socket, log, username, password):
     log.info('activating ldap')
-    session = login(socket, log, username, password)
+    session = gogs_login(socket, log, username, password)
 
     auth_url = '{0}/admin/auths/new'.format(socket)
     auth_csrf = extract_csrf(session.get(auth_url).text)
@@ -292,8 +285,8 @@ def activate_ldap(socket, log, username, password):
         raise Exception('unable to enable ldap')
 
 
-def extract_csrf(reaponse):
-    soup = BeautifulSoup(reaponse, "html.parser")
+def extract_csrf(response):
+    soup = BeautifulSoup(response, "html.parser")
     return soup.find_all('meta', {'name': '_csrf'})[0]['content']
 
 
