@@ -11,6 +11,7 @@ apps:
     before: [server]
 
   server:
+    user: git
     command: bin/service.server.sh start
     daemon: simple
     plugs:
