@@ -42,11 +42,11 @@ def service_prefix(installer):
 
 
 @pytest.fixture(scope="session")
-def module_setup(request, user_domain, data_dir, platform_data_dir, app_dir):
-    request.addfinalizer(lambda: module_teardown(user_domain, data_dir, platform_data_dir, app_dir))
+def module_setup(request, user_domain, data_dir, platform_data_dir, app_dir, service_prefix):
+    request.addfinalizer(lambda: module_teardown(user_domain, data_dir, platform_data_dir, app_dir, service_prefix))
 
 
-def module_teardown(user_domain, data_dir, platform_data_dir, app_dir):
+def module_teardown(user_domain, data_dir, platform_data_dir, app_dir, service_prefix):
     platform_log_dir = join(LOG_DIR, 'platform')
     os.mkdir(platform_log_dir)
     run_scp('root@{0}:{1}/log/* {2}'.format(user_domain, platform_data_dir, platform_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
@@ -65,7 +65,7 @@ def module_teardown(user_domain, data_dir, platform_data_dir, app_dir):
     run_ssh(user_domain, 'mkdir {0}'.format(TMP_DIR), password=LOGS_SSH_PASSWORD)
     run_ssh(user_domain, 'top -bn 1 -w 500 -c > {0}/top.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, 'ps auxfw > {0}/ps.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
-    run_ssh(user_domain, 'systemctl status gogs > {0}/gogs.status.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
+    run_ssh(user_domain, 'systemctl status {0}gogs > {1}/gogs.status.log'.format(service_prefix, TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, 'netstat -nlp > {0}/netstat.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, 'journalctl | tail -500 > {0}/journalctl.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, 'tail -500 /var/log/syslog > {0}/syslog.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
