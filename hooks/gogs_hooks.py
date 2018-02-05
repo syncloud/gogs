@@ -189,7 +189,7 @@ def create_install_user(index_url, log, email, login, password):
 
     wait_url(log, index_url, timeout=60)
 
-    log.info("Creating an install user, url: {0}".format(signup_url))
+    log.info("Creating an install user, email: {0} url: {1}".format(email, signup_url))
     session = requests_unixsocket.Session()
     response = session.post(signup_url, allow_redirects=False, timeout=120, data={
         'user_name': login,
