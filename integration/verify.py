@@ -77,7 +77,7 @@ def module_teardown(user_domain, data_dir, platform_data_dir, app_dir, service_p
     run_ssh(user_domain, 'ls -la /var/snap/gogs/common > {0}/var.snap.gogs.common.ls.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)    
     run_ssh(user_domain, 'ls -la /data > {0}/data.ls.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)    
     run_ssh(user_domain, 'ls -la /data/gogs > {0}/data.gogs.ls.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)    
-   run_scp('root@{0}:{1}/*.log {2}'.format(user_domain, TMP_DIR, app_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
+    run_scp('root@{0}:{1}/*.log {2}'.format(user_domain, TMP_DIR, app_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
     
 
     
