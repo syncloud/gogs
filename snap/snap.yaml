@@ -1,0 +1,27 @@
+apps:
+  postgresql:
+    user: git
+    command: bin/service.postgresql.sh start
+    daemon: forking
+    plugs:
+    - network
+    - network-bind
+    restart-condition: always
+    post-start-command: bin/service.postgresql.sh post-start
+    before: [server]
+
+  server:
+    user: git
+    command: bin/service.server.sh start
+    daemon: simple
+    plugs:
+    - network
+    - network-bind
+    restart-condition: always
+    after: [postgresql]
+
+confinement: strict
+description: GOGS
+grade: stable
+name: gogs
+summary: GOGS

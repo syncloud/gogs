@@ -1,12 +1,14 @@
+import logging
 from os.path import dirname, join, abspath, isdir
-from os import listdir
+from os import listdir, path, environ
 import sys
 
 app_path = abspath(join(dirname(__file__), '..'))
 
 lib_path = join(app_path, 'lib')
 libs = [join(lib_path, item) for item in listdir(lib_path) if isdir(join(lib_path, item))]
-map(sys.path.append, libs)
+map(lambda l: sys.path.insert(0, l), libs)
+
 from bs4 import BeautifulSoup
 
 from os.path import isdir, join
@@ -19,6 +21,7 @@ from syncloud_app import logger
 
 from syncloud_platform.application import api
 from syncloud_platform.gaplib import fs, linux, gen
+from syncloudlib.application import paths, urls, storage, users
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
@@ -32,6 +35,10 @@ DB_PASS = 'git'
 DB_NAME = 'gogs'
 GOGS_ADMIN_USER = 'gogs'
 GOGS_ADMIN_PASSWORD = unicode(uuid.uuid4().hex)
+
+logger.init(logging.DEBUG, console=True, line_format='%(message)s')
+
+install_file = join(paths.get_data_dir(APP_NAME), 'installed')
 
 
 def wait_url(log, url, timeout, interval=3):
@@ -51,12 +58,8 @@ def wait_url(log, url, timeout, interval=3):
     raise Exception('Timeout waiting for url: {0}'.format(url))
 
 
-def installed(database_path):
-    return isdir(database_path)
-
-
 def database_init(app_dir, app_data_dir, database_path, user_name):
-    log = logger.get_logger('postgres')
+    log = logger.get_logger('gogs')
     if not isdir(database_path):
         psql_initdb = join(app_dir, 'postgresql/bin/initdb')
         log.info(check_output(['sudo', '-H', '-u', user_name, psql_initdb, database_path]))
@@ -86,14 +89,11 @@ class Database:
 
 
 def install():
-    log = logger.get_logger('gogs_installer')
-
     linux.fix_locale()
-
-    app = api.get_app_setup(APP_NAME)
-    app_dir = app.get_install_dir()
-    app_data_dir = app.get_data_dir()
-
+  
+    app_dir = paths.get_app_dir(APP_NAME)
+    app_data_dir = paths.get_data_dir(APP_NAME)
+  
     home_folder = join('/home', USER_NAME)
     linux.useradd(USER_NAME, home_folder=home_folder)
 
@@ -101,8 +101,9 @@ def install():
     fs.makepath(log_path)
 
     database_path = join(app_data_dir, PSQL_DATA_PATH)
-    gogs_repos_path = app.get_storage_dir()
-
+    gogs_repos_path = storage.init_storage(APP_NAME, USER_NAME)
+    app_url = urls.get_app_url(APP_NAME)
+        
     variables = {
         'app_dir': app_dir,
         'app_data_dir': app_data_dir,
@@ -113,7 +114,7 @@ def install():
         'db_password': DB_PASS,
         'gogs_repos_path': gogs_repos_path,
         'log_path': log_path,
-        'app_url': app.app_url(),
+        'app_url': app_url,
         'web_secret': unicode(uuid.uuid4().hex),
         'disable_registration': False
     }
@@ -122,36 +123,64 @@ def install():
     config_path = join(app_data_dir, 'config')
 
     gen.generate_files(templates_path, config_path, variables)
-
-    fs.chownpath(app_dir, USER_NAME, recursive=True)
+    if 'SNAP' not in environ:
+        fs.chownpath(app_dir, USER_NAME, recursive=True)
     fs.chownpath(app_data_dir, USER_NAME, recursive=True)
 
-    first_install = not installed(database_path)
-    if first_install:
+    if not path.isfile(install_file):
         database_init(app_dir, app_data_dir, database_path, DB_USER)
-        prepare_storage()
+        
 
+def start():
+    app = api.get_app_setup(APP_NAME)
     app.add_service(SYSTEMD_POSTGRESQL)
-
-    if first_install:
-        log.info('creating database')
-        db_postgres = Database(join(app_dir, PSQL_PATH),
-                               database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
-        db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
-        db_postgres.execute("CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
-
     app.add_service(SYSTEMD_GOGS)
 
+
+def database_post_start():
+
+    log = logger.get_logger('gogs')
+    
+    if path.isfile(install_file):
+        log.info('database is already configured')
+        return
+        
+    app_dir = paths.get_app_dir(APP_NAME)
+    app_data_dir = paths.get_data_dir(APP_NAME)
+    database_path = join(app_data_dir, PSQL_DATA_PATH)
+ 
+    log.info('creating database')
+    db_postgres = Database(join(app_dir, PSQL_PATH),
+                           database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
+    db_postgres.execute("ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
+    db_postgres.execute("CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
+
+
+def configure():
+    
+    log = logger.get_logger('gogs')
+
+    if path.isfile(install_file):
+        log.info('gogs is already configured')
+        return
+    
+    app_dir = paths.get_app_dir(APP_NAME)
+    app_data_dir = paths.get_data_dir(APP_NAME)
+    database_path = join(app_data_dir, PSQL_DATA_PATH)
+   
     socket = '{0}/web.socket'.format(app_data_dir).replace('/', '%2F')
     index_url = 'http+unix://{0}'.format(socket)
-    if first_install:
-        create_install_user(index_url, log, app.redirect_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
-        activate_ldap(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
-        delete_install_user(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
+
+    create_install_user(index_url, log, users.get_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
+    activate_ldap(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
+    delete_install_user(index_url, log, GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
 
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
     db.execute("select * from login_source;")
+    
+    with open(install_file, 'w') as f:
+            f.write('installed\n')
 
 
 def create_install_user(index_url, log, email, login, password):
@@ -160,7 +189,7 @@ def create_install_user(index_url, log, email, login, password):
 
     wait_url(log, index_url, timeout=60)
 
-    log.info("Creating an install user, url: {0}".format(signup_url))
+    log.info("Creating an install user, email: {0} url: {1}".format(email, signup_url))
     session = requests_unixsocket.Session()
     response = session.post(signup_url, allow_redirects=False, timeout=120, data={
         'user_name': login,
@@ -179,7 +208,7 @@ def create_install_user(index_url, log, email, login, password):
 
 def delete_install_user(socket, log, username, password):
     log.info('getting csrf to delete install user')
-    session = login(socket, log, username, password)
+    session = gogs_login(socket, log, username, password)
     user_url = '{0}/admin/users/1/delete'.format(socket)
     csrf = extract_csrf(session.get(user_url).text)
 
@@ -193,7 +222,7 @@ def delete_install_user(socket, log, username, password):
         raise Exception('unable to delete install user')
 
 
-def login(socket, log, username, password):
+def gogs_login(socket, log, username, password):
     wait_url(log, socket, timeout=60)
 
     session = requests_unixsocket.Session()
@@ -201,9 +230,9 @@ def login(socket, log, username, password):
     login_url = '{0}/user/login'.format(socket)
     login_csrf = extract_csrf(session.get(login_url).text)
     response = session.post(login_url,
-                                  data={'user_name': username, 'password': password,
-                                        '_csrf': login_csrf},
-                                  allow_redirects=False)
+                            data={'user_name': username, 'password': password,
+                                  '_csrf': login_csrf},
+                            allow_redirects=False)
                                   
     if response.status_code != 302:
         log.error('status code: {0}'.format(response.status_code))
@@ -215,7 +244,7 @@ def login(socket, log, username, password):
 
 def activate_ldap(socket, log, username, password):
     log.info('activating ldap')
-    session = login(socket, log, username, password)
+    session = gogs_login(socket, log, username, password)
 
     auth_url = '{0}/admin/auths/new'.format(socket)
     auth_csrf = extract_csrf(session.get(auth_url).text)
@@ -256,8 +285,8 @@ def activate_ldap(socket, log, username, password):
         raise Exception('unable to enable ldap')
 
 
-def extract_csrf(reaponse):
-    soup = BeautifulSoup(reaponse, "html.parser")
+def extract_csrf(response):
+    soup = BeautifulSoup(response, "html.parser")
     return soup.find_all('meta', {'name': '_csrf'})[0]['content']
 
 
@@ -270,8 +299,3 @@ def remove():
     app_dir = app.get_install_dir()
 
     fs.removepath(app_dir)
-
-
-def prepare_storage():
-    app = api.get_app_setup(APP_NAME)
-    app_storage_dir = app.init_storage(USER_NAME)
