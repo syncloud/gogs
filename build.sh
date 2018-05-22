@@ -10,7 +10,7 @@ export TMP=/tmp
 NAME=gogs
 COIN_CACHE_DIR=${DIR}/coin.cache
 ARCH=$(uname -m)
-GOGS_VERSION=0.11.34
+GOGS_VERSION=0.11.43
 VERSION=$1
 INSTALLER=$2
 
