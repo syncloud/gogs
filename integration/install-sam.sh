@@ -7,8 +7,8 @@ if [ "$#" -lt 2 ]; then
 fi
 
 ARCH=$(uname -m)
-VERSION=$1
-RELEASE=$2
+VERSION=170523
+RELEASE=$1
 
 SAM=sam-${VERSION}-${ARCH}.tar.gz
 wget http://apps.syncloud.org/apps/${SAM} --progress=dot:giga
