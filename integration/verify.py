@@ -84,19 +84,21 @@ def module_teardown(user_domain, data_dir, platform_data_dir, app_dir, service_p
 @pytest.fixture(scope='function')
 def syncloud_session(device_host):
     session = requests.session()
-    session.post('http://{0}/rest/login'.format(device_host), data={'name': DEVICE_USER, 'password': DEVICE_PASSWORD})
+    session.post('https://{0}/rest/login'.format(device_host),
+                 data={'name': DEVICE_USER, 'password': DEVICE_PASSWORD},
+                 verify=False)
     return session
 
 
 @pytest.fixture(scope='function')
 def gogs_session(user_domain):
     session = requests.session()
-    main_response = session.get('http://{0}/user/login'.format(user_domain), allow_redirects=False)
+    main_response = session.get('https://{0}/user/login'.format(user_domain), allow_redirects=False, verify=False)
     soup = BeautifulSoup(main_response.text, "html.parser")
     csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
-    login_response = session.post('http://{0}/user/login'.format(user_domain),
+    login_response = session.post('https://{0}/user/login'.format(user_domain),
                                   data={'user_name': DEVICE_USER, 'password': DEVICE_PASSWORD, '_csrf': csrf},
-                                  allow_redirects=False)
+                                  allow_redirects=False, verify=False)
                                
     assert login_response.status_code == 302, login_response.text
     return session
@@ -112,7 +114,8 @@ def test_activate_device(auth, user_domain):
 
     response = requests.post('http://{0}:81/rest/activate'.format(user_domain),
                              data={'main_domain': SYNCLOUD_INFO, 'redirect_email': email, 'redirect_password': password,
-                                   'user_domain': domain, 'device_username': DEVICE_USER, 'device_password': DEVICE_PASSWORD})
+                                   'user_domain': domain, 'device_username': DEVICE_USER, 'device_password': DEVICE_PASSWORD},
+                                   verify=False)
     assert response.status_code == 200, response.text
     global LOGS_SSH_PASSWORD
     LOGS_SSH_PASSWORD = DEVICE_PASSWORD
@@ -138,19 +141,20 @@ def test_login(gogs_session):
 
 def test_install_user_disabled(user_domain):
     session = requests.session()
-    main_response = session.get('http://{0}/user/login'.format(user_domain), allow_redirects=False)
+    main_response = session.get('https://{0}/user/login'.format(user_domain), allow_redirects=False, verify=False)
     soup = BeautifulSoup(main_response.text, "html.parser")
     csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
-    login_response = session.post('http://{0}/user/login'.format(user_domain),
+    login_response = session.post('https://{0}/user/login'.format(user_domain),
                                   data={'user_name': 'gogs', 'password': 'gogs', '_csrf': csrf},
-                                  allow_redirects=False)
+                                  allow_redirects=False, verify=False)
                                
     assert login_response.status_code != 302, login_response.text
     return session
 
 
 def test_remove(syncloud_session, device_host):
-    response = syncloud_session.get('http://{0}/rest/remove?app_id=gogs'.format(device_host), allow_redirects=False)
+    response = syncloud_session.get('https://{0}/rest/remove?app_id=gogs'.format(device_host),
+                                    allow_redirects=False, verify=False)
     assert response.status_code == 200, response.text
 
 
