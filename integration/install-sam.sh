@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-if [ "$#" -lt 2 ]; then
-    echo "usage $0 version release"
+if [ "$#" -lt 1 ]; then
+    echo "usage $0 release"
     exit 1
 fi
 
