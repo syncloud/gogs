@@ -40,7 +40,8 @@ coin --to ${BUILD_DIR} --ignore-cache raw ${DOWNLOAD_URL}/git-${ARCH}.tar.gz
 #chmod +x ${BUILD_DIR}/gogs/gogs
 
 # or compile
-export PATH=/usr/lib/go-1.6/bin:$PATH
+export GOROOT=/tools/go-1.7.6
+export PATH=${GOROOT}/bin:$PATH
 
 export GOPATH=$(pwd)
 mkdir -p $GOPATH/src/github.com/gogits
