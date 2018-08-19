@@ -21,7 +21,7 @@ pipeline:
     image: syncloud/build-deps-${arch}
     commands:
       - VERSION=$(cat version)
-      - ./integration/test-docker.sh teamcity@syncloud.it password teamcity $VERSION master ${installer} device
+      - ./integration/test-docker.sh teamcity@syncloud.it password build $VERSION master ${installer} device
 
   upload:
     image: syncloud/build-deps-${arch}
@@ -29,9 +29,6 @@ pipeline:
     commands:
       - VERSION=$(cat version)
       - ./upload.sh $DRONE_BRANCH $VERSION
-    when:
-      matrix:
-        installer: sam
 
   ci-artifact:
     image: syncloud/build-deps-${arch}
@@ -54,5 +51,4 @@ matrix:
     - arm
     - amd64
   installer:
-    - sam
     - snapd
