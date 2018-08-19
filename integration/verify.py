@@ -5,7 +5,7 @@ from os.path import dirname, join
 import pytest
 import requests
 from bs4 import BeautifulSoup
-from syncloudlib.integration.installer import local_install, get_data_dir, get_app_dir, get_service_prefix
+from syncloudlib.integration.installer import local_install, get_data_dir, get_app_dir, get_service_prefix, wait_for_sam
 from syncloudlib.integration.ssh import run_scp, run_ssh
 
 SYNCLOUD_INFO = 'syncloud.info'
@@ -76,7 +76,6 @@ def module_teardown(user_domain, data_dir, platform_data_dir, app_dir, service_p
     run_scp('root@{0}:{1}/*.log {2}'.format(user_domain, TMP_DIR, app_log_dir), password=LOGS_SSH_PASSWORD, throw=False)
     
 
-    
 @pytest.fixture(scope='function')
 def syncloud_session(device_host):
     session = requests.session()
@@ -152,6 +151,7 @@ def test_remove(syncloud_session, device_host):
     response = syncloud_session.get('https://{0}/rest/remove?app_id=gogs'.format(device_host),
                                     allow_redirects=False, verify=False)
     assert response.status_code == 200, response.text
+    wait_for_sam(syncloud_session, device_host)
 
 
 def test_reinstall(app_archive_path, user_domain, installer):
