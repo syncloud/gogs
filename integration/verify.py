@@ -1,14 +1,11 @@
 import os
 import shutil
-import time
-from bs4 import BeautifulSoup
 from os.path import dirname, join
 
 import pytest
 import requests
-
-from syncloudlib.integration.installer import local_install, wait_for_sam, wait_for_rest, local_remove, \
-    get_data_dir, get_app_dir, get_service_prefix, get_ssh_env_vars
+from bs4 import BeautifulSoup
+from syncloudlib.integration.installer import local_install, get_data_dir, get_app_dir, get_service_prefix
 from syncloudlib.integration.ssh import run_scp, run_ssh
 
 SYNCLOUD_INFO = 'syncloud.info'
@@ -60,7 +57,6 @@ def module_teardown(user_domain, data_dir, platform_data_dir, app_dir, service_p
     run_ssh(user_domain, 'cat {0}/config/gogs.ini'.format(app_dir), password=LOGS_SSH_PASSWORD, throw=False)
     run_ssh(user_domain, '{0}/git/bin/git config --global user.name'.format(app_dir), password=LOGS_SSH_PASSWORD, throw=False, env_vars='HOME=/home/git')
     run_ssh(user_domain, '{0}/git/bin/git config --global user.email'.format(app_dir), password=LOGS_SSH_PASSWORD, throw=False, env_vars='HOME=/home/git')
-
 
     run_ssh(user_domain, 'mkdir {0}'.format(TMP_DIR), password=LOGS_SSH_PASSWORD)
     run_ssh(user_domain, 'top -bn 1 -w 500 -c > {0}/top.log'.format(TMP_DIR), password=LOGS_SSH_PASSWORD, throw=False)
