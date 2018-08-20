@@ -7,6 +7,7 @@ if [ "$#" -lt 7 ]; then
     exit 1
 fi
 
+ARCH=$(uname -m)
 DOMAIN=$3
 VERSION=$4
 RELEASE=$5
@@ -14,9 +15,6 @@ INSTALLER=$6
 DEVICE_HOST=$7
 
 APP=gogs
-GECKODRIVER=0.14.0
-FIREFOX=52.0
-ARCH=$(uname -m)
 
 if [ $ARCH == "x86_64" ]; then
     TEST_SUITE="verify.py test-ui.py"
@@ -26,13 +24,7 @@ else
     SNAP_ARCH=armhf
 fi
 
-if [ $INSTALLER == "snapd" ]; then
-    ARCHIVE=${APP}_${VERSION}_${SNAP_ARCH}.snap
-    INSTALLER_VERSION=170523
-else
-    ARCHIVE=${APP}-${VERSION}-${ARCH}.tar.gz
-    INSTALLER_VERSION=89
-fi
+ARCHIVE=${APP}_${VERSION}_${SNAP_ARCH}.snap
 APP_ARCHIVE_PATH=$(realpath "$ARCHIVE")
 
 cd ${DIR}
@@ -60,16 +52,13 @@ set -e
 
 sshpass -p syncloud scp -o StrictHostKeyChecking=no install-${INSTALLER}.sh root@${DEVICE_HOST}:/installer.sh
 
-sshpass -p syncloud ssh -o StrictHostKeyChecking=no root@${DEVICE_HOST} /installer.sh ${INSTALLER_VERSION} ${RELEASE}
+sshpass -p syncloud ssh -o StrictHostKeyChecking=no root@${DEVICE_HOST} /installer.sh ${RELEASE}
 
 pip2 install -r ${DIR}/dev_requirements.txt
 
-coin --to ${DIR} raw --subfolder geckodriver https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER}/geckodriver-v${GECKODRIVER}-linux64.tar.gz
-coin --to ${DIR} raw https://ftp.mozilla.org/pub/firefox/releases/${FIREFOX}/linux-x86_64/en-US/firefox-${FIREFOX}.tar.bz2
-curl https://raw.githubusercontent.com/mguillem/JSErrorCollector/master/dist/JSErrorCollector.xpi -o  JSErrorCollector.xpi
-
 #fix dns
 device_ip=$(getent hosts ${DEVICE_HOST} | awk '{ print $1 }')
+echo "$device_ip $DOMAIN.syncloud.info" >> /etc/hosts
 echo "$device_ip $APP.$DOMAIN.syncloud.info" >> /etc/hosts
 
 cat /etc/hosts

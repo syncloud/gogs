@@ -29,9 +29,6 @@ pipeline:
     commands:
       - VERSION=$(cat version)
       - ./upload.sh $DRONE_BRANCH $VERSION
-    when:
-      matrix:
-        installer: sam
 
   ci-artifact:
     image: syncloud/build-deps-${arch}
@@ -54,5 +51,4 @@ matrix:
     - arm
     - amd64
   installer:
-    - sam
     - snapd

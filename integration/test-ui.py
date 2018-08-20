@@ -13,7 +13,7 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 DIR = dirname(__file__)
 LOG_DIR = join(DIR, 'log')
-DEVICE_USER = 'gogs_user'
+DEVICE_USER = 'gogs_user@syncloud.info'
 DEVICE_PASSWORD = 'password'
 log_dir = join(LOG_DIR, 'gogs_log')
 screenshot_dir = join(DIR, 'screenshot')
@@ -26,7 +26,7 @@ def driver():
         shutil.rmtree(screenshot_dir)
     os.mkdir(screenshot_dir)
 
-    firefox_path = '{0}/firefox/firefox'.format(DIR)
+    firefox_path = '/tools/firefox/firefox'
     caps = DesiredCapabilities.FIREFOX
     caps["marionette"] = True
     caps['acceptSslCerts'] = True
@@ -34,11 +34,12 @@ def driver():
     binary = FirefoxBinary(firefox_path)
 
     profile = webdriver.FirefoxProfile()
-    profile.add_extension('{0}/JSErrorCollector.xpi'.format(DIR))
+    profile.add_extension('/tools/firefox/JSErrorCollector.xpi')
     profile.set_preference('app.update.auto', False)
     profile.set_preference('app.update.enabled', False)
     driver = webdriver.Firefox(profile, capabilities=caps, log_path="{0}/firefox.log".format(LOG_DIR),
-                               firefox_binary=binary, executable_path=join(DIR, 'geckodriver/geckodriver'))
+                               firefox_binary=binary, executable_path=join(DIR, '/tools/geckodriver/geckodriver'))
+
     desktop_w = 1280
     desktop_h = 2000
     driver.set_window_position(0, 0)
@@ -49,7 +50,7 @@ def driver():
 
 def test_login(user_domain, driver):
 
-    driver.get("http://{0}".format(user_domain))
+    driver.get("https://{0}".format(user_domain))
 
     # print(driver.page_source.encode("utf-8"))
 
@@ -68,7 +69,7 @@ def test_login(user_domain, driver):
 
 def test_users(user_domain, driver):
 
-    driver.get("http://{0}/admin/users".format(user_domain))
+    driver.get("https://{0}/admin/users".format(user_domain))
     # print(driver.page_source.encode("utf-8"))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.blue')))
@@ -78,7 +79,7 @@ def test_users(user_domain, driver):
 
 def test_user(user_domain, driver):
 
-    driver.get("http://{0}/admin/users/2".format(user_domain))
+    driver.get("https://{0}/admin/users/2".format(user_domain))
     print(driver.page_source.encode("utf-8"))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
@@ -88,7 +89,7 @@ def test_user(user_domain, driver):
 
 def test_create_repo_empty(user_domain, driver):
 
-    driver.get("http://{0}/repo/create".format(user_domain))
+    driver.get("https://{0}/repo/create".format(user_domain))
     # print(driver.page_source.encode("utf-8"))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
@@ -107,7 +108,7 @@ def test_create_repo_empty(user_domain, driver):
 
 def test_create_repo_init(user_domain, driver):
 
-    driver.get("http://{0}/repo/create".format(user_domain))
+    driver.get("https://{0}/repo/create".format(user_domain))
     # print(driver.page_source.encode("utf-8"))
     # time.sleep(5)
     wait_driver = WebDriverWait(driver, 10)
@@ -130,7 +131,7 @@ def test_create_repo_init(user_domain, driver):
 
 def test_ldap_auth(user_domain, driver):
 
-    driver.get("http://{0}/admin/auths/1".format(user_domain))
+    driver.get("https://{0}/admin/auths/1".format(user_domain))
     # print(driver.page_source.encode("utf-8"))
     # time.sleep(5)
     wait_driver = WebDriverWait(driver, 10)
