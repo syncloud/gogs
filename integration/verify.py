@@ -107,7 +107,7 @@ def test_start(module_setup):
     os.mkdir(LOG_DIR)
 
 
-def test_activate_device(auth, app_domain, domain):
+def test_activate_device(app_domain, domain):
 
     response = requests.post('http://{0}:81/rest/activate'.format(app_domain),
                              data={'main_domain': SYNCLOUD_INFO,
