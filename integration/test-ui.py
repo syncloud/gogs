@@ -13,7 +13,7 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 DIR = dirname(__file__)
 LOG_DIR = join(DIR, 'log')
-DEVICE_USER = 'gogs_user@syncloud.info'
+DEVICE_USER = 'user'
 DEVICE_PASSWORD = 'password'
 log_dir = join(LOG_DIR, 'gogs_log')
 screenshot_dir = join(DIR, 'screenshot')
@@ -128,6 +128,16 @@ def test_create_repo_init(app_domain, driver):
     driver.get_screenshot_as_file(join(screenshot_dir, 'repo-init.png'))
     # print(driver.page_source.encode("utf-8"))
 
+
+def test_web_commit(app_domain, driver):
+
+    driver.get("https://{0}/user/init/_edit/master/README.md".format(app_domain))
+    
+    time.sleep(5)
+    
+    print(driver.page_source.encode("utf-8"))
+    
+    driver.get_screenshot_as_file(join(screenshot_dir, 'web-commit.png'))
 
 def test_ldap_auth(app_domain, driver):
 
