@@ -13,7 +13,7 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 DIR = dirname(__file__)
 LOG_DIR = join(DIR, 'log')
-DEVICE_USER = 'user'
+DEVICE_USER = 'gogs_user@syncloud.info'
 DEVICE_PASSWORD = 'password'
 log_dir = join(LOG_DIR, 'gogs_log')
 screenshot_dir = join(DIR, 'screenshot')
@@ -131,7 +131,7 @@ def test_create_repo_init(app_domain, driver):
 
 def test_web_commit(app_domain, driver):
 
-    driver.get("https://{0}/user/init/_edit/master/README.md".format(app_domain))
+    driver.get("https://{0}/gogs_user/init/_edit/master/README.md".format(app_domain))
     
     time.sleep(5)
     
