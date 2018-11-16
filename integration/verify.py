@@ -16,26 +16,28 @@ LOGS_SSH_PASSWORD = DEFAULT_DEVICE_PASSWORD
 DIR = dirname(__file__)
 LOG_DIR = join(DIR, 'log')
 TMP_DIR = '/tmp/syncloud'
+REDIRECT_USER = "teamcity@syncloud.it"
+REDIRECT_PASSWORD = "password"
 
 
 @pytest.fixture(scope="session")
-def platform_data_dir(installer):
-    return get_data_dir(installer, 'platform')
+def platform_data_dir():
+    return get_data_dir('platform')
 
     
 @pytest.fixture(scope="session")
-def data_dir(installer):
-    return get_data_dir(installer, 'gogs')
+def data_dir():
+    return get_data_dir('gogs')
 
 
 @pytest.fixture(scope="session")
-def app_dir(installer):
-    return get_app_dir(installer, 'gogs')
+def app_dir():
+    return get_app_dir('gogs')
     
 
 @pytest.fixture(scope="session")
-def service_prefix(installer):
-    return get_service_prefix(installer)
+def service_prefix():
+    return get_service_prefix()
 
 
 @pytest.fixture(scope="session")
@@ -80,7 +82,8 @@ def module_teardown(user_domain, data_dir, platform_data_dir, app_dir, service_p
 def syncloud_session(device_host):
     session = requests.session()
     session.post('https://{0}/rest/login'.format(device_host),
-                 data={'name': DEVICE_USER, 'password': DEVICE_PASSWORD},
+                 data={'name': DEVICE_USER, 
+                       'password': DEVICE_PASSWORD},
                  verify=False)
     return session
 
@@ -104,20 +107,23 @@ def test_start(module_setup):
     os.mkdir(LOG_DIR)
 
 
-def test_activate_device(auth, user_domain):
-    email, password, domain, release = auth
+def test_activate_device(auth, user_domain, domain):
 
     response = requests.post('http://{0}:81/rest/activate'.format(user_domain),
-                             data={'main_domain': SYNCLOUD_INFO, 'redirect_email': email, 'redirect_password': password,
-                                   'user_domain': domain, 'device_username': DEVICE_USER, 'device_password': DEVICE_PASSWORD},
+                             data={'main_domain': SYNCLOUD_INFO,
+                                   'redirect_email': REDIRECT_USER,
+                                   'redirect_password': REDIRECT_PASSWORD,
+                                   'user_domain': domain,
+                                   'device_username': DEVICE_USER,
+                                   'device_password': DEVICE_PASSWORD},
                                    verify=False)
     assert response.status_code == 200, response.text
     global LOGS_SSH_PASSWORD
     LOGS_SSH_PASSWORD = DEVICE_PASSWORD
 
 
-def test_install(app_archive_path, user_domain, installer):
-    local_install(user_domain, DEVICE_PASSWORD, app_archive_path, installer)
+def test_install(app_archive_path, user_domain):
+    local_install(user_domain, DEVICE_PASSWORD, app_archive_path)
 
 
 def test_storage_dir(user_domain):
@@ -154,6 +160,6 @@ def test_remove(syncloud_session, device_host):
     wait_for_sam(syncloud_session, device_host)
 
 
-def test_reinstall(app_archive_path, user_domain, installer):
-    local_install(user_domain, DEVICE_PASSWORD, app_archive_path, installer)
+def test_reinstall(app_archive_path, user_domain):
+    local_install(user_domain, DEVICE_PASSWORD, app_archive_path)
 

@@ -2,17 +2,15 @@
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-if [ "$#" -lt 7 ]; then
-    echo "usage $0 redirect_user redirect_password redirect_domain version release [sam|snapd] device_host"
+if [ "$#" -lt 3 ]; then
+    echo "usage $0 redirect_domain version device_host"
     exit 1
 fi
 
 ARCH=$(uname -m)
-DOMAIN=$3
-VERSION=$4
-RELEASE=$5
-INSTALLER=$6
-DEVICE_HOST=$7
+DOMAIN=$1
+VERSION=$2
+DEVICE_HOST=$3
 
 APP=gogs
 
@@ -50,10 +48,6 @@ do
 done
 set -e
 
-sshpass -p syncloud scp -o StrictHostKeyChecking=no install-${INSTALLER}.sh root@${DEVICE_HOST}:/installer.sh
-
-sshpass -p syncloud ssh -o StrictHostKeyChecking=no root@${DEVICE_HOST} /installer.sh ${RELEASE}
-
 pip2 install -r ${DIR}/dev_requirements.txt
 
 #fix dns
@@ -63,4 +57,4 @@ echo "$device_ip $APP.$DOMAIN.syncloud.info" >> /etc/hosts
 
 cat /etc/hosts
 
-xvfb-run -l --server-args="-screen 0, 1024x4096x24" py.test -x -s ${TEST_SUITE} --email=$1 --password=$2 --domain=$DOMAIN --app-archive-path=${APP_ARCHIVE_PATH} --installer=${INSTALLER} --device-host=${DEVICE_HOST} --release=$RELEASE
+xvfb-run -l --server-args="-screen 0, 1024x4096x24" py.test -x -s ${TEST_SUITE} --domain=$DOMAIN --app-archive-path=${APP_ARCHIVE_PATH} --device-host=${DEVICE_HOST}
