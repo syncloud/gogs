@@ -12,16 +12,6 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope='session')
-def device_domain(request):
-    return '{0}.{1}'.format(request.config.getoption("--domain"), SYNCLOUD_INFO)
-
-
-@pytest.fixture(scope='session')
-def user_domain(device_domain):
-    return 'gogs.{0}'.format(device_domain, SYNCLOUD_INFO)
-
-
-@pytest.fixture(scope='session')
 def app_archive_path(request):
     return request.config.getoption("--app-archive-path")
 
@@ -32,5 +22,15 @@ def device_host(request):
 
 
 @pytest.fixture(scope='session')
-def domain(device_domain):
+def domain(request):
+    return request.config.getoption("--domain")
+
+
+@pytest.fixture(scope='session')
+def device_domain(domain):
+    return '{0}.{1}'.format(domain, SYNCLOUD_INFO)
+
+
+@pytest.fixture(scope='session')
+def app_domain(device_domain):
     return 'gogs.{0}'.format(device_domain, SYNCLOUD_INFO)
