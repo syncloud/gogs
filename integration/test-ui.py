@@ -71,7 +71,7 @@ def test_users(app_domain, driver):
 
     driver.get("https://{0}/admin/users".format(app_domain))
     # print(driver.page_source.encode("utf-8"))
-    wait_driver = WebDriverWait(driver, 10)
+    wait_driver = WebDriverWait(driver, 100)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.blue')))
 
     driver.get_screenshot_as_file(join(screenshot_dir, 'users.png'))
