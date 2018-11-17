@@ -71,7 +71,7 @@ def test_users(app_domain, driver):
 
     driver.get("https://{0}/admin/users".format(app_domain))
     # print(driver.page_source.encode("utf-8"))
-    wait_driver = WebDriverWait(driver, 10)
+    wait_driver = WebDriverWait(driver, 100)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.blue')))
 
     driver.get_screenshot_as_file(join(screenshot_dir, 'users.png'))
@@ -80,7 +80,7 @@ def test_users(app_domain, driver):
 def test_user(app_domain, driver):
 
     driver.get("https://{0}/admin/users/2".format(app_domain))
-    print(driver.page_source.encode("utf-8"))
+    # print(driver.page_source.encode("utf-8"))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
@@ -128,6 +128,22 @@ def test_create_repo_init(app_domain, driver):
     driver.get_screenshot_as_file(join(screenshot_dir, 'repo-init.png'))
     # print(driver.page_source.encode("utf-8"))
 
+
+def test_web_commit(app_domain, driver):
+
+    driver.get("https://{0}/gogs_user/init/_edit/master/README.md".format(app_domain))
+    
+    time.sleep(5)
+    
+    print(driver.page_source.encode("utf-8"))
+    edit = driver.find_element_by_css_selector(".CodeMirror-code")
+    edit.click()
+    edit.send_keys('test 123')
+    driver.get_screenshot_as_file(join(screenshot_dir, 'web-edit.png'))
+    
+    driver.find_element_by_css_selector("button.ui").click()
+    time.sleep(5)
+    driver.get_screenshot_as_file(join(screenshot_dir, 'web-commit.png'))
 
 def test_ldap_auth(app_domain, driver):
 
