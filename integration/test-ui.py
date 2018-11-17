@@ -80,7 +80,7 @@ def test_users(app_domain, driver):
 def test_user(app_domain, driver):
 
     driver.get("https://{0}/admin/users/2".format(app_domain))
-    print(driver.page_source.encode("utf-8"))
+    # print(driver.page_source.encode("utf-8"))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
@@ -136,11 +136,11 @@ def test_web_commit(app_domain, driver):
     time.sleep(5)
     
     print(driver.page_source.encode("utf-8"))
-    create = driver.find_element_by_css_selector(".CodeMirror-code")
+    create = driver.find_element_by_css_selector(".CodeMirror-code .CodeMirror-line")
     create.send_keys('test 123')
     driver.get_screenshot_as_file(join(screenshot_dir, 'web-edit.png'))
     
-    find_element_by_xpath("//input[@type='submit']").click()
+    driver.find_element_by_xpath("//input[@type='submit']").click()
     time.sleep(5)
     driver.get_screenshot_as_file(join(screenshot_dir, 'web-commit.png'))
 
