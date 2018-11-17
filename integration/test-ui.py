@@ -136,11 +136,12 @@ def test_web_commit(app_domain, driver):
     time.sleep(5)
     
     print(driver.page_source.encode("utf-8"))
-    create = driver.find_element_by_css_selector(".CodeMirror-code .CodeMirror-line")
-    create.send_keys('test 123')
+    edit = driver.find_element_by_css_selector(".CodeMirror-code")
+    edit.click()
+    edit.send_keys('test 123')
     driver.get_screenshot_as_file(join(screenshot_dir, 'web-edit.png'))
     
-    driver.find_element_by_xpath("//input[@type='submit']").click()
+    driver.find_element_by_css_selector("button.ui").click()
     time.sleep(5)
     driver.get_screenshot_as_file(join(screenshot_dir, 'web-commit.png'))
 
