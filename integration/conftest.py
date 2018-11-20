@@ -1,8 +1,6 @@
 import pytest
 
 SYNCLOUD_INFO = 'syncloud.info'
-DEVICE_USER = 'user'
-DEVICE_PASSWORD = 'password'
 
 
 def pytest_addoption(parser):
@@ -27,10 +25,15 @@ def domain(request):
 
 
 @pytest.fixture(scope='session')
-def device_domain(domain):
-    return '{0}.{1}'.format(domain, SYNCLOUD_INFO)
+def main_domain():
+    return SYNCLOUD_INFO
+
+
+@pytest.fixture(scope='session')
+def device_domain(domain, main_domain):
+    return '{0}.{1}'.format(domain, main_domain)
 
 
 @pytest.fixture(scope='session')
 def app_domain(device_domain):
-    return 'gogs.{0}'.format(device_domain, SYNCLOUD_INFO)
+    return 'gogs.{0}'.format(device_domain)

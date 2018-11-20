@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 from syncloudlib.integration.installer import local_install, get_data_dir, get_app_dir, get_service_prefix, wait_for_sam
 from syncloudlib.integration.ssh import run_scp, run_ssh
 
-SYNCLOUD_INFO = 'syncloud.info'
 DEVICE_USER = 'gogs_user@syncloud.info'
 DEVICE_PASSWORD = 'password'
 DEFAULT_DEVICE_PASSWORD = 'syncloud'
