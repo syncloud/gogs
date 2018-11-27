@@ -67,26 +67,18 @@ mkdir ${BUILD_DIR}/META
 echo ${NAME} >> ${BUILD_DIR}/META/app
 echo ${VERSION} >> ${BUILD_DIR}/META/version
 
-if [ $INSTALLER == "sam" ]; then
+echo "snapping"
+SNAP_DIR=${DIR}/build/snap
+ARCH=$(dpkg-architecture -q DEB_HOST_ARCH)
+rm -rf ${DIR}/*.snap
+mkdir ${SNAP_DIR}
+cp -r ${BUILD_DIR}/* ${SNAP_DIR}/
+cp -r ${DIR}/snap/meta ${SNAP_DIR}/
+cp ${DIR}/snap/snap.yaml ${SNAP_DIR}/meta/snap.yaml
+echo "version: $VERSION" >> ${SNAP_DIR}/meta/snap.yaml
+echo "architectures:" >> ${SNAP_DIR}/meta/snap.yaml
+echo "- ${ARCH}" >> ${SNAP_DIR}/meta/snap.yaml
 
-    echo "zipping"
-    rm -rf ${NAME}*.tar.gz
-    tar cpzf ${DIR}/${NAME}-${VERSION}-${ARCH}.tar.gz -C ${DIR}/build/ ${NAME}
-
-else
-
-    echo "snapping"
-    SNAP_DIR=${DIR}/build/snap
-    ARCH=$(dpkg-architecture -q DEB_HOST_ARCH)
-    rm -rf ${DIR}/*.snap
-    mkdir ${SNAP_DIR}
-    cp -r ${BUILD_DIR}/* ${SNAP_DIR}/
-    cp -r ${DIR}/snap/meta ${SNAP_DIR}/
-    cp ${DIR}/snap/snap.yaml ${SNAP_DIR}/meta/snap.yaml
-    echo "version: $VERSION" >> ${SNAP_DIR}/meta/snap.yaml
-    echo "architectures:" >> ${SNAP_DIR}/meta/snap.yaml
-    echo "- ${ARCH}" >> ${SNAP_DIR}/meta/snap.yaml
-
-    mksquashfs ${SNAP_DIR} ${DIR}/${NAME}_${VERSION}_${ARCH}.snap -noappend -comp xz -no-xattrs -all-root
-
-fi
+PACKAGE=${NAME}_${VERSION}_${ARCH}.snap
+echo ${PACKAGE} > package.name
+mksquashfs ${SNAP_DIR} ${DIR}/${PACKAGE} -noappend -comp xz -no-xattrs -all-root

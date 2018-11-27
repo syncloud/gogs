@@ -106,10 +106,10 @@ def test_start(module_setup):
     os.mkdir(LOG_DIR)
 
 
-def test_activate_device(app_domain, domain):
+def test_activate_device(app_domain, domain, main_domain):
 
     response = requests.post('http://{0}:81/rest/activate'.format(app_domain),
-                             data={'main_domain': SYNCLOUD_INFO,
+                             data={'main_domain': main_domain,
                                    'redirect_email': REDIRECT_USER,
                                    'redirect_password': REDIRECT_PASSWORD,
                                    'user_domain': domain,
