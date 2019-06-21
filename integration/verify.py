@@ -18,7 +18,7 @@ def module_setup(request, app_domain, data_dir, platform_data_dir, app_dir, devi
 
 
 def module_teardown(app_domain, data_dir, platform_data_dir, app_dir, device, log_dir):
-    platform_log_dir = join(LOG_DIR, 'platform')
+    platform_log_dir = join(log_dir, 'platform')
     os.mkdir(platform_log_dir)
 
     device.scp_from_device('{0}/log/*'.format(platform_data_dir), platform_log_dir)
