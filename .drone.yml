@@ -20,7 +20,7 @@ pipeline:
       - NAME=$(cat name)
       - ./build.sh $NAME $VERSION
   
- test:
+  test:
     image: syncloud/build-deps-${arch}
     commands:
       - pip2 install -r dev_requirements.txt
