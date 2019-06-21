@@ -36,7 +36,7 @@ def module_teardown(app_domain, data_dir, platform_data_dir, app_dir, device, lo
     device.run_ssh('mkdir {0}'.format(TMP_DIR), throw=False)
     device.run_ssh('top -bn 1 -w 500 -c > {0}/top.log'.format(TMP_DIR), throw=False)
     device.run_ssh('ps auxfw > {0}/ps.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('systemctl status {0}gogs > {1}/gogs.status.log'.format(service_prefix, TMP_DIR), throw=False)
+    device.run_ssh('systemctl status snap.gogs.* > {0}/gogs.status.log'.format(TMP_DIR), throw=False)
     device.run_ssh('netstat -nlp > {0}/netstat.log'.format(TMP_DIR), throw=False)
     device.run_ssh('journalctl | tail -500 > {0}/journalctl.log'.format(TMP_DIR), throw=False)
     device.run_ssh('tail -500 /var/log/syslog > {0}/syslog.log'.format(TMP_DIR), throw=False)
