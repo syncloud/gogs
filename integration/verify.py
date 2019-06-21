@@ -65,9 +65,9 @@ def gogs_session(app_domain):
     return session
 
 
-def test_start(module_setup):
-    shutil.rmtree(LOG_DIR, ignore_errors=True)
-    os.mkdir(LOG_DIR)
+def test_start(module_setup, log_dir):
+    shutil.rmtree(log_dir, ignore_errors=True)
+    os.mkdir(log_dir)
     add_host_alias(app, device_host)
     print(check_output('date', shell=True))
     device.run_ssh('date', retries=20)
