@@ -65,7 +65,7 @@ def gogs_session(app_domain):
     return session
 
 
-def test_start(module_setup, log_dir):
+def test_start(device_host, log_dir, app):
     shutil.rmtree(log_dir, ignore_errors=True)
     os.mkdir(log_dir)
     add_host_alias(app, device_host)
