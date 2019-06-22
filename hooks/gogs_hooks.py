@@ -2,13 +2,6 @@ import logging
 from os.path import dirname, join, abspath, isdir
 from os import listdir, path, environ
 import sys
-
-app_path = abspath(join(dirname(__file__), '..'))
-
-lib_path = join(app_path, 'lib')
-libs = [join(lib_path, item) for item in listdir(lib_path) if isdir(join(lib_path, item))]
-map(lambda l: sys.path.insert(0, l), libs)
-
 from bs4 import BeautifulSoup
 
 from os.path import isdir, join
@@ -17,11 +10,9 @@ import time
 from subprocess import check_output
 import shutil
 import uuid
-from syncloud_app import logger
 
-from syncloud_platform.application import api
-from syncloud_platform.gaplib import fs, linux, gen
-from syncloudlib.application import paths, urls, storage, users
+from syncloudlib import fs, linux, gen, logger
+from syncloudlib.application import paths, urls, storage, service
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
