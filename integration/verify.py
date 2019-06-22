@@ -53,13 +53,13 @@ def module_teardown(app_domain, data_dir, platform_data_dir, app_dir, device, lo
     
 
 @pytest.fixture(scope='function')
-def gogs_session(app_domain):
+def gogs_session(app_domain, device_user, device_password):
     session = requests.session()
     main_response = session.get('https://{0}/user/login'.format(app_domain), allow_redirects=False, verify=False)
     soup = BeautifulSoup(main_response.text, "html.parser")
     csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
     login_response = session.post('https://{0}/user/login'.format(app_domain),
-                                  data={'user_name': DEVICE_USER, 'password': DEVICE_PASSWORD, '_csrf': csrf},
+                                  data={'user_name': device_user, 'password': device_password, '_csrf': csrf},
                                   allow_redirects=False, verify=False)
                                
     assert login_response.status_code == 302, login_response.text
@@ -81,16 +81,16 @@ def test_activate_device(app_domain, domain, main_domain, device):
     assert response.status_code == 200, response.text
 
 
-def test_install(app_archive_path, app_domain):
-    local_install(app_domain, DEVICE_PASSWORD, app_archive_path)
+def test_install(app_archive_path, app_domain, device_user, device_password):
+    local_install(app_domain, device_password, app_archive_path)
 
 
 def test_storage_dir(device):
-    device.run_ssh('ls -la /data/gogs', password=DEVICE_PASSWORD)
+    device.run_ssh('ls -la /data/gogs')
 
 
 def test_git_config(device, app_dir):
-    device.run_ssh('{0}/git/bin/git config -l'.format(app_dir), password=DEVICE_PASSWORD, env_vars='HOME=/home/git')
+    device.run_ssh('{0}/git/bin/git config -l'.format(app_dir), env_vars='HOME=/home/git')
 
 
 def test_login(gogs_session):
@@ -119,6 +119,6 @@ def test_remove(syncloud_session, device_host):
     wait_for_installer(syncloud_session, device_host)
 
 
-def test_reinstall(app_archive_path, app_domain):
-    local_install(app_domain, DEVICE_PASSWORD, app_archive_path)
+def test_reinstall(app_archive_path, app_domain, device_password):
+    local_install(app_domain, device_password, app_archive_path)
 
