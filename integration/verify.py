@@ -66,7 +66,7 @@ def gogs_session(app_domain):
     return session
 
 
-def test_start(device_host, log_dir, app):
+def test_start(device_host, log_dir, app, device):
     shutil.rmtree(log_dir, ignore_errors=True)
     os.mkdir(log_dir)
     add_host_alias(app, device_host)
@@ -75,7 +75,7 @@ def test_start(device_host, log_dir, app):
 
 
 
-def test_activate_device(app_domain, domain, main_domain):
+def test_activate_device(app_domain, domain, main_domain, device):
 
     response = device.activate()
     assert response.status_code == 200, response.text
