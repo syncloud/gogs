@@ -121,12 +121,6 @@ def install():
         database_init(app_dir, app_data_dir, database_path, DB_USER)
         
 
-def start():
-    app = api.get_app_setup(APP_NAME)
-    app.add_service(SYSTEMD_POSTGRESQL)
-    app.add_service(SYSTEMD_GOGS)
-
-
 def database_post_start():
 
     log = logger.get_logger('gogs')
@@ -147,7 +141,7 @@ def database_post_start():
 
 
 def configure():
-    
+    database_post_start()
     log = logger.get_logger('gogs')
 
     if path.isfile(install_file):
@@ -279,13 +273,3 @@ def extract_csrf(response):
     soup = BeautifulSoup(response, "html.parser")
     return soup.find_all('meta', {'name': '_csrf'})[0]['content']
 
-
-def remove():
-    app = api.get_app_setup(APP_NAME)
-
-    app.remove_service(SYSTEMD_GOGS)
-    app.remove_service(SYSTEMD_POSTGRESQL)
-
-    app_dir = app.get_install_dir()
-
-    fs.removepath(app_dir)
