@@ -12,7 +12,7 @@ import shutil
 import uuid
 
 from syncloudlib import fs, linux, gen, logger
-from syncloudlib.application import paths, urls, storage, service
+from syncloudlib.application import paths, urls, storage, service, users
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
