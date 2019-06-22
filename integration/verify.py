@@ -21,14 +21,8 @@ def module_setup(request, app_domain, data_dir, platform_data_dir, app_dir, devi
 def module_teardown(app_domain, data_dir, platform_data_dir, app_dir, device, log_dir):
     platform_log_dir = join(log_dir, 'platform')
     os.mkdir(platform_log_dir)
-
     device.scp_from_device('{0}/log/*'.format(platform_data_dir), platform_log_dir)
-    app_log_dir = join(log_dir, 'app')
-    os.mkdir(app_log_dir)
-    device.scp_from_device('{0}/log/*.log'.format(data_dir), app_log_dir)
-
-    device.scp_from_device('/var/log/sam.log', platform_log_dir)
-
+  
     device.run_ssh('ls -la {0}'.format(data_dir), throw=False)
     device.run_ssh('cat {0}/config/gogs.ini'.format(app_dir), throw=False)
     device.run_ssh('{0}/git/bin/git config --global user.name'.format(app_dir), env_vars='HOME=/home/git', throw=False)
@@ -49,6 +43,10 @@ def module_teardown(app_domain, data_dir, platform_data_dir, app_dir, device, lo
     device.run_ssh('ls -la /var/snap/gogs/common > {0}/var.snap.gogs.common.ls.log'.format(TMP_DIR), throw=False)    
     device.run_ssh('ls -la /data > {0}/data.ls.log'.format(TMP_DIR), throw=False)    
     device.run_ssh('ls -la /data/gogs > {0}/data.gogs.ls.log'.format(TMP_DIR), throw=False)    
+  
+    app_log_dir = join(log_dir, 'app')
+    os.mkdir(app_log_dir)
+    device.scp_from_device('{0}/log/*.log'.format(data_dir), app_log_dir)
     device.scp_from_device('{0}/*.log'.format(TMP_DIR), app_log_dir)
     
 
