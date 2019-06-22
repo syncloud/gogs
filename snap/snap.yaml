@@ -6,6 +6,7 @@ apps:
     plugs:
     - network
     - network-bind
+    post-start-command: bin/service.postgresql.sh post-start
     restart-condition: always
     before: [server]
 
