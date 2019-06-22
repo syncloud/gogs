@@ -1,6 +1,7 @@
 import os
 import shutil
 from os.path import dirname, join
+from subprocess import check_output
 
 import pytest
 import requests
