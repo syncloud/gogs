@@ -28,7 +28,7 @@ pipeline:
       - DOMAIN=$(cat domain)
       - NAME=$(cat name)
       - cd integration
-      - py.test -x -s verify.py --domain=$DOMAIN --app-archive-path=$APP_ARCHIVE_PATH --device-host=device --app=$NAME
+      - py.test -x -s verify.py --domain=$DOMAIN --app-archive-path=$APP_ARCHIVE_PATH --device-host=device --app=$NAME --device-user=gogs
 
   test-ui:
     image: syncloud/build-deps-${arch}
@@ -37,8 +37,8 @@ pipeline:
       - DOMAIN=$(cat domain)
       - NAME=$(cat name)
       - cd integration
-      - xvfb-run -l --server-args="-screen 0, 1024x4096x24" py.test -x -s test-ui.py --domain=$DOMAIN --device-host=device --app=$NAME --ui-mode=desktop
-      - xvfb-run -l --server-args="-screen 0, 1024x4096x24" py.test -x -s test-ui.py --domain=$DOMAIN --device-host=device --app=$NAME --ui-mode=mobile
+      - xvfb-run -l --server-args="-screen 0, 1024x4096x24" py.test -x -s test-ui.py --domain=$DOMAIN --device-host=device --app=$NAME --ui-mode=desktop --device-user=gogs
+      - xvfb-run -l --server-args="-screen 0, 1024x4096x24" py.test -x -s test-ui.py --domain=$DOMAIN --device-host=device --app=$NAME --ui-mode=mobile --device-user=gogs
     shm_size: 1024000000
     when:
       platform: linux/amd64
