@@ -141,7 +141,7 @@ def database_post_start():
 
 
 def configure():
-    database_post_start()
+    
     log = logger.get_logger('gogs')
 
     if path.isfile(install_file):

@@ -11,6 +11,9 @@ case $1 in
 start)
     exec ${DIR}/postgresql/bin/pg_ctl -w -s -D ${SNAP_COMMON}/database start
     ;;
+post-start)
+    ${DIR}/bin/postgresql-post-start.sh
+    ;;
 stop)
     exec ${DIR}/postgresql/bin/pg_ctl -s -D ${SNAP_COMMON}/database stop -m fast
     ;;
