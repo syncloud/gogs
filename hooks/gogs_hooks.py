@@ -80,7 +80,6 @@ class Database:
 
 
 def install():
-    linux.fix_locale()
   
     app_dir = paths.get_app_dir(APP_NAME)
     app_data_dir = paths.get_data_dir(APP_NAME)
