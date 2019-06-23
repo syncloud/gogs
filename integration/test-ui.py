@@ -123,8 +123,8 @@ def test_web_commit(app_domain, driver, ui_mode, device_user):
     screenshots(driver, screenshot_dir, 'web-edit-' + ui_mode)
 
     edit = driver.find_element_by_css_selector(".CodeMirror-code")
-    edit.click()
-    edit.send_keys('test 123')
+    driver.execute_script("arguments[0].CodeMirror.setValue(\"test 123\");", edit);
+
     screenshots(driver, screenshot_dir, 'web-edit-' + ui_mode)
 
     driver.find_element_by_css_selector("button.ui").click()
