@@ -30,7 +30,7 @@ def module_teardown(device, log_dir, ui_mode):
     device.scp_from_device('{0}/*'.format(TMP_DIR), join(log_dir, 'log'))
 
 
-def test_login(app_domain, driver, device_user, device_password):
+def test_login(app_domain, driver, device_user, device_password, ui_mode):
 
     driver.get("https://{0}".format(app_domain))
 
@@ -45,7 +45,7 @@ def test_login(app_domain, driver, device_user, device_password):
     screenshots(driver, screenshot_dir, 'main-' + ui_mode)
 
 
-def test_users(app_domain, driver):
+def test_users(app_domain, driver, ui_mode):
 
     driver.get("https://{0}/admin/users".format(app_domain))
     # print(driver.page_source.encode("utf-8"))
@@ -55,7 +55,7 @@ def test_users(app_domain, driver):
     screenshots(driver, screenshot_dir, 'users-' + ui_mode)
 
 
-def test_user(app_domain, driver):
+def test_user(app_domain, driver, ui_mode):
 
     driver.get("https://{0}/admin/users/2".format(app_domain))
     # print(driver.page_source.encode("utf-8"))
@@ -65,7 +65,7 @@ def test_user(app_domain, driver):
     screenshots(driver, screenshot_dir, 'user-' + ui_mode)
 
 
-def test_create_repo_empty(app_domain, driver):
+def test_create_repo_empty(app_domain, driver, ui_mode):
 
     driver.get("https://{0}/repo/create".format(app_domain))
     # print(driver.page_source.encode("utf-8"))
@@ -83,7 +83,7 @@ def test_create_repo_empty(app_domain, driver):
     screenshots(driver, screenshot_dir, 'repo-empty-' + ui_mode)
 
 
-def test_create_repo_init(app_domain, driver):
+def test_create_repo_init(app_domain, driver, ui_mode):
 
     driver.get("https://{0}/repo/create".format(app_domain))
     # print(driver.page_source.encode("utf-8"))
@@ -105,7 +105,7 @@ def test_create_repo_init(app_domain, driver):
     screenshots(driver, screenshot_dir, 'repo-init-' + ui_mode)
 
 
-def test_web_commit(app_domain, driver):
+def test_web_commit(app_domain, driver, ui_mode):
 
     driver.get("https://{0}/gogs_user/init/_edit/master/README.md".format(app_domain))
     
@@ -121,7 +121,7 @@ def test_web_commit(app_domain, driver):
     time.sleep(5)
     screenshots(driver, screenshot_dir, 'web-commit-' + ui_mode)
 
-def test_ldap_auth(app_domain, driver):
+def test_ldap_auth(app_domain, driver, ui_mode):
 
     driver.get("https://{0}/admin/auths/1".format(app_domain))
     # print(driver.page_source.encode("utf-8"))
