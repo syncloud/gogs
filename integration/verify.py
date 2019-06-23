@@ -7,7 +7,7 @@ import pytest
 import requests
 from bs4 import BeautifulSoup
 from syncloudlib.integration.hosts import add_host_alias
-from syncloudlib.integration.installer import local_install, wait_for_rest
+from syncloudlib.integration.installer import local_install, wait_for_rest, wait_for_installer
 
 DIR = dirname(__file__)
 TMP_DIR = '/tmp/syncloud'
