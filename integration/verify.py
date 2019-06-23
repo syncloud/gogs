@@ -110,11 +110,11 @@ def test_install_user_disabled(app_domain):
     return session
 
 
-def test_remove(syncloud_session, device_host):
-    response = syncloud_session.get('https://{0}/rest/remove?app_id=gogs'.format(device_host),
+def test_remove(device_session, device_host):
+    response = device_session.get('https://{0}/rest/remove?app_id=gogs'.format(device_host),
                                     allow_redirects=False, verify=False)
     assert response.status_code == 200, response.text
-    wait_for_installer(syncloud_session, device_host)
+    wait_for_installer(device_session, device_host)
 
 
 def test_reinstall(app_archive_path, app_domain, device_password):
