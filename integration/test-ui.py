@@ -56,7 +56,6 @@ def test_login(app_domain, driver, device_user, device_password, ui_mode):
 def test_users(app_domain, driver, ui_mode):
 
     driver.get("https://{0}/admin/users".format(app_domain))
-    # print(driver.page_source.encode("utf-8"))
     wait_driver = WebDriverWait(driver, 100)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.blue')))
 
@@ -66,7 +65,6 @@ def test_users(app_domain, driver, ui_mode):
 def test_user(app_domain, driver, ui_mode):
 
     driver.get("https://{0}/admin/users/2".format(app_domain))
-    # print(driver.page_source.encode("utf-8"))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
@@ -76,7 +74,6 @@ def test_user(app_domain, driver, ui_mode):
 def test_create_repo_empty(app_domain, driver, ui_mode):
 
     driver.get("https://{0}/repo/create".format(app_domain))
-    # print(driver.page_source.encode("utf-8"))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
@@ -118,14 +115,13 @@ def test_create_repo_init(app_domain, driver, ui_mode):
     screenshots(driver, screenshot_dir, 'repo-init-' + ui_mode)
 
 
-def test_web_commit(app_domain, driver, ui_mode):
+def test_web_commit(app_domain, driver, ui_mode, device_user):
 
-    driver.get("https://{0}/gogs_user/init/_edit/master/README.md".format(app_domain))
+    driver.get("https://{0}/{1}/init/_edit/master/README.md".format(app_domain, device_user))
     
     time.sleep(5)
     screenshots(driver, screenshot_dir, 'web-edit-' + ui_mode)
 
-    print(driver.page_source.encode("utf-8"))
     edit = driver.find_element_by_css_selector(".CodeMirror-code")
     edit.click()
     edit.send_keys('test 123')
@@ -138,8 +134,6 @@ def test_web_commit(app_domain, driver, ui_mode):
 def test_ldap_auth(app_domain, driver, ui_mode):
 
     driver.get("https://{0}/admin/auths/1".format(app_domain))
-    # print(driver.page_source.encode("utf-8"))
-    # time.sleep(5)
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
