@@ -29,14 +29,14 @@ def module_teardown(device, log_dir, ui_mode):
     device.scp_from_device('{0}/*'.format(TMP_DIR), join(log_dir, 'log'))
 
 
-def test_login(app_domain, driver):
+def test_login(app_domain, driver, device_user, device_password):
 
     driver.get("https://{0}".format(app_domain))
 
     user = driver.find_element_by_id("user_name")
-    user.send_keys(DEVICE_USER)
+    user.send_keys(device_user)
     password = driver.find_element_by_id("password")
-    password.send_keys(DEVICE_PASSWORD)
+    password.send_keys(device_password)
     driver.get_screenshot_as_file(join(screenshot_dir, 'login.png'))
     password.send_keys(Keys.RETURN)
 
