@@ -123,7 +123,8 @@ def test_web_commit(app_domain, driver, ui_mode):
     driver.get("https://{0}/gogs_user/init/_edit/master/README.md".format(app_domain))
     
     time.sleep(5)
-    
+    screenshots(driver, screenshot_dir, 'web-edit-' + ui_mode)
+
     print(driver.page_source.encode("utf-8"))
     edit = driver.find_element_by_css_selector(".CodeMirror-code")
     edit.click()
