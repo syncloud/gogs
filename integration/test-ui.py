@@ -99,7 +99,7 @@ def test_create_repo_init(app_domain, driver, ui_mode):
 
     name = driver.find_element_by_id("repo_name")
     name.send_keys('init')
-    description = driver.find_element_by_id("repo_name")
+    description = driver.find_element_by_id("description")
     description.send_keys('description')
 
     time.sleep(2)
