@@ -102,8 +102,8 @@ def test_create_repo_init(app_domain, driver, ui_mode):
     time.sleep(2)
     screenshots(driver, screenshot_dir, 'repo-create-init-' + ui_mode)
 
-    wait_driver.until(EC.element_to_be_clickable((By.NAME, 'auto_init')))
-    auto_init = driver.find_element_by_name("auto_init")
+    wait_driver.until(EC.element_to_be_clickable((By.ID, 'auto_init')))
+    auto_init = driver.find_element_by_id("auto_init")
     auto_init.click()
     screenshots(driver, screenshot_dir, 'repo-create-init-' + ui_mode)
 
