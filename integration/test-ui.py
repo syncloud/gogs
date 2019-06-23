@@ -101,7 +101,7 @@ def test_create_repo_init(app_domain, driver, ui_mode):
     name.send_keys('init')
     description = driver.find_element_by_id("repo_name")
     description.send_keys('description')
-i
+
     time.sleep(2)
     screenshots(driver, screenshot_dir, 'repo-create-init-' + ui_mode)
 
