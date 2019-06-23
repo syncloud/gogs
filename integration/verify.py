@@ -79,8 +79,8 @@ def test_activate_device(app_domain, domain, main_domain, device):
     assert response.status_code == 200, response.text
 
 
-def test_install(app_archive_path, app_domain, device_user, device_password):
-    local_install(app_domain, device_password, app_archive_path)
+def test_install(app_archive_path, device_host, device_password):
+    local_install(device_host, device_password, app_archive_path)
 
 
 def test_storage_dir(device):
