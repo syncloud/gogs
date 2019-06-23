@@ -10,6 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+from syncloudlib.integration.hosts import add_host_alias
 from syncloudlib.integration.screenshots import screenshots
 
 DIR = dirname(__file__)
