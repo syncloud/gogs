@@ -3,5 +3,5 @@
 import os, sys
 sys.path.append(os.path.join(os.environ['SNAP'], 'hooks'))
 
-from gogs_hooks import configure
-configure()
+from gogs_hooks import database_post_start
+database_post_start()

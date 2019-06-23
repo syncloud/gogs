@@ -1,0 +1,4 @@
+beautifulsoup4==4.4.0
+requests-unixsocket==0.1.5
+requests==2.11.1
+syncloud-lib==133

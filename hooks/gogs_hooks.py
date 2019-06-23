@@ -2,13 +2,6 @@ import logging
 from os.path import dirname, join, abspath, isdir
 from os import listdir, path, environ
 import sys
-
-app_path = abspath(join(dirname(__file__), '..'))
-
-lib_path = join(app_path, 'lib')
-libs = [join(lib_path, item) for item in listdir(lib_path) if isdir(join(lib_path, item))]
-map(lambda l: sys.path.insert(0, l), libs)
-
 from bs4 import BeautifulSoup
 
 from os.path import isdir, join
@@ -17,11 +10,9 @@ import time
 from subprocess import check_output
 import shutil
 import uuid
-from syncloud_app import logger
 
-from syncloud_platform.application import api
-from syncloud_platform.gaplib import fs, linux, gen
-from syncloudlib.application import paths, urls, storage, users
+from syncloudlib import fs, linux, gen, logger
+from syncloudlib.application import paths, urls, storage, service, users
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
@@ -89,7 +80,6 @@ class Database:
 
 
 def install():
-    linux.fix_locale()
   
     app_dir = paths.get_app_dir(APP_NAME)
     app_data_dir = paths.get_data_dir(APP_NAME)
@@ -130,12 +120,6 @@ def install():
     if not path.isfile(install_file):
         database_init(app_dir, app_data_dir, database_path, DB_USER)
         
-
-def start():
-    app = api.get_app_setup(APP_NAME)
-    app.add_service(SYSTEMD_POSTGRESQL)
-    app.add_service(SYSTEMD_GOGS)
-
 
 def database_post_start():
 
@@ -289,13 +273,3 @@ def extract_csrf(response):
     soup = BeautifulSoup(response, "html.parser")
     return soup.find_all('meta', {'name': '_csrf'})[0]['content']
 
-
-def remove():
-    app = api.get_app_setup(APP_NAME)
-
-    app.remove_service(SYSTEMD_GOGS)
-    app.remove_service(SYSTEMD_POSTGRESQL)
-
-    app_dir = app.get_install_dir()
-
-    fs.removepath(app_dir)
