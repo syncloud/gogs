@@ -1,18 +1,15 @@
 import logging
-from os.path import dirname, join, abspath, isdir
-from os import listdir, path, environ
-import sys
-from bs4 import BeautifulSoup
-
-from os.path import isdir, join
-import requests_unixsocket
-import time
-from subprocess import check_output
 import shutil
+import time
 import uuid
+from os import path, environ
+from os.path import isdir, join
+from subprocess import check_output
 
+import requests_unixsocket
+from bs4 import BeautifulSoup
 from syncloudlib import fs, linux, gen, logger
-from syncloudlib.application import paths, urls, storage, service, users
+from syncloudlib.application import paths, urls, storage, users
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
@@ -33,7 +30,6 @@ install_file = join(paths.get_data_dir(APP_NAME), 'installed')
 
 
 def wait_url(log, url, timeout, interval=3):
-
     t0 = time.time()
     while time.time() - t0 < timeout:
         try:
@@ -80,10 +76,9 @@ class Database:
 
 
 def install():
-  
     app_dir = paths.get_app_dir(APP_NAME)
     app_data_dir = paths.get_data_dir(APP_NAME)
-  
+
     home_folder = join('/home', USER_NAME)
     linux.useradd(USER_NAME, home_folder=home_folder)
 
@@ -93,7 +88,7 @@ def install():
     database_path = join(app_data_dir, PSQL_DATA_PATH)
     gogs_repos_path = storage.init_storage(APP_NAME, USER_NAME)
     app_url = urls.get_app_url(APP_NAME)
-        
+
     variables = {
         'app_dir': app_dir,
         'app_data_dir': app_data_dir,
@@ -119,20 +114,19 @@ def install():
 
     if not path.isfile(install_file):
         database_init(app_dir, app_data_dir, database_path, DB_USER)
-        
+
 
 def database_post_start():
-
     log = logger.get_logger('gogs')
-    
+
     if path.isfile(install_file):
         log.info('database is already configured')
         return
-        
+
     app_dir = paths.get_app_dir(APP_NAME)
     app_data_dir = paths.get_data_dir(APP_NAME)
     database_path = join(app_data_dir, PSQL_DATA_PATH)
- 
+
     log.info('creating database')
     db_postgres = Database(join(app_dir, PSQL_PATH),
                            database='postgres', user=DB_USER, database_path=database_path, port=PSQL_PORT)
@@ -141,17 +135,16 @@ def database_post_start():
 
 
 def configure():
-    
     log = logger.get_logger('gogs')
 
     if path.isfile(install_file):
         log.info('gogs is already configured')
         return
-    
+
     app_dir = paths.get_app_dir(APP_NAME)
     app_data_dir = paths.get_data_dir(APP_NAME)
     database_path = join(app_data_dir, PSQL_DATA_PATH)
-   
+
     socket = '{0}/web.socket'.format(app_data_dir).replace('/', '%2F')
     index_url = 'http+unix://{0}'.format(socket)
 
@@ -162,13 +155,12 @@ def configure():
     db = Database(join(app_dir, PSQL_PATH),
                   database=DB_NAME, user=DB_USER, database_path=database_path, port=PSQL_PORT)
     db.execute("select * from login_source;")
-    
+
     with open(install_file, 'w') as f:
-            f.write('installed\n')
+        f.write('installed\n')
 
 
 def create_install_user(index_url, log, email, login, password):
-
     signup_url = '{0}/user/sign_up'.format(index_url)
 
     wait_url(log, index_url, timeout=60)
@@ -217,7 +209,7 @@ def gogs_login(socket, log, username, password):
                             data={'user_name': username, 'password': password,
                                   '_csrf': login_csrf},
                             allow_redirects=False)
-                                  
+
     if response.status_code != 302:
         log.error('status code: {0}'.format(response.status_code))
         log.error(response.text.encode("utf-8"))
@@ -235,32 +227,32 @@ def activate_ldap(socket, log, username, password):
 
     auth_response = session.post(auth_url,
                                  data={
-                                      '_csrf': auth_csrf,
-                                      'type': 5,
-                                      'name': 'syncloud',
-                                      'security_protocol': '',
-                                      'host': 'localhost',
-                                      'port': 389,
-                                      'bind_dn': '',
-                                      'bind_password': '',
-                                      'user_base': '',
-                                      'user_dn': 'cn=%s,ou=users,dc=syncloud,dc=org',
-                                      'filter': '(&(objectclass=inetOrgPerson)(uid=%s))',
-                                      'admin_filter': '(objectClass=inetOrgPerson)',
-                                      'attribute_username': 'cn',
-                                      'attribute_name': 'cn',
-                                      'attribute_surname': '',
-                                      'attribute_mail': 'mail',
-                                      'group_dn': '',
-                                      'group_filter': '',
-                                      'group_member_uid': '',
-                                      'user_uid': '',
-                                      'smtp_auth': 'PLAIN',
-                                      'smtp_host': '',
-                                      'smtp_port': '',
-                                      'allowed_domains': '',
-                                      'pam_service_name': '',
-                                      'is_active': 'on'},
+                                     '_csrf': auth_csrf,
+                                     'type': 5,
+                                     'name': 'syncloud',
+                                     'security_protocol': '',
+                                     'host': 'localhost',
+                                     'port': 389,
+                                     'bind_dn': '',
+                                     'bind_password': '',
+                                     'user_base': '',
+                                     'user_dn': 'cn=%s,ou=users,dc=syncloud,dc=org',
+                                     'filter': '(&(objectclass=inetOrgPerson)(uid=%s))',
+                                     'admin_filter': '(objectClass=inetOrgPerson)',
+                                     'attribute_username': 'cn',
+                                     'attribute_name': 'cn',
+                                     'attribute_surname': '',
+                                     'attribute_mail': 'mail',
+                                     'group_dn': '',
+                                     'group_filter': '',
+                                     'group_member_uid': '',
+                                     'user_uid': '',
+                                     'smtp_auth': 'PLAIN',
+                                     'smtp_host': '',
+                                     'smtp_port': '',
+                                     'allowed_domains': '',
+                                     'pam_service_name': '',
+                                     'is_active': 'on'},
                                  allow_redirects=False)
 
     if auth_response.status_code != 302:
@@ -273,3 +265,6 @@ def extract_csrf(response):
     soup = BeautifulSoup(response, "html.parser")
     return soup.find_all('meta', {'name': '_csrf'})[0]['content']
 
+
+def prepare_storage():
+    storage.init_storage(APP_NAME, USER_NAME)
