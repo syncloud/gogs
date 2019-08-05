@@ -13,7 +13,7 @@ DIR = dirname(__file__)
 TMP_DIR = '/tmp/syncloud'
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def module_setup(request):
     request.addfinalizer(module_teardown)
 
