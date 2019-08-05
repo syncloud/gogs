@@ -273,3 +273,10 @@ def extract_csrf(response):
     soup = BeautifulSoup(response, "html.parser")
     return soup.find_all('meta', {'name': '_csrf'})[0]['content']
 
+
+def prepare_storage():
+    storage.init_storage(APP_NAME, USER_NAME) 
+
+
+
+
