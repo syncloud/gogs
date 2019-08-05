@@ -13,41 +13,39 @@ DIR = dirname(__file__)
 TMP_DIR = '/tmp/syncloud'
 
 
-@pytest.fixture(scope="module")
-def module_setup(request):
+@pytest.fixture(scope="session")
+def module_setup(request, data_dir, platform_data_dir, app_dir, device, log_dir):
+    def module_teardown():
+        platform_log_dir = join(log_dir, 'platform')
+        os.mkdir(platform_log_dir)
+        device.scp_from_device('{0}/log/*'.format(platform_data_dir), platform_log_dir)
+
+        device.run_ssh('ls -la {0}'.format(data_dir), throw=False)
+        device.run_ssh('cat {0}/config/gogs.ini'.format(app_dir), throw=False)
+        device.run_ssh('{0}/git/bin/git config --global user.name'.format(app_dir), env_vars='HOME=/home/git', throw=False)
+        device.run_ssh('{0}/git/bin/git config --global user.email'.format(app_dir), env_vars='HOME=/home/git', throw=False)
+
+        device.run_ssh('mkdir {0}'.format(TMP_DIR), throw=False)
+        device.run_ssh('top -bn 1 -w 500 -c > {0}/top.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('ps auxfw > {0}/ps.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('systemctl status snap.gogs.* > {0}/gogs.status.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('netstat -nlp > {0}/netstat.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('journalctl | tail -500 > {0}/journalctl.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('tail -500 /var/log/syslog > {0}/syslog.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('tail -500 /var/log/messages > {0}/messages.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('ls -la /snap > {0}/snap.ls.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('ls -la /snap/gogs > {0}/snap.gogs.ls.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('ls -la /var/snap > {0}/var.snap.ls.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('ls -la /var/snap/gogs > {0}/var.snap.gogs.ls.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('ls -la /var/snap/gogs/common > {0}/var.snap.gogs.common.ls.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('ls -la /data > {0}/data.ls.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('ls -la /data/gogs > {0}/data.gogs.ls.log'.format(TMP_DIR), throw=False)
+
+        app_log_dir = join(log_dir, 'app')
+        os.mkdir(app_log_dir)
+        device.scp_from_device('{0}/log/*.log'.format(data_dir), app_log_dir)
+        device.scp_from_device('{0}/*.log'.format(TMP_DIR), app_log_dir)
     request.addfinalizer(module_teardown)
-
-
-def module_teardown(data_dir, platform_data_dir, app_dir, device, log_dir):
-    platform_log_dir = join(log_dir, 'platform')
-    os.mkdir(platform_log_dir)
-    device.scp_from_device('{0}/log/*'.format(platform_data_dir), platform_log_dir)
-
-    device.run_ssh('ls -la {0}'.format(data_dir), throw=False)
-    device.run_ssh('cat {0}/config/gogs.ini'.format(app_dir), throw=False)
-    device.run_ssh('{0}/git/bin/git config --global user.name'.format(app_dir), env_vars='HOME=/home/git', throw=False)
-    device.run_ssh('{0}/git/bin/git config --global user.email'.format(app_dir), env_vars='HOME=/home/git', throw=False)
-
-    device.run_ssh('mkdir {0}'.format(TMP_DIR), throw=False)
-    device.run_ssh('top -bn 1 -w 500 -c > {0}/top.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('ps auxfw > {0}/ps.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('systemctl status snap.gogs.* > {0}/gogs.status.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('netstat -nlp > {0}/netstat.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('journalctl | tail -500 > {0}/journalctl.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('tail -500 /var/log/syslog > {0}/syslog.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('tail -500 /var/log/messages > {0}/messages.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('ls -la /snap > {0}/snap.ls.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('ls -la /snap/gogs > {0}/snap.gogs.ls.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('ls -la /var/snap > {0}/var.snap.ls.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('ls -la /var/snap/gogs > {0}/var.snap.gogs.ls.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('ls -la /var/snap/gogs/common > {0}/var.snap.gogs.common.ls.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('ls -la /data > {0}/data.ls.log'.format(TMP_DIR), throw=False)
-    device.run_ssh('ls -la /data/gogs > {0}/data.gogs.ls.log'.format(TMP_DIR), throw=False)
-
-    app_log_dir = join(log_dir, 'app')
-    os.mkdir(app_log_dir)
-    device.scp_from_device('{0}/log/*.log'.format(data_dir), app_log_dir)
-    device.scp_from_device('{0}/*.log'.format(TMP_DIR), app_log_dir)
 
 
 @pytest.fixture(scope='function')
