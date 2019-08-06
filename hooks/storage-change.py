@@ -1,3 +1,3 @@
-import gogs_hooks
+import subprocess
 
-gogs_hooks.prepare_storage()
+print(subprocess.check_output('snap run gogs.storage-change', shell=True))

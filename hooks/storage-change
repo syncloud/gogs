@@ -1,0 +1,5 @@
+#!/snap/nextcloud/current/python/bin/python
+
+import gogs_hooks
+
+gogs_hooks.prepare_storage()
