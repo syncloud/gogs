@@ -1,4 +1,4 @@
-#!/snap/nextcloud/current/python/bin/python
+#!/snap/gogs/current/python/bin/python
 
 import gogs_hooks
 
