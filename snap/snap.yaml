@@ -20,6 +20,9 @@ apps:
     restart-condition: always
     after: [postgresql]
 
+  storage-change:
+    command: hooks/storage-change
+
 confinement: strict
 description: GOGS
 grade: stable

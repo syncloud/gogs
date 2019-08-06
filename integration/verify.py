@@ -107,7 +107,7 @@ def test_install_user_disabled(app_domain):
 
 
 def test_storage_change_event(device):
-    device.run_ssh('/snap/gogs/current/python/bin/python /snap/gogs/current/hooks/storage-change.py')
+    device.run_ssh('/snap/platform/current/python/bin/python /snap/gogs/current/hooks/storage-change.py')
 
 
 def test_remove(device_session, device_host):
