@@ -26,7 +26,7 @@ steps:
   - APP_ARCHIVE_PATH=$(realpath $(cat package.name))
   - DOMAIN=$(cat domain)
   - cd integration
-  - py.test -x -s verify.py --domain=$DOMAIN --app-archive-path=$APP_ARCHIVE_PATH --device-host=device --app=gogs
+  - py.test -x -s verify.py --domain=$DOMAIN --app-archive-path=$APP_ARCHIVE_PATH --device-host=device --app=gogs --device-user=gogs
 
 
 - name: upload
@@ -108,7 +108,7 @@ steps:
   - APP_ARCHIVE_PATH=$(realpath $(cat package.name))
   - DOMAIN=$(cat domain)
   - cd integration
-  - py.test -x -s verify.py --domain=$DOMAIN --app-archive-path=$APP_ARCHIVE_PATH --device-host=device --app=gogs
+  - py.test -x -s verify.py --domain=$DOMAIN --app-archive-path=$APP_ARCHIVE_PATH --device-host=device --app=gogs --device-user=gogs
 
 
 - name: upload
@@ -190,7 +190,7 @@ steps:
   - APP_ARCHIVE_PATH=$(realpath $(cat package.name))
   - DOMAIN=$(cat domain)
   - cd integration
-  - py.test -x -s verify.py --domain=$DOMAIN --app-archive-path=$APP_ARCHIVE_PATH --device-host=device --app=gogs
+  - py.test -x -s verify.py --domain=$DOMAIN --app-archive-path=$APP_ARCHIVE_PATH --device-host=device --app=gogs --device-user=gogs
 
 - name: test-ui
   image: syncloud/build-deps-amd64
@@ -199,7 +199,7 @@ steps:
   - DOMAIN=$(cat domain)
   - cd integration
   - xvfb-run -l --server-args='-screen 0, 1024x4096x24' py.test -x -s test-ui.py --ui-mode=desktop --domain=$DOMAIN --device-host=device --app=gogs --device-user=gogs
-  - xvfb-run -l --server-args='-screen 0, 1024x4096x24' py.test -x -s test-ui.py --ui-mode=mobile --domain=$DOMAIN --device-host=device --app=gogs  --device-user=gogs
+  - xvfb-run -l --server-args='-screen 0, 1024x4096x24' py.test -x -s test-ui.py --ui-mode=mobile --domain=$DOMAIN --device-host=device --app=gogs --device-user=gogs
   volumes:
   - name: shm
     path: /dev/shm
@@ -283,7 +283,7 @@ steps:
   - APP_ARCHIVE_PATH=$(realpath $(cat package.name))
   - DOMAIN=$(cat domain)
   - cd integration
-  - py.test -x -s verify.py --domain=$DOMAIN --app-archive-path=$APP_ARCHIVE_PATH --device-host=device --app=gogs
+  - py.test -x -s verify.py --domain=$DOMAIN --app-archive-path=$APP_ARCHIVE_PATH --device-host=device --app=gogs --device-user=gogs
 
 - name: test-ui
   image: syncloud/build-deps-amd64
@@ -292,7 +292,7 @@ steps:
   - DOMAIN=$(cat domain)
   - cd integration
   - xvfb-run -l --server-args='-screen 0, 1024x4096x24' py.test -x -s test-ui.py --ui-mode=desktop --domain=$DOMAIN --device-host=device --app=gogs --device-user=gogs
-  - xvfb-run -l --server-args='-screen 0, 1024x4096x24' py.test -x -s test-ui.py --ui-mode=mobile --domain=$DOMAIN --device-host=device --app=gogs  --device-user=gogs
+  - xvfb-run -l --server-args='-screen 0, 1024x4096x24' py.test -x -s test-ui.py --ui-mode=mobile --domain=$DOMAIN --device-host=device --app=gogs --device-user=gogs
   volumes:
   - name: shm
     path: /dev/shm
