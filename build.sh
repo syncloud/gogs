@@ -27,11 +27,16 @@ BUILD_DIR=${DIR}/build/${NAME}
 mkdir -p ${BUILD_DIR}
 mkdir ${BUILD_DIR}/lib
 
-DOWNLOAD_URL=http://artifact.syncloud.org/3rdparty
+wget --progress=dot:giga https://github.com/syncloud/3rdparty/releases/download/1/git-${ARCH}.tar.gz
+tar xf git-${ARCH}.tar.gz
+mv git ${BUILD_DIR}
+wget --progress=dot:giga https://github.com/syncloud/3rdparty/releases/download/1/postgresql-${ARCH}.tar.gz
+tar xf postgresql-${ARCH}.tar.gz
+mv postgresql ${BUILD_DIR}
+wget --progress=dot:giga https://github.com/syncloud/3rdparty/releases/download/1/python-${ARCH}.tar.gz
+tar xf python-${ARCH}.tar.gz
+mv python ${BUILD_DIRbc}
 
-coin --to ${BUILD_DIR} raw ${DOWNLOAD_URL}/postgresql-${ARCH}.tar.gz
-coin --to ${BUILD_DIR} raw ${DOWNLOAD_URL}/git-${ARCH}.tar.gz
-coin --to ${BUILD_DIR} raw ${DOWNLOAD_URL}/python-${ARCH}.tar.gz
 ${BUILD_DIR}/python/bin/pip install -r ${DIR}/requirements.txt
 
 #use binaries
