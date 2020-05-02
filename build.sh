@@ -35,7 +35,7 @@ tar xf postgresql-${ARCH}.tar.gz
 mv postgresql ${BUILD_DIR}
 wget --progress=dot:giga https://github.com/syncloud/3rdparty/releases/download/1/python-${ARCH}.tar.gz
 tar xf python-${ARCH}.tar.gz
-mv python ${BUILD_DIRbc}
+mv python ${BUILD_DIR}
 
 ${BUILD_DIR}/python/bin/pip install -r ${DIR}/requirements.txt
 
