@@ -6,17 +6,19 @@ from subprocess import check_output
 import pytest
 import requests
 from bs4 import BeautifulSoup
-from syncloudlib.integration.hosts import add_host_alias
+from syncloudlib.integration.hosts import add_host_alias_by_ip
 from syncloudlib.integration.installer import local_install, wait_for_installer
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 DIR = dirname(__file__)
 TMP_DIR = '/tmp/syncloud'
 
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 @pytest.fixture(scope="session")
-def module_setup(request, data_dir, platform_data_dir, app_dir, device, log_dir):
+def module_setup(request, data_dir, platform_data_dir, app_dir, device, artifact_dir):
     def module_teardown():
-        platform_log_dir = join(log_dir, 'platform')
+        platform_log_dir = join(artifact_dir, 'platform')
         os.mkdir(platform_log_dir)
         device.scp_from_device('{0}/log/*'.format(platform_data_dir), platform_log_dir)
 
@@ -41,10 +43,12 @@ def module_setup(request, data_dir, platform_data_dir, app_dir, device, log_dir)
         device.run_ssh('ls -la /data > {0}/data.ls.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ls -la /data/gogs > {0}/data.gogs.ls.log'.format(TMP_DIR), throw=False)
 
-        app_log_dir = join(log_dir, 'app')
+        app_log_dir = join(artifact_dir, 'app')
         os.mkdir(app_log_dir)
         device.scp_from_device('{0}/log/*.log'.format(data_dir), app_log_dir)
         device.scp_from_device('{0}/*.log'.format(TMP_DIR), app_log_dir)
+        check_output('chmod -R a+r {0}'.format(artifact_dir), shell=True)
+
     request.addfinalizer(module_teardown)
 
 
@@ -62,10 +66,8 @@ def gogs_session(app_domain, device_user, device_password):
     return session
 
 
-def test_start(module_setup, device_host, log_dir, app, device):
-    shutil.rmtree(log_dir, ignore_errors=True)
-    os.mkdir(log_dir)
-    add_host_alias(app, device_host)
+def test_start(module_setup, device_host, app, device, domain):
+    add_host_alias_by_ip(app, domain, device_host)
     print(check_output('date', shell=True))
     device.run_ssh('date', retries=20)
 
