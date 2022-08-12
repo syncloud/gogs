@@ -12,6 +12,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from syncloudlib.integration.hosts import add_host_alias
 from syncloudlib.integration.screenshots import screenshots
+from integration import lib
 
 DIR = dirname(__file__)
 screenshot_dir = join(DIR, 'screenshot')
@@ -38,21 +39,10 @@ def test_start(module_setup, app, device_host):
     add_host_alias(app, device_host)
 
 
-def test_login(app_domain, driver, device_user, device_password, ui_mode):
+def test_login(sepenium, device_user, device_password, ui_mode):
+    lib.login(sepenium, device_user, device_password, ui_mode):
 
-    driver.get("https://{0}".format(app_domain))
-
-    user = driver.find_element_by_id("user_name")
-    user.send_keys(device_user)
-    password = driver.find_element_by_id("password")
-    password.send_keys(device_password)
-    driver.get_screenshot_as_file(join(screenshot_dir, 'login.png'))
-    password.send_keys(Keys.RETURN)
-
-    time.sleep(2)
-    screenshots(driver, screenshot_dir, 'main-' + ui_mode)
-
-
+    
 def test_users(app_domain, driver, ui_mode):
 
     driver.get("https://{0}/admin/users".format(app_domain))
