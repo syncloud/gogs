@@ -32,7 +32,7 @@ local build(arch, test_ui) = [{
                 "mkdir build/snap/bin",
                 "cd build/gogs",
                 "go build -ldflags '-linkmode external -extldflags -static' -o ../build/snap/bin/gogs",
-                "chmod +x build/snap/bin/gogs
+                "chmod +x build/snap/bin/gogs"
             ]
         },
         {
