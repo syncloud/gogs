@@ -36,7 +36,7 @@ local build(arch, test_ui) = [{
             ]
         },
         {
-            name: "build postgresql",
+            name: "package postgresql",
             image: "debian:buster-slim",
             commands: [
                 "./postgresql/build.sh"
@@ -53,7 +53,7 @@ local build(arch, test_ui) = [{
             ]
         },
   {
-            name: "build git",
+            name: "packages git",
             image: "debian:buster-slim",
             commands: [
                 "./git/build.sh"
