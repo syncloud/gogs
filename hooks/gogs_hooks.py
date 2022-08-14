@@ -100,7 +100,7 @@ def install():
         'gogs_repos_path': gogs_repos_path,
         'log_path': log_path,
         'app_url': app_url,
-        'web_secret': unicode(uuid.uuid4().hex),
+        'web_secret': uuid.uuid4().hex,
         'disable_registration': False
     }
 
