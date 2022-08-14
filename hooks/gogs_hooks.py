@@ -78,7 +78,8 @@ class Database:
 def install():
     app_dir = paths.get_app_dir(APP_NAME)
     app_data_dir = paths.get_data_dir(APP_NAME)
-
+    data_dir = join('/var/snap', APP_NAME, 'current')
+  
     home_folder = join('/home', USER_NAME)
     linux.useradd(USER_NAME, home_folder=home_folder)
 
@@ -105,7 +106,7 @@ def install():
     }
 
     templates_path = join(app_dir, 'config')
-    config_path = join(app_data_dir, 'config')
+    config_path = join(data_dir, 'config')
 
     gen.generate_files(templates_path, config_path, variables)
     if 'SNAP' not in environ:
