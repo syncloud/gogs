@@ -39,7 +39,7 @@ def wait_url(log, url, timeout, interval=3):
             if response.status_code == 200 or response.status_code == 302:
                 return
             log.info(response.status_code)
-        except Exception, e:
+        except Exception as e:
             log.info(e.message)
         time.sleep(interval)
     raise Exception('Timeout waiting for url: {0}'.format(url))
