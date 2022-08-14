@@ -22,7 +22,7 @@ DB_USER = 'git'
 DB_PASS = 'git'
 DB_NAME = 'gogs'
 GOGS_ADMIN_USER = 'gogs'
-GOGS_ADMIN_PASSWORD = unicode(uuid.uuid4().hex)
+GOGS_ADMIN_PASSWORD = uuid.uuid4().hex
 
 logger.init(logging.DEBUG, console=True, line_format='%(message)s')
 
