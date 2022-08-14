@@ -19,8 +19,6 @@ cp -r ${DIR}/bin ${SNAP_DIR}
 cp -r ${DIR}/config ${SNAP_DIR}
 cp -r ${DIR}/hooks ${SNAP_DIR}
 cp -r ${DIR}/meta ${SNAP_DIR}
-cp -r templates ${BUILD_DIR}/gogs
-cp -r public ${BUILD_DIR}/gogs
 
 echo "version: $VERSION" >> ${SNAP_DIR}/meta/snap.yaml
 echo "architectures:" >> ${SNAP_DIR}/meta/snap.yaml

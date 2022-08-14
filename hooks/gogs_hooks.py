@@ -104,7 +104,7 @@ def install():
         'disable_registration': False
     }
 
-    templates_path = join(app_dir, 'config.templates')
+    templates_path = join(app_dir, 'config')
     config_path = join(app_data_dir, 'config')
 
     gen.generate_files(templates_path, config_path, variables)
