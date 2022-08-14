@@ -2,7 +2,7 @@
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 DOWNLOAD_URL=https://github.com/syncloud/3rdparty/releases/download
-GOGS_VERSION=0.11.43
+GOGS_VERSION=0.12.10
 ARCH=$(uname -m)
 rm -rf ${DIR}/build
 BUILD_DIR=${DIR}/build/snap
