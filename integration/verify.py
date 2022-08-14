@@ -6,7 +6,7 @@ from subprocess import check_output
 import pytest
 import requests
 from bs4 import BeautifulSoup
-from syncloudlib.integration.hosts import add_host_alias_by_ip
+from syncloudlib.integration.hosts import add_host_alias
 from syncloudlib.integration.installer import local_install, wait_for_installer
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
@@ -66,14 +66,13 @@ def gogs_session(app_domain, device_user, device_password):
     return session
 
 
-def test_start(module_setup, device_host, app, device, domain):
-    add_host_alias_by_ip(app, domain, device_host)
-    print(check_output('date', shell=True))
-    device.run_ssh('date', retries=20)
+def test_start(module_setup, device, app, domain, device_host):
+    add_host_alias(app, device_host, domain)
+    device.run_ssh('date', retries=100, throw=True)
 
 
 def test_activate_device(device):
-    response = device.activate()
+    response = device.activate_custom()
     assert response.status_code == 200, response.text
 
 

@@ -56,7 +56,7 @@ local build(arch, test_ui) = [{
             ]
         },
   {
-            name: "packages git",
+            name: "package git",
             image: "debian:buster-slim",
             commands: [
                 "./git/build.sh"
