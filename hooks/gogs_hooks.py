@@ -15,7 +15,7 @@ APP_NAME = 'gogs'
 USER_NAME = 'git'
 SYSTEMD_GOGS = 'gogs'
 SYSTEMD_POSTGRESQL = 'gogs-postgresql'
-PSQL_PATH = 'postgresql/bin/psql'
+PSQL_PATH = 'postgresql/bin/psql.sh'
 PSQL_DATA_PATH = 'database'
 PSQL_PORT = 5433
 DB_USER = 'git'
@@ -48,7 +48,7 @@ def wait_url(log, url, timeout, interval=3):
 def database_init(app_dir, app_data_dir, database_path, user_name):
     log = logger.get_logger('gogs')
     if not isdir(database_path):
-        psql_initdb = join(app_dir, 'postgresql/bin/initdb')
+        psql_initdb = join(app_dir, 'postgresql/bin/initdb.sh')
         log.info(check_output(['sudo', '-H', '-u', user_name, psql_initdb, database_path]))
         postgresql_conf_to = join(database_path, 'postgresql.conf')
         postgresql_conf_from = join(app_data_dir, 'config', 'postgresql.conf')
