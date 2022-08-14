@@ -92,7 +92,7 @@ def install():
     variables = {
         'app_dir': app_dir,
         'app_data_dir': app_data_dir,
-        'db_psql_path': database_path,
+        'database_dir': database_path,
         'db_psql_port': PSQL_PORT,
         'db_name': DB_NAME,
         'db_user': DB_USER,
