@@ -18,5 +18,4 @@ docker rmi $APP:syncloud || true
 tar xf app.tar
 rm -rf app.tar
 mv ${BUILD_DIR}/usr/bin/git ${BUILD_DIR}/usr/bin/git.bin
-cp ${DIR}/bin/* ${BUILD_DIR}/usr/bin
-
+cp ${DIR}/bin/* ${BUILD_DIR}/bin
