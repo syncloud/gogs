@@ -45,13 +45,13 @@ def wait_url(log, url, timeout, interval=3):
     raise Exception('Timeout waiting for url: {0}'.format(url))
 
 
-def database_init(app_dir, app_data_dir, database_path, user_name):
+def database_init(app_dir, data_dir, database_path, user_name):
     log = logger.get_logger('gogs')
     if not isdir(database_path):
         psql_initdb = join(app_dir, 'postgresql/bin/initdb.sh')
         log.info(check_output(['sudo', '-H', '-u', user_name, psql_initdb, database_path]))
         postgresql_conf_to = join(database_path, 'postgresql.conf')
-        postgresql_conf_from = join(app_data_dir, 'config', 'postgresql.conf')
+        postgresql_conf_from = join(data_dir, 'config', 'postgresql.conf')
         shutil.copy(postgresql_conf_from, postgresql_conf_to)
     else:
         log.info('Database path "{0}" already exists'.format(database_path))
@@ -109,12 +109,11 @@ def install():
     config_path = join(data_dir, 'config')
 
     gen.generate_files(templates_path, config_path, variables)
-    if 'SNAP' not in environ:
-        fs.chownpath(app_dir, USER_NAME, recursive=True)
     fs.chownpath(app_data_dir, USER_NAME, recursive=True)
+    fs.chownpath(data_dir, USER_NAME, recursive=True)
 
     if not path.isfile(install_file):
-        database_init(app_dir, app_data_dir, database_path, DB_USER)
+        database_init(app_dir, data_dir, database_path, DB_USER)
 
 
 def database_post_start():
