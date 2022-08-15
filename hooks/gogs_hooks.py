@@ -40,7 +40,7 @@ def wait_url(log, url, timeout, interval=3):
                 return
             log.info(response.status_code)
         except Exception as e:
-            log.info(e.message)
+            log.info(str(e)
         time.sleep(interval)
     raise Exception('Timeout waiting for url: {0}'.format(url))
 

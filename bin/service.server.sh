@@ -13,10 +13,11 @@ export PATH=$DIR/git/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin
 
 case $1 in
 start)
-    exec ${DIR}/gogs/gogs web --config /var/snap/gogs/current/config/gogs.ini
+    exec ${DIR}/bin/gogs web --config /var/snap/gogs/current/config/gogs.ini
     ;;
 *)
     echo "not valid command"
     exit 1
     ;;
 esac
+
