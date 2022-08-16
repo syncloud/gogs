@@ -272,7 +272,7 @@ def extract_csrf(session, url, log):
         log.error(response.text.encode("utf-8"))
         raise Exception('unable to get csrf')
 
-    soup = BeautifulSoup(response, "html.parser")
+    soup = BeautifulSoup(response.text, "html.parser")
     
     log.info(response)
     found = soup.find_all('meta', {'name': '_csrf'})
