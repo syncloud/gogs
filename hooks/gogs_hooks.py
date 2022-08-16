@@ -185,9 +185,10 @@ def create_install_user(index_url, log, email, login, password):
 def delete_install_user(socket, log, username, password):
     log.info('getting csrf to delete install user')
     session = gogs_login(socket, log, username, password)
-    url = '{0}/admin/users/1/delete'.format(socket)
+    url = '{0}/admin/users/1'.format(socket)
     csrf = extract_csrf(session, url, log)
 
+    url = '{0}/admin/users/1/delete'.format(socket)
     log.info('deleting install user')
     response = session.post(url, allow_redirects=False,
                             data={'id': 1, '_csrf': csrf})
