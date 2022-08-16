@@ -185,11 +185,11 @@ def create_install_user(index_url, log, email, login, password):
 def delete_install_user(socket, log, username, password):
     log.info('getting csrf to delete install user')
     session = gogs_login(socket, log, username, password)
-    user_url = '{0}/admin/users/1/delete'.format(socket)
-    csrf = extract_csrf(session.get(user_url).text, log)
+    url = '{0}/admin/users/1/delete'.format(socket)
+    csrf = extract_csrf(session, url, log)
 
     log.info('deleting install user')
-    response = session.post(user_url, allow_redirects=False,
+    response = session.post(url, allow_redirects=False,
                             data={'id': 1, '_csrf': csrf})
 
     if response.status_code != 200:
@@ -204,12 +204,7 @@ def gogs_login(socket, log, username, password):
     session = requests_unixsocket.Session()
 
     login_url = '{0}/user/login'.format(socket)
-    response = session.get(login_url)
-    if response.status_code != 200:
-        log.error('status code: {0}'.format(response.status_code))
-        log.error(response.text.encode("utf-8"))
-        raise Exception('unable to prepare login')
-    login_csrf = extract_csrf(response.text, log)
+    login_csrf = extract_csrf(session, login_url, log)
 
     response = session.post(login_url,
                             data={'user_name': username, 'password': password,
@@ -229,7 +224,7 @@ def activate_ldap(socket, log, username, password):
     session = gogs_login(socket, log, username, password)
 
     auth_url = '{0}/admin/auths/new'.format(socket)
-    auth_csrf = extract_csrf(session.get(auth_url).text, log)
+    auth_csrf = extract_csrf(session, auth_url, log)
 
     auth_response = session.post(auth_url,
                                  data={
@@ -267,10 +262,18 @@ def activate_ldap(socket, log, username, password):
         raise Exception('unable to enable ldap')
 
 
-def extract_csrf(response, log):
-    
-    soup = BeautifulSoup(response, "html.parser")
+def extract_csrf(session, url, log):
     log.info('extract_csrf')
+    response = session.get(url)
+    code = response.status_code
+    if code != 200:
+        log.error('url: {0}'.format(url))
+        log.error('status code: {0}'.format(code))
+        log.error(response.text.encode("utf-8"))
+        raise Exception('unable to get csrf')
+
+    soup = BeautifulSoup(response, "html.parser")
+    
     log.info(response)
     found = soup.find_all('meta', {'name': '_csrf'})
     log.info('found: {0}'.format(found))
