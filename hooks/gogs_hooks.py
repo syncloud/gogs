@@ -262,6 +262,7 @@ def activate_ldap(socket, log, username, password):
 
 
 def extract_csrf(response):
+    log.info(response)
     soup = BeautifulSoup(response, "html.parser")
     return soup.find_all('meta', {'name': '_csrf'})[0]['content']
 
