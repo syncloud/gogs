@@ -36,8 +36,8 @@ def test_start(module_setup, app, domain, device_host):
     add_host_alias(app, device_host, domain)
 
 
-def test_login(sepenium, device_user, device_password, ui_mode):
-    lib.login(sepenium, device_user, device_password, ui_mode):
+def test_login(selenium, device_user, device_password):
+    lib.login(selenium, device_user, device_password)
 
     
 def test_users(app_domain, driver, ui_mode):
@@ -110,13 +110,14 @@ def test_web_commit(app_domain, driver, ui_mode, device_user):
     screenshots(driver, screenshot_dir, 'web-edit-' + ui_mode)
 
     edit = driver.find_element_by_css_selector(".CodeMirror")
-    driver.execute_script("arguments[0].CodeMirror.setValue(\"test 123\");", edit);
+    driver.execute_script("arguments[0].CodeMirror.setValue(\"test 123\");", edit)
 
     screenshots(driver, screenshot_dir, 'web-edit-' + ui_mode)
 
     driver.find_element_by_css_selector("button.ui").click()
     time.sleep(5)
     screenshots(driver, screenshot_dir, 'web-commit-' + ui_mode)
+
 
 def test_ldap_auth(app_domain, driver, ui_mode):
 
