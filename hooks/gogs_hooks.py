@@ -204,7 +204,13 @@ def gogs_login(socket, log, username, password):
     session = requests_unixsocket.Session()
 
     login_url = '{0}/user/login'.format(socket)
-    login_csrf = extract_csrf(session.get(login_url).text, log)
+    response = session.get(login_url)
+    if response.status_code != 200:
+        log.error('status code: {0}'.format(response.status_code))
+        log.error(response.text.encode("utf-8"))
+        raise Exception('unable to prepare login')
+    login_csrf = extract_csrf(response.text, log)
+
     response = session.post(login_url,
                             data={'user_name': username, 'password': password,
                                   '_csrf': login_csrf},
