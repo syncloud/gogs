@@ -1,5 +1,5 @@
 #!/snap/gogs/current/python/bin/python
 
-import gogs_hooks
+from installer import Installer
 
-gogs_hooks.prepare_storage()
+Installer().prepare_storage()
