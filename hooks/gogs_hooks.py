@@ -186,7 +186,7 @@ def delete_install_user(socket, log, username, password):
     log.info('getting csrf to delete install user')
     session = gogs_login(socket, log, username, password)
     user_url = '{0}/admin/users/1/delete'.format(socket)
-    csrf = extract_csrf(session.get(user_url).text)
+    csrf = extract_csrf(session.get(user_url).text, log)
 
     log.info('deleting install user')
     response = session.post(user_url, allow_redirects=False,
@@ -204,7 +204,7 @@ def gogs_login(socket, log, username, password):
     session = requests_unixsocket.Session()
 
     login_url = '{0}/user/login'.format(socket)
-    login_csrf = extract_csrf(session.get(login_url).text)
+    login_csrf = extract_csrf(session.get(login_url).text, log)
     response = session.post(login_url,
                             data={'user_name': username, 'password': password,
                                   '_csrf': login_csrf},
@@ -223,7 +223,7 @@ def activate_ldap(socket, log, username, password):
     session = gogs_login(socket, log, username, password)
 
     auth_url = '{0}/admin/auths/new'.format(socket)
-    auth_csrf = extract_csrf(session.get(auth_url).text)
+    auth_csrf = extract_csrf(session.get(auth_url).text, log)
 
     auth_response = session.post(auth_url,
                                  data={
@@ -261,7 +261,7 @@ def activate_ldap(socket, log, username, password):
         raise Exception('unable to enable ldap')
 
 
-def extract_csrf(response):
+def extract_csrf(response, log):
     log.info(response)
     soup = BeautifulSoup(response, "html.parser")
     return soup.find_all('meta', {'name': '_csrf'})[0]['content']
