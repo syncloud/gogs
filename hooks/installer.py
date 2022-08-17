@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 from syncloudlib import fs, linux, gen, logger
 from syncloudlib.application import paths, urls, storage, users
 
-from hooks.database import Database
+from database import Database
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
