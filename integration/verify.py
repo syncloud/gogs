@@ -88,7 +88,7 @@ def test_install_user_disabled(app_domain):
 
 
 def test_storage_change_event(device):
-    device.run_ssh('snap run nextcloud.storage-change > {0}/storage-change.log'.format(TMP_DIR))
+    device.run_ssh('snap run gogs.storage-change > {0}/storage-change.log'.format(TMP_DIR))
 
 
 def test_reinstall(app_archive_path, app_domain, device_password):
