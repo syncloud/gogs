@@ -52,20 +52,6 @@ def module_setup(request, data_dir, platform_data_dir, app_dir, device, artifact
     request.addfinalizer(module_teardown)
 
 
-@pytest.fixture(scope='function')
-def gogs_session(app_domain, device_user, device_password):
-    session = requests.session()
-    main_response = session.get('https://{0}/user/login'.format(app_domain), allow_redirects=False, verify=False)
-    soup = BeautifulSoup(main_response.text, "html.parser")
-    csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
-    login_response = session.post('https://{0}/user/login'.format(app_domain),
-                                  data={'user_name': device_user, 'password': device_password, '_csrf': csrf},
-                                  allow_redirects=False, verify=False)
-
-    assert login_response.status_code == 302, login_response.text
-    return session
-
-
 def test_start(module_setup, device, app, domain, device_host):
     add_host_alias(app, device_host, domain)
     device.run_ssh('date', retries=100, throw=True)
@@ -88,12 +74,6 @@ def test_git_config(device, app_dir):
     device.run_ssh('{0}/git/bin/git config -l'.format(app_dir), env_vars='HOME=/home/git')
 
 
-def test_login(gogs_session):
-    session = gogs_session
-    # todo
-    # assert response.status_code == 200, response.text
-
-
 def test_install_user_disabled(app_domain):
     session = requests.session()
     main_response = session.get('https://{0}/user/login'.format(app_domain), allow_redirects=False, verify=False)
@@ -108,14 +88,7 @@ def test_install_user_disabled(app_domain):
 
 
 def test_storage_change_event(device):
-    device.run_ssh('/snap/platform/current/python/bin/python /snap/gogs/current/hooks/storage-change.py')
-
-
-def test_remove(device_session, device_host):
-    response = device_session.get('https://{0}/rest/remove?app_id=gogs'.format(device_host),
-                                  allow_redirects=False, verify=False)
-    assert response.status_code == 200, response.text
-    wait_for_installer(device_session, device_host)
+    device.run_ssh('snap run nextcloud.storage-change > {0}/storage-change.log'.format(TMP_DIR))
 
 
 def test_reinstall(app_archive_path, app_domain, device_password):
