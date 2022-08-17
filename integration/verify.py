@@ -27,7 +27,6 @@ def module_setup(request, data_dir, platform_data_dir, app_dir, device, artifact
         device.run_ssh('{0}/git/bin/git config --global user.name'.format(app_dir), env_vars='HOME=/home/git', throw=False)
         device.run_ssh('{0}/git/bin/git config --global user.email'.format(app_dir), env_vars='HOME=/home/git', throw=False)
 
-        device.run_ssh('mkdir {0}'.format(TMP_DIR), throw=False)
         device.run_ssh('top -bn 1 -w 500 -c > {0}/top.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ps auxfw > {0}/ps.log'.format(TMP_DIR), throw=False)
         device.run_ssh('systemctl status snap.gogs.* > {0}/gogs.status.log'.format(TMP_DIR), throw=False)
@@ -55,7 +54,8 @@ def module_setup(request, data_dir, platform_data_dir, app_dir, device, artifact
 def test_start(module_setup, device, app, domain, device_host):
     add_host_alias(app, device_host, domain)
     device.run_ssh('date', retries=100, throw=True)
-
+    device.run_ssh('mkdir {0}'.format(TMP_DIR), throw=False)
+        
 
 def test_activate_device(device):
     response = device.activate_custom()
