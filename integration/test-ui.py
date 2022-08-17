@@ -42,7 +42,7 @@ def test_login(selenium, device_user, device_password):
     
 def test_users(app_domain, driver, ui_mode):
 
-    driver.get("https://{0}/admin/users".format(app_domain))
+    # driver.get("https://{0}/admin/users".format(app_domain))
     wait_driver = WebDriverWait(driver, 100)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.blue')))
 
@@ -51,7 +51,7 @@ def test_users(app_domain, driver, ui_mode):
 
 def test_user(app_domain, driver, ui_mode):
 
-    driver.get("https://{0}/admin/users/2".format(app_domain))
+    # driver.get("https://{0}/admin/users/2".format(app_domain))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
@@ -60,7 +60,7 @@ def test_user(app_domain, driver, ui_mode):
 
 def test_create_repo_empty(app_domain, driver, ui_mode):
 
-    driver.get("https://{0}/repo/create".format(app_domain))
+    # driver.get("https://{0}/repo/create".format(app_domain))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
@@ -77,7 +77,7 @@ def test_create_repo_empty(app_domain, driver, ui_mode):
 
 def test_create_repo_init(app_domain, driver, ui_mode):
 
-    driver.get("https://{0}/repo/create".format(app_domain))
+    # driver.get("https://{0}/repo/create".format(app_domain))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
@@ -104,7 +104,7 @@ def test_create_repo_init(app_domain, driver, ui_mode):
 
 def test_web_commit(app_domain, driver, ui_mode, device_user):
 
-    driver.get("https://{0}/{1}/init/_edit/master/README.md".format(app_domain, device_user))
+    # driver.get("https://{0}/{1}/init/_edit/master/README.md".format(app_domain, device_user))
     
     time.sleep(5)
     screenshots(driver, screenshot_dir, 'web-edit-' + ui_mode)
@@ -121,7 +121,7 @@ def test_web_commit(app_domain, driver, ui_mode, device_user):
 
 def test_ldap_auth(app_domain, driver, ui_mode):
 
-    driver.get("https://{0}/admin/auths/1".format(app_domain))
+    # driver.get("https://{0}/admin/auths/1".format(app_domain))
     wait_driver = WebDriverWait(driver, 10)
     wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
 
