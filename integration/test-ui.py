@@ -44,7 +44,7 @@ def test_users(selenium):
 
 def test_user(selenium):
     # driver.get("https://{0}/admin/users/2".format(app_domain))
-    selenium.find_by_xpath("//a[@href='/admin/users/2')]").click()
+    selenium.find_by_xpath("//a[@href='/admin/users/2']").click()
     selenium.find_by_xpath("//h4[contains(.,'Edit Account')]")
     selenium.screenshot('user')
 
@@ -79,9 +79,9 @@ def test_web_commit(selenium, device_user):
 
     # driver.get("https://{0}/{1}/init/_edit/master/README.md".format(app_domain, device_user))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]")
-    selenium.find_by_xpath("//a[@href='/{0}/init')]".format(device_user)).click()
-    selenium.find_by_xpath("//a[@href='/{0}/init/src/master/README.md')]".format(device_user)).click()
-    selenium.find_by_xpath("//a[@href='/{0}/init/_edit/master/README.md')]".format(device_user)).click()
+    selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
+    selenium.find_by_xpath("//a[@href='/{0}/init/src/master/README.md']".format(device_user)).click()
+    selenium.find_by_xpath("//a[@href='/{0}/init/_edit/master/README.md']".format(device_user)).click()
     edit = selenium.find_by_css(".CodeMirror")
     selenium.driver.execute_script("arguments[0].CodeMirror.setValue(\"test 123\");", edit)
     selenium.screenshot('web-edit')
@@ -95,6 +95,6 @@ def test_ldap_auth(selenium, device_user):
     selenium.find_by_xpath("//span[@class='text avatar']").click()
     selenium.find_by_xpath("//a[contains(.,'Admin Panel')]").click()
     selenium.find_by_xpath("//a[contains(.,'Authentications')]").click()
-    selenium.find_by_xpath("//a[@href='/admin/auths/1')]".format(device_user)).click()
+    selenium.find_by_xpath("//a[@href='/admin/auths/1']".format(device_user)).click()
     selenium.find_by_xpath("//h4[contains(.,'Edit Authentication Setting')]")
     selenium.screenshot('ldap-auth')
