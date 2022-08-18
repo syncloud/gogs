@@ -24,6 +24,7 @@ def module_setup(request, device, log_dir, ui_mode, artifact_dir):
 
     request.addfinalizer(module_teardown)
 
+
 def test_start(module_setup, app, domain, device_host):
     add_host_alias(app, device_host, domain)
 
@@ -34,7 +35,9 @@ def test_login(selenium, device_user, device_password):
     
 def test_users(selenium):
     # driver.get("https://{0}/admin/users".format(app_domain))
-    selenium.wait_or_screenshot(EC.element_to_be_clickable((By.CSS_SELECTOR, '.blue')))
+    selenium.find_by_xpath("//a[contains(.,'Admin Panel')]").click()
+    selenium.find_by_xpath("//a[contains(.,'Users')]").click()
+    selenium.find_by_xpath("//h4[contains(.,'User Manage Panel')]")
     selenium.screenshot('users')
 
 
