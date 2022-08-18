@@ -43,66 +43,58 @@ def test_users(selenium):
 
 
 def test_user(selenium):
-
     # driver.get("https://{0}/admin/users/2".format(app_domain))
-    selenium.wait_or_screenshot(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
+    selenium.find_by_xpath("//a[@href='/admin/users/2')]").click()
+    selenium.find_by_xpath("//h4[contains(.,'Edit Account')]")
     selenium.screenshot('user')
 
 
 def test_create_repo_empty(selenium):
 
     # driver.get("https://{0}/repo/create".format(app_domain))
-    selenium.wait_or_screenshot(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
-    name = selenium.find_by_id("repo_name")
-    name.send_keys('empty')
+    selenium.find_by_xpath("//i[@class='octicon octicon-plus']").click()
+    selenium.find_by_xpath("//a[contains(.,'New Repository')]")
+    selenium.find_by_id("repo_name").send_keys('empty')
     selenium.screenshot('repo-create-empty')
-    create = selenium.find_by_css_selector(".green")
-    create.click()
+    selenium.find_by_xpath("//button[contains(.,'Create Repository')]").click()
     selenium.screenshot('repo-empty')
 
 
 def test_create_repo_init(selenium):
 
     # driver.get("https://{0}/repo/create".format(app_domain))
-    selenium.wait_or_screenshot(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
-
-    name = selenium.find_by_id("repo_name")
-    name.send_keys('init')
+    selenium.find_by_xpath("//i[@class='octicon octicon-plus']").click()
+    selenium.find_by_xpath("//a[contains(.,'New Repository')]")
+    selenium.find_by_id("repo_name").send_keys('init')
     description = selenium.find_by_id("description")
     description.send_keys('description')
-
     selenium.screenshot('repo-create-init')
-
-    selenium.wait_or_screenshot(EC.presence_of_element_located((By.ID, 'auto-init')))
-    auto_init = selenium.find_by_id("auto-init")
-    auto_init.click()
+    selenium.find_by_id("auto-init").click()
     selenium.screenshot('repo-create-init')
-
-    selenium.wait_or_screenshot(EC.presence_of_element_located((By.CSS_SELECTOR, '.green')))
-    create = selenium.find_by_css_selector(".green")
-    create.click()
-
+    selenium.find_by_xpath("//button[contains(.,'Create Repository')]").click()
     selenium.screenshot('repo-init')
 
 
-def test_web_commit(selenium):
+def test_web_commit(selenium, device_user):
 
     # driver.get("https://{0}/{1}/init/_edit/master/README.md".format(app_domain, device_user))
-
-    selenium.screenshot('web-edit')
-
-    edit = selenium.find_by_css_selector(".CodeMirror")
+    selenium.find_by_xpath("//a[contains(.,'Dashboard')]")
+    selenium.find_by_xpath("//a[@href='/{0}/init')]".format(device_user)).click()
+    selenium.find_by_xpath("//a[@href='/{0}/init/src/master/README.md')]".format(device_user)).click()
+    selenium.find_by_xpath("//a[@href='/{0}/init/_edit/master/README.md')]".format(device_user)).click()
+    edit = selenium.find_by_css(".CodeMirror")
     selenium.driver.execute_script("arguments[0].CodeMirror.setValue(\"test 123\");", edit)
-
     selenium.screenshot('web-edit')
-
-    selenium.find_by_css_selector("button.ui").click()
+    selenium.find_by_css("button.ui").click()
     selenium.screenshot('web-commit')
 
 
-def test_ldap_auth(selenium):
+def test_ldap_auth(selenium, device_user):
 
     # driver.get("https://{0}/admin/auths/1".format(app_domain))
-    selenium.wait_or_screenshot(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
-
+    selenium.find_by_xpath("//span[@class='text avatar']").click()
+    selenium.find_by_xpath("//a[contains(.,'Admin Panel')]").click()
+    selenium.find_by_xpath("//a[contains(.,'Authentications')]").click()
+    selenium.find_by_xpath("//a[@href='/admin/auths/1')]".format(device_user)).click()
+    selenium.find_by_xpath("//h4[contains(.,'Edit Authentication Setting')]")
     selenium.screenshot('ldap-auth')
