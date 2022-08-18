@@ -35,6 +35,7 @@ def test_login(selenium, device_user, device_password):
     
 def test_users(selenium):
     # driver.get("https://{0}/admin/users".format(app_domain))
+    selenium.find_by_xpath("//span[@class='text avatar']").click()
     selenium.find_by_xpath("//a[contains(.,'Admin Panel')]").click()
     selenium.find_by_xpath("//a[contains(.,'Users')]").click()
     selenium.find_by_xpath("//h4[contains(.,'User Manage Panel')]")
