@@ -104,7 +104,7 @@ local build(arch, test_ui) = [{
               "APP_ARCHIVE_PATH=$(realpath $(cat package.name))",
               "cd integration",
               "./deps.sh",
-              "py.test -x -s verify.py --distro=buster --domain=buster.com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + ".buster.com --app=" + name + " --arch=" + arch
+              "py.test -x -s verify.py --distro=buster --domain=buster.com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + ".buster.com --app="  + name + " --device-user=gogs --arch=" + arch
             ]
         }] +
         ( if test_ui then ([
@@ -134,7 +134,7 @@ local build(arch, test_ui) = [{
               "apt-get update && apt-get install -y sshpass openssh-client libxml2-dev libxslt-dev build-essential libz-dev curl",
               "cd integration",
               "pip install -r requirements.txt",
-              "py.test -x -s test-ui.py --distro=buster --ui-mode=" + mode + " --domain=buster.com --device-host=" + name + ".buster.com --app=" + name + " --browser=" + browser,
+              "py.test -x -s test-ui.py --distro=buster --ui-mode=" + mode + " --domain=buster.com --device-host=" + name + ".buster.com --app=" + name + " --device-user=gogs --browser=" + browser,
             ]
         } for mode in ["desktop", "mobile"] ])
        else [] ) +
@@ -146,7 +146,7 @@ local build(arch, test_ui) = [{
               "APP_ARCHIVE_PATH=$(realpath $(cat package.name))",
               "cd integration",
               "./deps.sh",
-              "py.test -x -s test-upgrade.py --distro=buster --ui-mode=desktop --domain=buster.com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + ".buster.com --app=" + name + " --browser=" + browser,
+              "py.test -x -s test-upgrade.py --distro=buster --ui-mode=desktop --domain=buster.com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + ".buster.com --app=" + name + " --device-user=gogs --browser=" + browser,
             ],
             privileged: true,
             volumes: [{
