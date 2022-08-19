@@ -78,7 +78,7 @@ def test_create_repo_init(selenium):
 def test_web_commit(selenium, device_user):
 
     # driver.get("https://{0}/{1}/init/_edit/master/README.md".format(app_domain, device_user))
-    selenium.find_by_xpath("//a[contains(.,'Dashboard')]")
+    selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
     selenium.find_by_xpath("//a[@href='/{0}/init/src/master/README.md']".format(device_user)).click()
     selenium.find_by_xpath("//a[@href='/{0}/init/_edit/master/README.md']".format(device_user)).click()
