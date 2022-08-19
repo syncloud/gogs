@@ -18,4 +18,9 @@ docker rmi $APP:syncloud || true
 tar xf app.tar
 rm -rf app.tar
 mv ${BUILD_DIR}/usr/bin/git ${BUILD_DIR}/usr/bin/git.bin
+mv ${BUILD_DIR}/usr/bin/git-lfs ${BUILD_DIR}/usr/bin/git-lfs.bin
+mv ${BUILD_DIR}/usr/bin/git-shell ${BUILD_DIR}/usr/bin/git-shell.bin
+mv ${BUILD_DIR}/usr/bin/git-receive-pack ${BUILD_DIR}/usr/bin/git-receive-pack.bin
+mv ${BUILD_DIR}/usr/bin/git-upload-pack ${BUILD_DIR}/usr/bin/git-upload-pack.bin
+mv ${BUILD_DIR}/usr/bin/git-upload-archive ${BUILD_DIR}/usr/bin/git-upload-archive.bin
 cp ${DIR}/bin/* ${BUILD_DIR}/bin

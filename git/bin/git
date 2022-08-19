@@ -1,7 +1,7 @@
 #!/bin/bash -e
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ..  && pwd )
 
-export HOME=/home/git
+export PATH=$PATH:$DIR/bin
 LIBS=${DIR}/lib
 LIBS=$LIBS:${DIR}/usr/lib
 ${DIR}/lib/ld-musl-*.so* --library-path $LIBS ${DIR}/usr/bin/git.bin config --global init.templateDir ${DIR}/usr/share/git-core/templates
