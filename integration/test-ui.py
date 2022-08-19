@@ -53,7 +53,7 @@ def test_create_repo_empty(selenium):
 
     # driver.get("https://{0}/repo/create".format(app_domain))
     selenium.find_by_xpath("//i[@class='octicon octicon-plus']").click()
-    selenium.find_by_xpath("//a[contains(.,'New Repository')]")
+    selenium.find_by_xpath("//a[contains(.,'New Repository')]").click()
     selenium.find_by_id("repo_name").send_keys('empty')
     selenium.screenshot('repo-create-empty')
     selenium.find_by_xpath("//button[contains(.,'Create Repository')]").click()
@@ -64,7 +64,7 @@ def test_create_repo_init(selenium):
 
     # driver.get("https://{0}/repo/create".format(app_domain))
     selenium.find_by_xpath("//i[@class='octicon octicon-plus']").click()
-    selenium.find_by_xpath("//a[contains(.,'New Repository')]")
+    selenium.find_by_xpath("//a[contains(.,'New Repository')]").click()
     selenium.find_by_id("repo_name").send_keys('init')
     description = selenium.find_by_id("description")
     description.send_keys('description')
