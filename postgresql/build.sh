@@ -22,10 +22,6 @@ echo "${MAJOR_VERSION}" > ${BUILD_DIR}/../db.major.version
 docker export postgres -o postgres.tar
 tar xf postgres.tar
 rm -rf postgres.tar
-ls -la 
-ls -la bin
-ls -la usr/bin
-ls -ls usr/share/postgresql-common/pg_wrapper
 PGBIN=$(echo usr/local/bin)
 ldd $PGBIN/initdb
 mv $PGBIN/postgres $PGBIN/postgres.bin
