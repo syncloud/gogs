@@ -17,10 +17,4 @@ docker ps -a -q --filter ancestor=$APP:syncloud --format="{{.ID}}" | xargs docke
 docker rmi $APP:syncloud || true
 tar xf app.tar
 rm -rf app.tar
-mv ${BUILD_DIR}/usr/bin/git ${BUILD_DIR}/usr/bin/git
-mv ${BUILD_DIR}/usr/bin/git-lfs ${BUILD_DIR}/usr/bin/git-lfs
-mv ${BUILD_DIR}/usr/bin/git-shell ${BUILD_DIR}/usr/bin/git-shell
-mv ${BUILD_DIR}/usr/bin/git-receive-pack ${BUILD_DIR}/usr/bin/git-receive-pack
-mv ${BUILD_DIR}/usr/bin/git-upload-pack ${BUILD_DIR}/usr/bin/git-upload-pack
-mv ${BUILD_DIR}/usr/bin/git-upload-archive ${BUILD_DIR}/usr/bin/git-upload-archive
 cp ${DIR}/bin/* ${BUILD_DIR}/bin
