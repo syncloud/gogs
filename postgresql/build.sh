@@ -3,7 +3,7 @@
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
-MAJOR_VERSION=10
+MAJOR_VERSION=9
 
 apt update
 apt install -y libltdl7 libnss3
@@ -32,3 +32,4 @@ mv $PGBIN/postgres $PGBIN/postgres.bin
 mv $PGBIN/pg_dump $PGBIN/pg_dump.bin
 cp $DIR/bin/* bin
 cp $DIR/pgbin/* $PGBIN
+
