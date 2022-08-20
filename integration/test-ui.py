@@ -96,3 +96,7 @@ def test_ldap_auth(selenium, device_user):
     selenium.find_by_xpath("//a[@href='/admin/auths/1']".format(device_user)).click()
     selenium.find_by_xpath("//h4[contains(.,'Edit Authentication Setting')]")
     selenium.screenshot('ldap-auth')
+
+
+def test_teardown(driver):
+    driver.quit()
