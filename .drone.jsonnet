@@ -1,9 +1,11 @@
 local name = "gogs";
+local browser = "firefox";
+local go = "1.18.2";
 
-local build(arch, distro) = {
+local build(arch, test_ui) = [{
     kind: "pipeline",
-    name: arch + " " + distro,
-
+    type: "docker",
+    name: arch,
     platform: {
         os: "linux",
         arch: arch
@@ -11,50 +13,150 @@ local build(arch, distro) = {
     steps: [
         {
             name: "version",
-            image: "syncloud/build-deps-" + arch,
+            image: "debian:buster-slim",
             commands: [
-                "echo $(date +%y%m%d)$DRONE_BUILD_NUMBER > version",
-                "echo " + distro + arch + "$DRONE_BRANCH > domain"
+                "echo $DRONE_BUILD_NUMBER > version"
             ]
         },
         {
+            name: "download",
+            image: "debian:buster-slim",
+            commands: [
+                "./download.sh"
+            ]
+        },
+       {
             name: "build",
-            image: "syncloud/build-deps-" + arch,
+            image: "golang:" + go,
+            commands: [
+                "mkdir build/snap/bin",
+                "cd build/gogs",
+                "go build -ldflags '-linkmode external -extldflags -static' -o ../snap/bin/gogs",
+                "chmod +x ../snap/bin/gogs",
+                "mkdir ../snap/gogs",
+                "cp -r public ../snap/gogs",
+                "cp -r templates ../snap/gogs"
+            ]
+        },
+        {
+            name: "package postgresql",
+            image: "debian:buster-slim",
+            commands: [
+                "./postgresql/build.sh"
+            ],
+            volumes: [
+                {
+                    name: "docker",
+                    path: "/usr/bin/docker"
+                },
+                {
+                    name: "docker.sock",
+                    path: "/var/run/docker.sock"
+                }
+            ]
+        },
+  {
+            name: "package git",
+            image: "debian:buster-slim",
+            commands: [
+                "./git/build.sh"
+            ],
+            volumes: [
+                {
+                    name: "docker",
+                    path: "/usr/bin/docker"
+                },
+                {
+                    name: "docker.sock",
+                    path: "/var/run/docker.sock"
+                }
+            ]
+        },
+        {
+            name: "package python",
+            image: "debian:buster-slim",
+            commands: [
+                "./python/build.sh"
+            ],
+            volumes: [
+                {
+                    name: "docker",
+                    path: "/usr/bin/docker"
+                },
+                {
+                    name: "docker.sock",
+                    path: "/var/run/docker.sock"
+                }
+            ]
+        },
+        {
+            name: "package",
+            image: "debian:buster-slim",
             commands: [
                 "VERSION=$(cat version)",
-                "./build.sh " + name + " $VERSION"
+                "./package.sh " + name + " $VERSION "
             ]
         },
         {
-            name: "test-intergation",
-            image: "syncloud/build-deps-" + arch,
+            name: "test-integration-buster",
+            image: "python:3.8-slim-buster",
             commands: [
-              "pip2 install -r dev_requirements.txt",
               "APP_ARCHIVE_PATH=$(realpath $(cat package.name))",
-              "DOMAIN=$(cat domain)",
               "cd integration",
-              "py.test -x -s verify.py --domain=$DOMAIN --app-archive-path=$APP_ARCHIVE_PATH --device-host=device --app=" + name + " --device-user=gogs"
+              "./deps.sh",
+              "py.test -x -s verify.py --distro=buster --domain=buster.com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + ".buster.com --app="  + name + " --device-user=gogs --arch=" + arch
             ]
-        },
-        if arch == "arm" then {} else
+        }] +
+        ( if test_ui then ([
         {
-            name: "test-ui",
-            image: "syncloud/build-deps-" + arch,
-            commands: [
-              "pip2 install -r dev_requirements.txt",
-              "DOMAIN=$(cat domain)",
-              "cd integration",
-              "xvfb-run -l --server-args='-screen 0, 1024x4096x24' py.test -x -s test-ui.py --ui-mode=desktop --domain=$DOMAIN --device-host=device --app=" + name + " --device-user=gogs",
-              "xvfb-run -l --server-args='-screen 0, 1024x4096x24' py.test -x -s test-ui.py --ui-mode=mobile --domain=$DOMAIN --device-host=device --app=" + name + " --device-user=gogs",
-            ],
-            volumes: [{
+            name: "selenium-video",
+            image: "selenium/video:ffmpeg-4.3.1-20220208",
+            detach: true,
+            environment: {
+                DISPLAY_CONTAINER_NAME: "selenium",
+                FILE_NAME: "video.mkv"
+            },
+            volumes: [
+            {
                 name: "shm",
                 path: "/dev/shm"
+            },
+            {
+                name: "videos",
+                path: "/videos"
+            }
+        ]
+       }] +
+        [{
+            name: "test-ui-" + mode,
+            image: "python:3.8-slim-buster",
+            commands: [
+              "apt-get update && apt-get install -y sshpass openssh-client libxml2-dev libxslt-dev build-essential libz-dev curl",
+              "cd integration",
+              "pip install -r requirements.txt",
+              "py.test -x -s test-ui.py --distro=buster --ui-mode=" + mode + " --domain=buster.com --device-host=" + name + ".buster.com --app=" + name + " --device-user=gogs --browser=" + browser,
+            ]
+        } for mode in ["desktop", "mobile"] ])
+       else [] ) +
+       ( if arch == "amd64" then [
+        {
+            name: "test-upgrade",
+            image: "python:3.8-slim-buster",
+            commands: [
+              "APP_ARCHIVE_PATH=$(realpath $(cat package.name))",
+              "cd integration",
+              "./deps.sh",
+              "py.test -x -s test-upgrade.py --distro=buster --ui-mode=desktop --domain=buster.com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + ".buster.com --app=" + name + " --device-user=gogs --browser=" + browser,
+            ],
+            privileged: true,
+            volumes: [{
+                name: "videos",
+                path: "/videos"
             }]
-        },
+        } ] else [] ) + [
         {
             name: "upload",
-            image: "syncloud/build-deps-" + arch,
+            image: "debian:buster-slim",
             environment: {
                 AWS_ACCESS_KEY_ID: {
                     from_secret: "AWS_ACCESS_KEY_ID"
@@ -64,15 +166,19 @@ local build(arch, distro) = {
                 }
             },
             commands: [
-              "VERSION=$(cat version)",
-              "PACKAGE=$(cat package.name)",
-              "pip2 install -r dev_requirements.txt",
-              "syncloud-upload.sh " + name + " $DRONE_BRANCH $VERSION $PACKAGE"
-            ]
+                "PACKAGE=$(cat package.name)",
+                "apt update && apt install -y wget",
+                "wget https://github.com/syncloud/snapd/releases/download/1/syncloud-release-" + arch + " -O release --progress=dot:giga",
+                "chmod +x release",
+                "./release publish -f $PACKAGE -b $DRONE_BRANCH"
+            ],
+            when: {
+                branch: ["stable", "master"]
+            }
         },
         {
             name: "artifact",
-            image: "appleboy/drone-scp",
+            image: "appleboy/drone-scp:1.6.2",
             settings: {
                 host: {
                     from_secret: "artifact_host"
@@ -83,53 +189,130 @@ local build(arch, distro) = {
                 },
                 timeout: "2m",
                 command_timeout: "2m",
-                target: "/home/artifact/repo/" + name + "/${DRONE_BUILD_NUMBER}-" + distro + "-" + arch,
-                source: "artifact/*",
-		             strip_components: 1
+                target: "/home/artifact/repo/" + name + "/${DRONE_BUILD_NUMBER}-" + arch,
+                source: [
+                    "artifact/*"
+                ],
+                privileged: true,
+                strip_components: 1,
+                volumes: [
+                   {
+                        name: "videos",
+                        path: "/drone/src/artifact/videos"
+                    }
+                ]
             },
             when: {
               status: [ "failure", "success" ]
             }
         }
-    ],
-    services: [{
-        name: "device",
-        image: "syncloud/platform-" + distro + "-" + arch,
-        privileged: true,
+        ],
+        trigger: {
+          event: [
+            "push",
+            "pull_request"
+          ]
+        },
+        services: [
+            {
+                name: name + ".buster.com",
+                image: "syncloud/platform-buster-" + arch + ":22.01",
+                privileged: true,
+                volumes: [
+                    {
+                        name: "dbus",
+                        path: "/var/run/dbus"
+                    },
+                    {
+                        name: "dev",
+                        path: "/dev"
+                    }
+                ]
+            }
+        ] + ( if test_ui then [
+            {
+                name: "selenium",
+                image: "selenium/standalone-" + browser + ":4.1.2-20220208",
+                environment: {
+                    SE_NODE_SESSION_TIMEOUT: "999999"
+                },
+                volumes: [{
+                    name: "shm",
+                    path: "/dev/shm"
+                }]
+            }
+        ] else [] ),
         volumes: [
             {
                 name: "dbus",
-                path: "/var/run/dbus"
+                host: {
+                    path: "/var/run/dbus"
+                }
             },
             {
                 name: "dev",
-                path: "/dev"
+                host: {
+                    path: "/dev"
+                }
+            },
+            {
+                name: "shm",
+                temp: {}
+            },
+            {
+                name: "videos",
+                temp: {}
+            },
+            {
+                name: "docker",
+                host: {
+                    path: "/usr/bin/docker"
+                }
+            },
+            {
+                name: "docker.sock",
+                host: {
+                    path: "/var/run/docker.sock"
+                }
             }
         ]
-    }],
-    volumes: [
-        {
-            name: "dbus",
-            host: {
-                path: "/var/run/dbus"
-            }
-        },
-        {
-            name: "dev",
-            host: {
-                path: "/dev"
-            }
-        },
-        {
-            name: "shm",
-            temp: {}
-        }
-    ]
-};
+    },
+    {
+         kind: "pipeline",
+         type: "docker",
+         name: "promote-" + arch,
+         platform: {
+             os: "linux",
+             arch: arch
+         },
+         steps: [
+         {
+                 name: "promote",
+                 image: "debian:buster-slim",
+                 environment: {
+                     AWS_ACCESS_KEY_ID: {
+                         from_secret: "AWS_ACCESS_KEY_ID"
+                     },
+                     AWS_SECRET_ACCESS_KEY: {
+                         from_secret: "AWS_SECRET_ACCESS_KEY"
+                     }
+                 },
+                 commands: [
+                   "apt update && apt install -y wget",
+                   "wget https://github.com/syncloud/snapd/releases/download/1/syncloud-release-" + arch + " -O release --progress=dot:giga",
+                   "chmod +x release",
+                   "./release promote -n " + name + " -a $(dpkg --print-architecture)"
+                 ]
+           }
+          ],
+          trigger: {
+           event: [
+             "promote"
+           ]
+         }
+     }
+];
 
-[
-    build("arm", "jessie"),
-    build("arm", "buster"),
-    build("amd64", "jessie"),
-    build("amd64", "buster"),
-]
+build("amd64", true) +
+build("arm64", false) +
+build("arm", false)

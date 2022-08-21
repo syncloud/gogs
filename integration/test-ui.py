@@ -1,140 +1,102 @@
-import os
-import shutil
-from os.path import dirname, join, exists
+from os.path import dirname, join
+
 import pytest
-import time
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from syncloudlib.integration.hosts import add_host_alias
-from syncloudlib.integration.screenshots import screenshots
+from subprocess import check_output
+from integration import lib
 
 DIR = dirname(__file__)
-screenshot_dir = join(DIR, 'screenshot')
-TMP_DIR = '/tmp/syncloud/ui'
+
 
 @pytest.fixture(scope="session")
-def module_setup(request, device, log_dir, ui_mode):
-    request.addfinalizer(lambda: module_teardown(device, log_dir, ui_mode))
+def module_setup(request, device, log_dir, ui_mode, artifact_dir):
+    def module_teardown():
+        tmp_dir = '/tmp/syncloud/ui'
+        device.activated()
+        device.run_ssh('mkdir -p {0}/{1}'.format(tmp_dir, ui_mode), throw=False)
+        device.run_ssh('journalctl > {0}/{1}/journalctl.log'.format(tmp_dir, ui_mode), throw=False)
+        device.scp_from_device('{0}/*'.format(tmp_dir), artifact_dir)
+        check_output('chmod -R a+r {0}'.format(artifact_dir), shell=True)
+
+    request.addfinalizer(module_teardown)
 
 
-def module_teardown(device, log_dir, ui_mode):
-    device.activated()
-    device.run_ssh('mkdir -p {0}'.format(TMP_DIR), throw=False)
-    device.run_ssh('journalctl > {0}/journalctl.ui.{1}.log'.format(TMP_DIR, ui_mode), throw=False)
-    device.run_ssh('cp /var/log/syslog {0}/syslog.ui.{1}.log'.format(TMP_DIR, ui_mode), throw=False)
-      
-    device.scp_from_device('{0}/*'.format(TMP_DIR), join(log_dir, 'log'))
+def test_start(module_setup, app, domain, device_host):
+    add_host_alias(app, device_host, domain)
 
 
-def test_start(module_setup, app, device_host):
-    if not exists(screenshot_dir):
-        os.mkdir(screenshot_dir)
+def test_login(selenium, device_user, device_password):
+    lib.login(selenium, device_user, device_password)
 
-    add_host_alias(app, device_host)
-
-
-def test_login(app_domain, driver, device_user, device_password, ui_mode):
-
-    driver.get("https://{0}".format(app_domain))
-
-    user = driver.find_element_by_id("user_name")
-    user.send_keys(device_user)
-    password = driver.find_element_by_id("password")
-    password.send_keys(device_password)
-    driver.get_screenshot_as_file(join(screenshot_dir, 'login.png'))
-    password.send_keys(Keys.RETURN)
-
-    time.sleep(2)
-    screenshots(driver, screenshot_dir, 'main-' + ui_mode)
-
-
-def test_users(app_domain, driver, ui_mode):
-
-    driver.get("https://{0}/admin/users".format(app_domain))
-    wait_driver = WebDriverWait(driver, 100)
-    wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.blue')))
-
-    screenshots(driver, screenshot_dir, 'users-' + ui_mode)
-
-
-def test_user(app_domain, driver, ui_mode):
-
-    driver.get("https://{0}/admin/users/2".format(app_domain))
-    wait_driver = WebDriverWait(driver, 10)
-    wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
-
-    screenshots(driver, screenshot_dir, 'user-' + ui_mode)
-
-
-def test_create_repo_empty(app_domain, driver, ui_mode):
-
-    driver.get("https://{0}/repo/create".format(app_domain))
-    wait_driver = WebDriverWait(driver, 10)
-    wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
-
-    name = driver.find_element_by_id("repo_name")
-    name.send_keys('empty')
-    screenshots(driver, screenshot_dir, 'repo-create-empty-' + ui_mode)
-
-    create = driver.find_element_by_css_selector(".green")
-    create.click()
-
-    time.sleep(5)
-    screenshots(driver, screenshot_dir, 'repo-empty-' + ui_mode)
-
-
-def test_create_repo_init(app_domain, driver, ui_mode):
-
-    driver.get("https://{0}/repo/create".format(app_domain))
-    wait_driver = WebDriverWait(driver, 10)
-    wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
-
-    name = driver.find_element_by_id("repo_name")
-    name.send_keys('init')
-    description = driver.find_element_by_id("description")
-    description.send_keys('description')
-
-    time.sleep(2)
-    screenshots(driver, screenshot_dir, 'repo-create-init-' + ui_mode)
-
-    wait_driver.until(EC.presence_of_element_located((By.ID, 'auto-init')))
-    auto_init = driver.find_element_by_id("auto-init")
-    auto_init.click()
-    screenshots(driver, screenshot_dir, 'repo-create-init-' + ui_mode)
-
-    wait_driver.until(EC.presence_of_element_located((By.CSS_SELECTOR, '.green')))
-    create = driver.find_element_by_css_selector(".green")
-    create.click()
-
-    time.sleep(5)
-    screenshots(driver, screenshot_dir, 'repo-init-' + ui_mode)
-
-
-def test_web_commit(app_domain, driver, ui_mode, device_user):
-
-    driver.get("https://{0}/{1}/init/_edit/master/README.md".format(app_domain, device_user))
     
-    time.sleep(5)
-    screenshots(driver, screenshot_dir, 'web-edit-' + ui_mode)
+def test_users(selenium):
+    # driver.get("https://{0}/admin/users".format(app_domain))
+    selenium.find_by_xpath("//span[@class='text avatar']").click()
+    selenium.find_by_xpath("//a[contains(.,'Admin Panel')]").click()
+    selenium.find_by_xpath("//a[contains(.,'Users')]").click()
+    selenium.find_by_xpath("//h4[contains(.,'User Manage Panel')]")
+    selenium.screenshot('users')
 
-    edit = driver.find_element_by_css_selector(".CodeMirror")
-    driver.execute_script("arguments[0].CodeMirror.setValue(\"test 123\");", edit);
 
-    screenshots(driver, screenshot_dir, 'web-edit-' + ui_mode)
+def test_user(selenium):
+    # driver.get("https://{0}/admin/users/2".format(app_domain))
+    selenium.find_by_xpath("//a[@href='/admin/users/2']").click()
+    selenium.find_by_xpath("//h4[contains(.,'Edit Account')]")
+    selenium.screenshot('user')
 
-    driver.find_element_by_css_selector("button.ui").click()
-    time.sleep(5)
-    screenshots(driver, screenshot_dir, 'web-commit-' + ui_mode)
 
-def test_ldap_auth(app_domain, driver, ui_mode):
+def test_create_repo_empty(selenium):
 
-    driver.get("https://{0}/admin/auths/1".format(app_domain))
-    wait_driver = WebDriverWait(driver, 10)
-    wait_driver.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.green')))
+    # driver.get("https://{0}/repo/create".format(app_domain))
+    selenium.find_by_xpath("//i[@class='octicon octicon-plus']").click()
+    selenium.find_by_xpath("//a[contains(.,'New Repository')]").click()
+    selenium.find_by_id("repo_name").send_keys('empty')
+    selenium.screenshot('repo-create-empty')
+    selenium.find_by_xpath("//button[contains(.,'Create Repository')]").click()
+    selenium.screenshot('repo-empty')
 
-    screenshots(driver, screenshot_dir, 'ldap-auth-' + ui_mode)
+
+def test_create_repo_init(selenium):
+
+    # driver.get("https://{0}/repo/create".format(app_domain))
+    selenium.find_by_xpath("//i[@class='octicon octicon-plus']").click()
+    selenium.find_by_xpath("//a[contains(.,'New Repository')]").click()
+    selenium.find_by_id("repo_name").send_keys('init')
+    description = selenium.find_by_id("description")
+    description.send_keys('description')
+    selenium.screenshot('repo-create-init')
+    selenium.find_by_id("auto-init").click()
+    selenium.screenshot('repo-create-init')
+    selenium.find_by_xpath("//button[contains(.,'Create Repository')]").click()
+    selenium.screenshot('repo-init')
+
+
+def test_web_commit(selenium, device_user):
+
+    # driver.get("https://{0}/{1}/init/_edit/master/README.md".format(app_domain, device_user))
+    selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
+    selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
+    selenium.find_by_xpath("//a[@href='/{0}/init/src/master/README.md']".format(device_user)).click()
+    selenium.find_by_xpath("//a[@href='/{0}/init/_edit/master/README.md']".format(device_user)).click()
+    edit = selenium.find_by_css(".CodeMirror")
+    selenium.driver.execute_script("arguments[0].CodeMirror.setValue(\"test 123\");", edit)
+    selenium.screenshot('web-edit')
+    selenium.find_by_css("button.ui").click()
+    selenium.screenshot('web-commit')
+
+
+def test_ldap_auth(selenium, device_user):
+
+    # driver.get("https://{0}/admin/auths/1".format(app_domain))
+    selenium.find_by_xpath("//span[@class='text avatar']").click()
+    selenium.find_by_xpath("//a[contains(.,'Admin Panel')]").click()
+    selenium.find_by_xpath("//a[contains(.,'Authentications')]").click()
+    selenium.find_by_xpath("//a[@href='/admin/auths/1']".format(device_user)).click()
+    selenium.find_by_xpath("//h4[contains(.,'Edit Authentication Setting')]")
+    selenium.screenshot('ldap-auth')
+
+
+def test_teardown(driver):
+    driver.quit()

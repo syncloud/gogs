@@ -3,5 +3,6 @@
 import os, sys
 sys.path.append(os.path.join(os.environ['SNAP'], 'hooks'))
 
-from gogs_hooks import install
-install()
+from installer import Installer
+
+Installer().install()
