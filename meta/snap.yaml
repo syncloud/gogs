@@ -2,11 +2,11 @@ apps:
   postgresql:
     user: git
     command: bin/service.postgresql.sh start
+    post-start-command: bin/service.postgresql.sh post-start
     daemon: forking
     plugs:
     - network
     - network-bind
-    post-start-command: bin/service.postgresql.sh post-start
     restart-condition: always
     before: [server]
 
