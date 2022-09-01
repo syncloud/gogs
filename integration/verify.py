@@ -87,6 +87,18 @@ def test_install_user_disabled(app_domain):
     return session
 
 
+def test_login(app_domain, device_user, device_password):
+    session = requests.session()
+    main_response = session.get('https://{0}/user/login'.format(app_domain), allow_redirects=False, verify=False)
+    soup = BeautifulSoup(main_response.text, "html.parser")
+    csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
+    login_response = session.post('https://{0}/user/login'.format(app_domain),
+                                  data={'user_name': device_user, 'password': device_password, '_csrf': csrf},
+                                  allow_redirects=False, verify=False)
+
+    assert login_response.status_code == 302, login_response.text
+
+
 def test_storage_change_event(device):
     device.run_ssh('snap run gogs.storage-change > {0}/storage-change.log'.format(TMP_DIR))
 
