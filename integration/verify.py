@@ -93,7 +93,11 @@ def test_login(app_domain, device_user, device_password):
     soup = BeautifulSoup(main_response.text, "html.parser")
     csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
     login_response = session.post('https://{0}/user/login'.format(app_domain),
-                                  data={'user_name': device_user, 'password': device_password, '_csrf': csrf},
+                                  data={'user_name': device_user,
+                                  'password': device_password,
+                                  '_csrf': csrf,
+                                  'login_source': 1
+                                  },
                                   allow_redirects=False, verify=False)
 
     assert login_response.status_code == 302, login_response.text
