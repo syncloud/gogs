@@ -27,15 +27,9 @@ local build(arch, test_ui) = [{
         },
        {
             name: "build",
-            image: "golang:" + go,
+            image: "debian:buster-slim",
             commands: [
-                "mkdir build/snap/bin",
-                "cd build/gogs",
-                "go build -ldflags '-linkmode external -extldflags -static' -o ../snap/bin/gogs",
-                "chmod +x ../snap/bin/gogs",
-                "mkdir ../snap/gogs",
-                "cp -r public ../snap/gogs",
-                "cp -r templates ../snap/gogs"
+                "./gogs/build.sh"
             ]
         },
         {
