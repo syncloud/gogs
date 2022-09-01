@@ -30,6 +30,16 @@ local build(arch, test_ui) = [{
             image: "debian:buster-slim",
             commands: [
                 "./gogs/build.sh"
+            ],
+            volumes: [
+                {
+                    name: "docker",
+                    path: "/usr/bin/docker"
+                },
+                {
+                    name: "docker.sock",
+                    path: "/var/run/docker.sock"
+                }
             ]
         },
         {
