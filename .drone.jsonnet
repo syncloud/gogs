@@ -1,6 +1,6 @@
 local name = "gogs";
 local browser = "firefox";
-local go = "1.7.6";
+local go = "1.8.7";
 
 local build(arch, test_ui) = [{
     kind: "pipeline",
