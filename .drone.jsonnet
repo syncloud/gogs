@@ -1,6 +1,6 @@
 local name = "gogs";
 local browser = "firefox";
-local go = "1.19";
+local go = "1.7.6";
 
 local build(arch, test_ui) = [{
     kind: "pipeline",
@@ -27,19 +27,15 @@ local build(arch, test_ui) = [{
         },
        {
             name: "build",
-            image: "debian:buster-slim",
+            image: "golang:" + go,
             commands: [
-                "./gogs/build.sh"
-            ],
-            volumes: [
-                {
-                    name: "docker",
-                    path: "/usr/bin/docker"
-                },
-                {
-                    name: "docker.sock",
-                    path: "/var/run/docker.sock"
-                }
+                "mkdir build/snap/bin",
+                "cd build/gogs",
+                "go build -ldflags '-linkmode external -extldflags -static' -o ../snap/bin/gogs",
+                "chmod +x ../snap/bin/gogs",
+                "mkdir ../snap/gogs",
+                "cp -r public ../snap/gogs",
+                "cp -r templates ../snap/gogs"
             ]
         },
         {
