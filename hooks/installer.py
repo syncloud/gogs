@@ -40,7 +40,8 @@ class Installer:
         self.log = logger.get_logger('gogs')
         socket = '{0}/web.socket'.format(self.app_data_dir).replace('/', '%2F')
         self.base_url = 'http+unix://{0}'.format(socket)
-        self.db = Database(self.app_dir, self.data_dir, join(self.app_dir, PSQL_PATH), DB_USER, self.database_path, PSQL_PORT)
+        self.config_dir = join(self.data_dir, 'config')
+        self.db = Database(self.app_dir, self.data_dir, self.config_dir, join(self.app_dir, PSQL_PATH), DB_USER, self.database_path, PSQL_PORT)
 
     def init_config(self):
         home_folder = join('/home', USER_NAME)
@@ -64,22 +65,24 @@ class Installer:
             'disable_registration': False
         }
         templates_path = join(self.app_dir, 'config')
-        config_path = join(self.data_dir, 'config')
-        gen.generate_files(templates_path, config_path, variables)
+        gen.generate_files(templates_path, self.config_dir, variables)
         fs.chownpath(self.app_data_dir, USER_NAME, recursive=True)
         fs.chownpath(self.data_dir, USER_NAME, recursive=True)
 
     def install(self):
         self.init_config()
         self.db.init()
+        self.db.init_config()
 
     def pre_refresh(self):
         self.db.backup()
 
     def post_refresh(self):
+        self.init_config()
         if self.db.requires_upgrade():
             self.db.remove()
             self.db.init()
+        self.db.init_config()
 
     def database_post_start(self):
         if path.isfile(install_file):

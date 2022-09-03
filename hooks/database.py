@@ -8,14 +8,16 @@ from hooks.installer import DB_USER
 
 class Database:
 
-    def __init__(self, app_dir, data_dir, psql, user, database_path, port):
+    def __init__(self, app_dir, data_dir, config_dir, psql, user, database_path, port):
+        self.log = logger.get_logger('database')
         self.app_dir = app_dir
         self.data_dir = data_dir
+        self.config_dir = config_dir
         self.psql = psql
         self.user = user
         self.database_dir = database_path
         self.port = port
-        self.log = logger.get_logger('postgres')
+        self.postgresql_config = join(self.config_dir, 'postgresql.conf')
         self.old_major_version_file = join(self.data_dir, 'db.major.version')
         self.new_major_version_file = join(self.app_dir, 'db.major.version')
         self.backup_file = join(self.data_dir, 'database.dump')
@@ -27,15 +29,10 @@ class Database:
         self.log.info(check_output(command_line, shell=True))
 
     def init(self):
-        if not isdir(self.database_dir):
-            psql_initdb = join(self.app_dir, 'postgresql/bin/initdb.sh')
-            self.log.info(check_output(['sudo', '-H', '-u', DB_USER, psql_initdb, self.database_dir]))
-            postgresql_conf_to = join(self.database_dir, 'postgresql.conf')
-            postgresql_conf_from = join(self.data_dir, 'config', 'postgresql.conf')
-            shutil.copy(postgresql_conf_from, postgresql_conf_to)
-        else:
-            self.log.info('Database path "{0}" already exists'.format(self.database_dir))
-        return self.database_dir
+        self.run('{0}/bin/initdb.sh {1}'.format(self.app_dir, self.database_dir))
+
+    def init_config(self):
+        shutil.copy(self.postgresql_config, self.database_dir)
 
     def remove(self):
         if not isfile(self.backup_file):
