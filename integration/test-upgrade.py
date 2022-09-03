@@ -31,7 +31,7 @@ def test_upgrade(device, device_user, device_password, device_host, app_archive_
     device.run_ssh('snap install gogs')
 
     # TODO: remove after release of gogs with backup on pre-refresh
-    device.run_ssh('sudo -E -H -u gogs /snap/gogs/current/postgresql/bin/pg_dumpall.sh -p 5433 -h /var/snap/gogs/common/database -f /var/snap/gogs/current/database.dump')
+    device.run_ssh('sudo -E -H -u git /snap/gogs/current/postgresql/bin/pg_dumpall.sh -p 5433 -h /var/snap/gogs/common/database -f /var/snap/gogs/current/database.dump')
 
     local_install(device_host, device_password, app_archive_path)
     wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 10)
