@@ -40,19 +40,15 @@ class Installer:
         self.log = logger.get_logger('gogs')
         socket = '{0}/web.socket'.format(self.app_data_dir).replace('/', '%2F')
         self.base_url = 'http+unix://{0}'.format(socket)
-        self.db = Database(join(self.app_dir, PSQL_PATH), DB_USER, self.database_path, PSQL_PORT)
+        self.db = Database(self.app_dir, self.data_dir, join(self.app_dir, PSQL_PATH), DB_USER, self.database_path, PSQL_PORT)
 
-    def install(self):
-
+    def init_config(self):
         home_folder = join('/home', USER_NAME)
         linux.useradd(USER_NAME, home_folder=home_folder)
-
         log_path = join(self.app_data_dir, 'log')
         fs.makepath(log_path)
-
         gogs_repos_path = storage.init_storage(APP_NAME, USER_NAME)
         app_url = urls.get_app_url(APP_NAME)
-
         variables = {
             'app_dir': self.app_dir,
             'app_data_dir': self.app_data_dir,
@@ -67,27 +63,23 @@ class Installer:
             'web_secret': uuid.uuid4().hex,
             'disable_registration': False
         }
-
         templates_path = join(self.app_dir, 'config')
         config_path = join(self.data_dir, 'config')
-
         gen.generate_files(templates_path, config_path, variables)
         fs.chownpath(self.app_data_dir, USER_NAME, recursive=True)
         fs.chownpath(self.data_dir, USER_NAME, recursive=True)
 
-        if not path.isfile(install_file):
-            self.database_init()
+    def install(self):
+        self.init_config()
+        self.db.init()
 
-    def database_init(self):
-        if not isdir(self.database_path):
-            psql_initdb = join(self.app_dir, 'postgresql/bin/initdb.sh')
-            self.log.info(check_output(['sudo', '-H', '-u', DB_USER, psql_initdb, self.database_path]))
-            postgresql_conf_to = join(self.database_path, 'postgresql.conf')
-            postgresql_conf_from = join(self.data_dir, 'config', 'postgresql.conf')
-            shutil.copy(postgresql_conf_from, postgresql_conf_to)
-        else:
-            self.log.info('Database path "{0}" already exists'.format(self.database_path))
-        return self.database_path
+    def pre_refresh(self):
+        self.db.backup()
+
+    def post_refresh(self):
+        if self.db.requires_upgrade():
+            self.db.remove()
+            self.db.init()
 
     def database_post_start(self):
         if path.isfile(install_file):
@@ -98,18 +90,25 @@ class Installer:
         self.db.execute('postgres', "ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
         self.db.execute('postgres', "CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
 
+    def installed(self):
+        return path.isfile(install_file)
+
     def configure(self):
 
-        if path.isfile(install_file):
-            self.log.info('gogs is already configured')
-            return
+        if self.installed():
+            self.upgrade()
+        else:
+            self.initialize()
 
+    def upgrade(self):
+        if self.db.requires_upgrade():
+            self.db.restore()
+
+    def initialize(self):
         self.create_install_user(users.get_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         self.activate_ldap(GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         self.delete_install_user(GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
-
         self.db.execute(DB_NAME, "select * from login_source;")
-
         with open(install_file, 'w') as f:
             f.write('installed\n')
 

@@ -23,6 +23,12 @@ apps:
   storage-change:
     command: hooks/storage-change
 
+  psql:
+    command: bin/psql.sh
+
+  pgdumpall:
+    command: bin/pg_dumpall.sh
+
 confinement: strict
 description: GOGS
 grade: stable
