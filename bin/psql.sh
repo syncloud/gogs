@@ -10,8 +10,8 @@ fi
 # shellcheck source=config/env
 . "${SNAP_DATA}/config/env"
 
-if [[ "$(whoami)" == "gogs" ]]; then
+if [[ "$(whoami)" == "git" ]]; then
     ${DIR}/postgresql/bin/psql.sh -p ${PSQL_PORT} -h ${PSQL_DATABASE} "$@"
 else
-    sudo -E -H -u gogs ${DIR}/postgresql/bin/psql.sh -p ${PSQL_PORT} -h ${PSQL_DATABASE} "$@"
+    sudo -E -H -u git ${DIR}/postgresql/bin/psql.sh -p ${PSQL_PORT} -h ${PSQL_DATABASE} "$@"
 fi

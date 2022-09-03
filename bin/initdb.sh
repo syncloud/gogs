@@ -10,8 +10,8 @@ fi
 # shellcheck source=config/env
 . "${SNAP_DATA}/config/env"
 
-if [[ "$(whoami)" == "gogs" ]]; then
+if [[ "$(whoami)" == "git" ]]; then
     ${DIR}/postgresql/bin/initdb.sh "$@"
 else
-    sudo -E -H -u gogs ${DIR}/postgresql/bin/initdb.sh "$@"
+    sudo -E -H -u git ${DIR}/postgresql/bin/initdb.sh "$@"
 fi
