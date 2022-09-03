@@ -3,8 +3,6 @@ from os.path import join, isfile, isdir
 from subprocess import check_output, CalledProcessError
 from syncloudlib import logger
 
-from hooks.installer import DB_USER
-
 
 class Database:
 
