@@ -3,7 +3,7 @@
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
-MAJOR_VERSION=9.4-alpine
+MAJOR_VERSION=9.6-alpine
 
 apt update
 apt install -y libltdl7 libnss3
