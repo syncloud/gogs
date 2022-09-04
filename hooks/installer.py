@@ -78,6 +78,7 @@ class Installer:
         self.db.backup()
 
     def post_refresh(self):
+        self.log.info('post refresh')
         self.init_config()
         if self.db.requires_upgrade():
             self.db.remove()
@@ -85,10 +86,10 @@ class Installer:
         self.db.init_config()
 
     def database_post_start(self):
+        self.log.info('post database start')
         if self.installed():
             if self.db.requires_upgrade():
                 self.db.restore()
-            #self.log.info('database is already configured')
             return
 
         self.log.info('creating database')
@@ -99,16 +100,17 @@ class Installer:
         return path.isfile(install_file)
 
     def configure(self):
-
+        self.log.info('configure')
         if self.installed():
             self.upgrade()
         else:
             self.initialize()
 
     def upgrade(self):
-        pass
+        self.log.info('upgrade')
 
     def initialize(self):
+        self.log.info('initialize')
         self.create_install_user(users.get_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         self.activate_ldap(GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         self.delete_install_user(GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)

@@ -36,8 +36,7 @@ class Database:
         if not isfile(self.backup_file):
             raise Exception("Backup file does not exist: {0}".format(self.backup_file))
 
-        if isdir(self.database_dir):
-            shutil.rmtree(self.database_dir)
+        shutil.rmtree(self.database_dir)
 
     def restore(self):
         self.run('snap run gogs.psql -f {0} postgres'.format(self.backup_file))
