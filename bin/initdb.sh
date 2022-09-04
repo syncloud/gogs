@@ -2,13 +2,8 @@
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
 
-if [ -z "$SNAP_COMMON" ]; then
-  echo "SNAP_COMMON environment variable must be set"
-  exit 1
-fi
-
 # shellcheck source=config/env
-. "${SNAP_DATA}/config/env"
+. "/var/snap/gogs/current/config/env"
 
 if [[ "$(whoami)" == "git" ]]; then
     ${DIR}/postgresql/bin/initdb.sh "$@"

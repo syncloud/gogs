@@ -7,7 +7,7 @@ if [[ -z "$1" ]]; then
     exit 1
 fi
 # shellcheck source=config/env
-. "${SNAP_DATA}/config/env"
+. "/var/snap/gogs/current/config/env"
 
 case $1 in
 start)
