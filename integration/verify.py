@@ -75,7 +75,7 @@ def test_git_config(device, app_dir):
 
 
 def test_psql(device, app_dir):
-    device.run_ssh('snap run gogs.psql -U git -d postgres -c "\l"')
+    device.run_ssh("snap run gogs.psql -U git -d postgres -c '\l'")
 
 
 def test_install_user_disabled(app_domain):
