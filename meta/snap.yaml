@@ -2,7 +2,7 @@ apps:
   postgresql:
     user: git
     command: bin/service.postgresql.sh start
-    post-start-command: bin/service.postgresql.sh post-start
+    #post-start-command: bin/service.postgresql.sh post-start
     daemon: forking
     plugs:
     - network

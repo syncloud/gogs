@@ -13,9 +13,6 @@ case $1 in
 start)
     exec ${DIR}/postgresql/bin/pg_ctl.sh -w -s -D ${PSQL_DATABASE} start
     ;;
-post-start)
-    ${DIR}/bin/postgresql-post-start.sh
-    ;;
 reload)
     exec ${DIR}/postgresql/bin/pg_ctl.sh -s -D ${PSQL_DATABASE} reload
     ;;
