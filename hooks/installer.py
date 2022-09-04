@@ -86,7 +86,9 @@ class Installer:
 
     def database_post_start(self):
         if self.installed():
-            self.log.info('database is already configured')
+            if self.db.requires_upgrade():
+                self.db.restore()
+            #self.log.info('database is already configured')
             return
 
         self.log.info('creating database')
@@ -104,8 +106,7 @@ class Installer:
             self.initialize()
 
     def upgrade(self):
-        if self.db.requires_upgrade():
-            self.db.restore()
+        pass
 
     def initialize(self):
         self.create_install_user(users.get_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
