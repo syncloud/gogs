@@ -55,7 +55,7 @@ class Database:
     def run(self, cmd):
         try:
             self.log.info("postgres executing: {0}".format(cmd))
-            output = check_output(cmd, shell=True).decode()
+            output = check_output(cmd + " 2>&1", shell=True).decode()
             self.log.info(output)
         except CalledProcessError as e:
             self.log.error("postgres error: " + e.output.decode())

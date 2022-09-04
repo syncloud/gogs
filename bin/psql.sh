@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -xe
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
 
@@ -7,7 +7,8 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
 . "/var/snap/gogs/current/config/env"
 
 if [[ "$(whoami)" == "git" ]]; then
-    ${DIR}/postgresql/bin/psql.sh -p ${PSQL_PORT} -h ${PSQL_DATABASE} "$@"
+    ${DIR}/postgresql/bin/psql.sh -p 5433 -h /var/snap/gogs/common/database "$@"
 else
-    sudo -E -H -u git ${DIR}/postgresql/bin/psql.sh -p ${PSQL_PORT} -h /var/snap/gogs/common/database "$@"
+    sudo -E -H -u git ${DIR}/postgresql/bin/psql.sh -p 5433 -h /var/snap/gogs/common/database "$@"
 fi
+
