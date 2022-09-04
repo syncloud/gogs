@@ -74,6 +74,10 @@ def test_git_config(device, app_dir):
     device.run_ssh('{0}/git/bin/git config -l'.format(app_dir), env_vars='HOME=/home/git')
 
 
+def test_psql(device, app_dir):
+    device.run_ssh('snap run gogs.psql -c "\l"')
+
+
 def test_install_user_disabled(app_domain):
     session = requests.session()
     main_response = session.get('https://{0}/user/login'.format(app_domain), allow_redirects=False, verify=False)

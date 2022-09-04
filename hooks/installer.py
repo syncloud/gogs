@@ -85,7 +85,7 @@ class Installer:
         self.db.init_config()
 
     def database_post_start(self):
-        if path.isfile(install_file):
+        if self.installed():
             self.log.info('database is already configured')
             return
 
