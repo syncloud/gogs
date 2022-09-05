@@ -26,6 +26,7 @@ function wait_for_db() {
     done
     set -e
     if [[ $started == 0 ]]; then
+        echo "timeout waiting for gogs db"
         exit 1
     fi
     echo "done waiting for gogs db"
