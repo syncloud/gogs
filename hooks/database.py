@@ -1,7 +1,7 @@
 import shutil
 from os.path import join, isfile, isdir
 from subprocess import check_output, CalledProcessError
-from syncloudlib import logger
+from syncloudlib import logger, fs
 
 
 class Database:
