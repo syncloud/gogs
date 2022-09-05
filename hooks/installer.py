@@ -85,19 +85,6 @@ class Installer:
             self.db.init()
         self.db.init_config()
 
-    def database_post_start(self):
-        self.log.info('post database start')
-        if self.installed():
-            if self.db.requires_upgrade():
-                self.log.info('db requires an upgrade, restoring db')
-                self.db.restore()
-            else:
-                self.log.info('db does not require an upgrade')
-        else:
-            self.log.info('creating database')
-            self.db.execute('postgres', "ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
-            self.db.execute('postgres', "CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
-
     def installed(self):
         return path.isfile(install_file)
 
@@ -110,9 +97,17 @@ class Installer:
 
     def upgrade(self):
         self.log.info('upgrade')
+        if self.db.requires_upgrade():
+            self.log.info('db requires an upgrade, restoring db')
+            self.db.restore()
 
     def initialize(self):
         self.log.info('initialize')
+
+        self.log.info('creating database')
+        self.db.execute('postgres', "ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
+        self.db.execute('postgres', "CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
+
         self.create_install_user(users.get_email(), GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         self.activate_ldap(GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         self.delete_install_user(GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
