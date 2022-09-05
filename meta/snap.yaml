@@ -8,7 +8,7 @@ apps:
     - network
     - network-bind
     restart-condition: always
-    start-timeout: 2000s
+    start-timeout: 200s
     before: [server]
 
   server:
@@ -19,7 +19,7 @@ apps:
     - network
     - network-bind
     restart-condition: always
-    start-timeout: 2000s
+    start-timeout: 200s
     after: [postgresql]
 
   storage-change:

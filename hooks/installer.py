@@ -99,7 +99,7 @@ class Installer:
         self.log.info('upgrade')
         if self.db.requires_upgrade():
             self.log.info('db requires an upgrade, restoring db')
-            self.db.restore()
+            #self.db.restore()
 
     def initialize(self):
         self.log.info('initialize')
