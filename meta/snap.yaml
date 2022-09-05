@@ -2,12 +2,13 @@ apps:
   postgresql:
     user: git
     command: bin/service.postgresql.sh start
-    post-start-command: bin/service.postgresql.sh post-start
+    #post-start-command: bin/service.postgresql.sh post-start
     daemon: forking
     plugs:
     - network
     - network-bind
     restart-condition: always
+    start-timeout: 200s
     before: [server]
 
   server:
@@ -18,10 +19,17 @@ apps:
     - network
     - network-bind
     restart-condition: always
+    start-timeout: 200s
     after: [postgresql]
 
   storage-change:
     command: hooks/storage-change
+
+  psql:
+    command: bin/psql.sh
+
+  pgdumpall:
+    command: bin/pg_dumpall.sh
 
 confinement: strict
 description: GOGS
