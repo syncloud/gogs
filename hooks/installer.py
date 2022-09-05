@@ -89,12 +89,14 @@ class Installer:
         self.log.info('post database start')
         if self.installed():
             if self.db.requires_upgrade():
+                self.log.info('db requires an upgrade, restoring db')
                 self.db.restore()
-            return
-
-        self.log.info('creating database')
-        self.db.execute('postgres', "ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
-        self.db.execute('postgres', "CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
+            else:
+                self.log.info('db does not require an upgrade')
+        else:
+            self.log.info('creating database')
+            self.db.execute('postgres', "ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASS))
+            self.db.execute('postgres', "CREATE DATABASE {0} WITH OWNER={1};".format(DB_NAME, DB_USER))
 
     def installed(self):
         return path.isfile(install_file)

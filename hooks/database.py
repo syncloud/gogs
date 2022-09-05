@@ -31,6 +31,7 @@ class Database:
 
     def init_config(self):
         shutil.copy(self.postgresql_config, self.database_dir)
+        fs.chownpath(self.database_dir, self.user, recursive=True)
 
     def remove(self):
         if not isfile(self.backup_file):
