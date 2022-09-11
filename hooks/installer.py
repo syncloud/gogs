@@ -49,7 +49,6 @@ class Installer:
         log_path = join(self.app_data_dir, 'log')
         fs.makepath(log_path)
         gogs_repos_path = storage.init_storage(APP_NAME, USER_NAME)
-        app_url = urls.get_app_url(APP_NAME)
         variables = {
             'app_dir': self.app_dir,
             'app_data_dir': self.app_data_dir,
@@ -60,7 +59,8 @@ class Installer:
             'db_password': DB_PASS,
             'gogs_repos_path': gogs_repos_path,
             'log_path': log_path,
-            'app_url': app_url,
+            'app_url': urls.get_app_url(APP_NAME),
+            'app_domain': urls.get_app_domain_name(APP_NAME),
             'web_secret': uuid.uuid4().hex,
             'disable_registration': False
         }

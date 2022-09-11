@@ -1,5 +1,5 @@
 import pytest
-from subprocess import check_output
+from subprocess import check_output, CalledProcessError, STDOUT
 from syncloudlib.integration.hosts import add_host_alias
 from integration import lib
 from syncloudlib.integration.installer import local_install, wait_for_installer
@@ -30,13 +30,6 @@ def test_start(module_setup, app, device_host, domain, device):
 def test_upgrade(device, device_user, device_password, device_host, app_archive_path, app_domain):
     device.run_ssh('snap remove gogs')
     device.run_ssh('snap install gogs')
-
-    # TODO: remove after release of gogs with backup on pre-refresh
-    device.run_ssh('sudo -E -H -u git /snap/gogs/current/postgresql/bin/pg_dumpall.sh -p 5433 -h /var/snap/gogs/common/database -f /var/snap/gogs/current/database.dump')
-
     local_install(device_host, device_password, app_archive_path)
     wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 10)
 
-
-def test_login(selenium, device_user, device_password):
-    lib.login(selenium, device_user, device_password)
