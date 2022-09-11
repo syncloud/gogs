@@ -31,6 +31,7 @@ def test_upgrade(device, device_user, device_password, device_host, app_archive_
     device.run_ssh('snap remove gogs')
     device.run_ssh('snap install gogs')
     run("git clone https://{0}:{1}@{2}/{3}/init init".format(device_user, device_password, app_domain, device_user))
+    run("git config http.sslVerify 'false'")
     run("cd init; touch 1; git add .; git commit -am 'test'; git push;")
 
     local_install(device_host, device_password, app_archive_path)
