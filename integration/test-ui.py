@@ -87,7 +87,7 @@ def test_web_commit(selenium, device_user):
     selenium.screenshot('web-commit')
 
 
-def test_git_cli(device, device_user, device_password, device_host, app_archive_path, app_domain):
+def test_git_cli(selenium, device, device_user, device_password, device_host, app_archive_path, app_domain):
     run("git config --global http.sslverify false")
     run("git clone https://{0}:{1}@{2}/{3}/init init".format(device_user, device_password, app_domain, device_user))
     run("cd init; touch 1; git add .; git commit -am 'test'; git push;")
