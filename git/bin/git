@@ -4,5 +4,5 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ..  && pwd )
 export PATH=$PATH:$DIR/bin
 LIBS=${DIR}/lib
 LIBS=$LIBS:${DIR}/usr/lib
-GIT_TEMPLATE_DIR=${DIR}/usr/share/git-core/templates
+export GIT_TEMPLATE_DIR=${DIR}/usr/share/git-core/templates
 ${DIR}/lib/ld-musl-*.so* --library-path $LIBS ${DIR}/usr/bin/git "$@"
