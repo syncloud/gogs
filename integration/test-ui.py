@@ -98,5 +98,11 @@ def test_ldap_auth(selenium, device_user):
     selenium.screenshot('ldap-auth')
 
 
+def test_git_cli(device, device_user, device_password, device_host, app_archive_path, app_domain):
+    run("git config --global http.sslverify false")
+    run("git clone https://{0}:{1}@{2}/{3}/init init".format(device_user, device_password, app_domain, device_user))
+    run("cd init; touch 1; git add .; git commit -am 'test'; git push;")
+
+    
 def test_teardown(driver):
     driver.quit()

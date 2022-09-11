@@ -136,9 +136,10 @@ local build(arch, test_ui) = [{
               "pip install -r requirements.txt",
               "py.test -x -s test-ui.py --distro=buster --ui-mode=" + mode + " --domain=buster.com --device-host=" + name + ".buster.com --app=" + name + " --device-user=gogs --browser=" + browser,
             ]
-        } for mode in ["desktop", "mobile"] ])
-       else [] ) +
-       ( if arch == "amd64" then [
+        } for mode in ["desktop", "mobile"] 
+       ]
+        +
+       [
         {
             name: "test-upgrade",
             image: "python:3.8-slim-buster",
@@ -153,7 +154,18 @@ local build(arch, test_ui) = [{
                 name: "videos",
                 path: "/videos"
             }]
-        } ] else [] ) + [
+        } ] +
+        [{
+            name: "test-ui-upgrade",
+            image: "python:3.8-slim-buster",
+            commands: [
+              "apt-get update && apt-get install -y sshpass openssh-client libxml2-dev libxslt-dev build-essential libz-dev curl",
+              "cd integration",
+              "pip install -r requirements.txt",
+              "py.test -x -s test-ui.py --distro=buster --ui-mode=" + mode + " --domain=buster.com --device-host=" + name + ".buster.com --app=" + name + " --device-user=gogs --browser=" + browser,
+            ]
+        } for mode in ["desktop"] 
+       ]) else [] ) + [
         {
             name: "upload",
             image: "debian:buster-slim",
