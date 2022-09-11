@@ -87,10 +87,10 @@ def test_web_commit(selenium, device_user):
     selenium.screenshot('web-commit')
 
 
-def test_git_cli(selenium, device, device_user, device_password, device_host, app_archive_path, app_domain):
+def test_git_cli(selenium, device, device_user, device_password, device_host, app_archive_path, app_domain, ui_mode):
     run("git config --global http.sslverify false")
-    run("git clone https://{0}:{1}@{2}/{3}/init init".format(device_user, device_password, app_domain, device_user))
-    run("cd init; touch 1; git add .; git commit -am 'test'; git push;")
+    run("git clone https://{0}:{1}@{2}/{3}/init init-{4}".format(device_user, device_password, app_domain, device_user, ui_mode))
+    run("cd init-{0}; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
     selenium.screenshot('cli-commit')
