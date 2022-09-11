@@ -87,6 +87,14 @@ def test_web_commit(selenium, device_user):
     selenium.screenshot('web-commit')
 
 
+def test_git_cli(device, device_user, device_password, device_host, app_archive_path, app_domain):
+    run("git config --global http.sslverify false")
+    run("git clone https://{0}:{1}@{2}/{3}/init init".format(device_user, device_password, app_domain, device_user))
+    run("cd init; touch 1; git add .; git commit -am 'test'; git push;")
+    selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
+    selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
+    selenium.screenshot('cli-commit')
+
 def test_ldap_auth(selenium, device_user):
 
     # driver.get("https://{0}/admin/auths/1".format(app_domain))
@@ -96,12 +104,6 @@ def test_ldap_auth(selenium, device_user):
     selenium.find_by_xpath("//a[@href='/admin/auths/1']".format(device_user)).click()
     selenium.find_by_xpath("//h4[contains(.,'Edit Authentication Setting')]")
     selenium.screenshot('ldap-auth')
-
-
-def test_git_cli(device, device_user, device_password, device_host, app_archive_path, app_domain):
-    run("git config --global http.sslverify false")
-    run("git clone https://{0}:{1}@{2}/{3}/init init".format(device_user, device_password, app_domain, device_user))
-    run("cd init; touch 1; git add .; git commit -am 'test'; git push;")
 
     
 def test_teardown(driver):
