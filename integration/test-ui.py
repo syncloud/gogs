@@ -4,7 +4,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from syncloudlib.integration.hosts import add_host_alias
-from subprocess import check_output
+from subprocess import check_output, CalledProcessError, STDOUT
 from integration import lib
 
 DIR = dirname(__file__)
@@ -106,3 +106,11 @@ def test_git_cli(device, device_user, device_password, device_host, app_archive_
     
 def test_teardown(driver):
     driver.quit()
+
+def run(cmd):
+    try:
+        output = check_output(cmd, stderr=STDOUT, shell=True).decode()
+        print(output)
+    except CalledProcessError as e:
+        print("error: " + e.output.decode())
+        raise e
