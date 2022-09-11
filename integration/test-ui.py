@@ -32,7 +32,6 @@ def test_login(selenium, device_user, device_password):
 
     
 def test_users(selenium):
-    # driver.get("https://{0}/admin/users".format(app_domain))
     selenium.find_by_xpath("//span[@class='text avatar']").click()
     selenium.find_by_xpath("//a[contains(.,'Admin Panel')]").click()
     selenium.find_by_xpath("//a[contains(.,'Users')]").click()
@@ -41,15 +40,12 @@ def test_users(selenium):
 
 
 def test_user(selenium):
-    # driver.get("https://{0}/admin/users/2".format(app_domain))
     selenium.find_by_xpath("//a[@href='/admin/users/2']").click()
     selenium.find_by_xpath("//h4[contains(.,'Edit Account')]")
     selenium.screenshot('user')
 
 
 def test_create_repo_empty(selenium):
-
-    # driver.get("https://{0}/repo/create".format(app_domain))
     selenium.find_by_xpath("//i[@class='octicon octicon-plus']").click()
     selenium.find_by_xpath("//a[contains(.,'New Repository')]").click()
     selenium.find_by_id("repo_name").send_keys('empty')
@@ -74,8 +70,6 @@ def test_create_repo_init(selenium):
 
 
 def test_web_commit(selenium, device_user):
-
-    # driver.get("https://{0}/{1}/init/_edit/master/README.md".format(app_domain, device_user))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
     selenium.find_by_xpath("//a[@href='/{0}/init/src/master/README.md']".format(device_user)).click()
@@ -87,17 +81,17 @@ def test_web_commit(selenium, device_user):
     selenium.screenshot('web-commit')
 
 
-def test_git_cli(selenium, device, device_user, device_password, device_host, app_archive_path, app_domain, ui_mode):
+def test_git_cli(selenium, device_user, device_password, app_domain, ui_mode):
     run("git config --global http.sslverify false")
-    run("git clone https://{0}:{1}@{2}/{3}/init init-{4}".format(device_user, device_password, app_domain, device_user, ui_mode))
-    run("cd init-{0}; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
+    run("rm -rf init")
+    run("git clone https://{0}:{1}@{2}/{3}/init init".format(device_user, device_password, app_domain, device_user))
+    run("cd init; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
     selenium.screenshot('cli-commit')
 
-def test_ldap_auth(selenium, device_user):
 
-    # driver.get("https://{0}/admin/auths/1".format(app_domain))
+def test_ldap_auth(selenium, device_user):
     selenium.find_by_xpath("//span[@class='text avatar']").click()
     selenium.find_by_xpath("//a[contains(.,'Admin Panel')]").click()
     selenium.find_by_xpath("//a[contains(.,'Authentications')]").click()
@@ -108,6 +102,7 @@ def test_ldap_auth(selenium, device_user):
     
 def test_teardown(driver):
     driver.quit()
+
 
 def run(cmd):
     try:
