@@ -14,7 +14,7 @@ DIR = dirname(__file__)
 def module_setup(request, device, log_dir, ui_mode, artifact_dir):
     def module_teardown():
         tmp_dir = '/tmp/syncloud/ui'
-        device.activated()
+        
         device.run_ssh('mkdir -p {0}/{1}'.format(tmp_dir, ui_mode), throw=False)
         device.run_ssh('journalctl > {0}/{1}/journalctl.log'.format(tmp_dir, ui_mode), throw=False)
         device.scp_from_device('{0}/*'.format(tmp_dir), artifact_dir)
@@ -23,7 +23,8 @@ def module_setup(request, device, log_dir, ui_mode, artifact_dir):
     request.addfinalizer(module_teardown)
 
 
-def test_start(module_setup, app, domain, device_host):
+def test_start(module_setup, app, domain, device_host, device):
+    device.activated()
     add_host_alias(app, device_host, domain)
 
 
@@ -90,6 +91,10 @@ def test_git_cli(selenium, device_user, device_password, app_domain, ui_mode):
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
     selenium.screenshot('cli-commit')
 
+
+def test_hook_path(device, device_user):
+    assert "current" in device.run_ssh('cat /data/gogs/{0}/init.git/hooks/pre-receive'.format(device_user))
+  
 
 def test_ldap_auth(selenium, device_user):
     selenium.find_by_xpath("//span[@class='text avatar']").click()
