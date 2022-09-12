@@ -91,6 +91,10 @@ def test_git_cli(selenium, device_user, device_password, app_domain, ui_mode):
     selenium.screenshot('cli-commit')
 
 
+def test_hook_path(device, device_user):
+    assert "current" in device.run_ssh('cat /data/gogs/{0}/init.git/hooks/pre-receive'.format(device_user))
+  
+
 def test_ldap_auth(selenium, device_user):
     selenium.find_by_xpath("//span[@class='text avatar']").click()
     selenium.find_by_xpath("//a[contains(.,'Admin Panel')]").click()

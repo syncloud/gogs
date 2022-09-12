@@ -36,7 +36,8 @@ function wait_for_db() {
 case $1 in
 start)
     wait_for_db
-    exec ${DIR}/bin/gogs web --config /var/snap/gogs/current/config/gogs.ini
+    # git hooks inside repos have this path hardcoded, need to keep it constant across upgrades.
+    exec /snap/gogs/current/bin/gogs web --config /var/snap/gogs/current/config/gogs.ini
     ;;
 *)
     echo "not valid command"
