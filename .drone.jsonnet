@@ -205,7 +205,6 @@ local build(arch, test_ui, docker) = [{
                 source: [
                     "artifact/*"
                 ],
-                privileged: true,
                 strip_components: 1,
                 volumes: [
                    {

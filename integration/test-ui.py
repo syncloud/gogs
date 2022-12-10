@@ -82,10 +82,37 @@ def test_web_commit(selenium, device_user):
     selenium.screenshot('web-commit')
 
 
-def test_git_cli(selenium, device_user, device_password, app_domain, ui_mode):
+def test_git_cli_https(selenium, device_user, device_password, app_domain, ui_mode):
     run("git config --global http.sslverify false")
     run("rm -rf init")
     run("git clone https://{0}:{1}@{2}/{3}/init init".format(device_user, device_password, app_domain, device_user))
+    run("cd init; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
+    selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
+    selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
+    selenium.screenshot('cli-commit')
+
+
+def test_git_cli_ssh(selenium, device_user, device_password, app_domain, ui_mode):
+    run("ssh-keygen -b 2048 -t rsa -N "" -f /root/.ssh/id_rsa")
+    key = run("cat /root/.ssh/id_rsa")
+    run("rm -rf init")
+
+    selenium.find_by_xpath("//span[@class='text avatar']").click()
+    selenium.find_by_xpath("//a[@href='/user/settings']").click()
+    selenium.find_by_xpath("//a[@href='/user/settings/ssh']").click()
+    selenium.find_by_xpath("//div[contains(.,'Add Key')]").click()
+    selenium.find_by_id("title").send_keys('key1')
+    selenium.find_by_id("content").send_keys(key)
+    selenium.find_by_xpath("//button[contains(.,'Add Key')]").click()
+    selenium.find_by_xpath("//strong[contains(.,'key1')]").click()
+    selenium.screenshot('ssh-keys')
+
+    selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
+    selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
+    url = selenium.find_by_id("epo-clone-url").get_property("value")
+
+    run("rm -rf init")
+    run("git clone {0} init".format(url))
     run("cd init; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
@@ -113,6 +140,7 @@ def run(cmd):
     try:
         output = check_output(cmd, stderr=STDOUT, shell=True).decode()
         print(output)
+        return output.strip()
     except CalledProcessError as e:
         print("error: " + e.output.decode())
         raise e

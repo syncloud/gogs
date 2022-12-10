@@ -45,7 +45,7 @@ class Installer:
 
     def init_config(self):
         home_folder = join('/home', USER_NAME)
-        linux.useradd(USER_NAME, home_folder=home_folder)
+        linux.useradd(USER_NAME, home_folder=home_folder, shell='/bin/bash')
         log_path = join(self.app_data_dir, 'log')
         fs.makepath(log_path)
         gogs_repos_path = storage.init_storage(APP_NAME, USER_NAME)
