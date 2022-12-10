@@ -237,6 +237,10 @@ class Installer:
     def prepare_storage(self):
         storage.init_storage(APP_NAME, USER_NAME)
 
+    def on_domain_change(self):
+        self.log.info('domain change')
+        self.init_config()
+
     def wait_url(self, url, timeout, interval=3):
         t0 = time.time()
         while time.time() - t0 < timeout:

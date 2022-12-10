@@ -25,6 +25,9 @@ apps:
   storage-change:
     command: hooks/storage-change
 
+access-change:
+    command: hooks/access-change
+
   psql:
     command: bin/psql.sh
 
