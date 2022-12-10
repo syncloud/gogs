@@ -325,6 +325,6 @@ local build(arch, test_ui, docker) = [{
      }
 ];
 
-build("amd64", true, "booksworm") +
-build("arm64", false, "booksworm") +
+build("amd64", true, "bookworm") +
+build("arm64", false, "bookworm") +
 build("arm", false, "buster")
