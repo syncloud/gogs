@@ -2,7 +2,7 @@ local name = "gogs";
 local browser = "firefox";
 local go = "1.18.5";
 
-local build(arch, test_ui) = [{
+local build(arch, test_ui, docker) = [{
     kind: "pipeline",
     type: "docker",
     name: arch,
@@ -40,7 +40,7 @@ local build(arch, test_ui) = [{
         },
         {
             name: "package postgresql",
-            image: "debian:buster-slim",
+            image: "debian:"+docker+"-slim",
             commands: [
                 "./postgresql/build.sh"
             ],
@@ -57,7 +57,7 @@ local build(arch, test_ui) = [{
         },
   {
             name: "package git",
-            image: "debian:buster-slim",
+            image: "debian:"+docker+"-slim",
             commands: [
                 "./git/build.sh"
             ],
@@ -74,7 +74,7 @@ local build(arch, test_ui) = [{
         },
         {
             name: "package python",
-            image: "debian:buster-slim",
+            image: "debian:"+docker+"-slim",
             commands: [
                 "./python/build.sh"
             ],
@@ -325,6 +325,6 @@ local build(arch, test_ui) = [{
      }
 ];
 
-build("amd64", true) +
-build("arm64", false) +
-build("arm", false)
+build("amd64", true, "booksworm") +
+build("arm64", false, "booksworm") +
+build("arm", false, "buster")
