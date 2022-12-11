@@ -10,7 +10,7 @@ BUILD_DIR=${DIR}/../build/snap/postgresql
 docker ps -a -q --filter ancestor=postgres:syncloud --format="{{.ID}}" | xargs docker stop | xargs docker rm || true
 docker rmi postgres:syncloud || true
 docker build --build-arg MAJOR_VERSION=$MAJOR_VERSION -t postgres:syncloud .
-docker run postgres:syncloud postgres --help
+#docker run postgres:syncloud postgres --help
 docker create --name=postgres postgres:syncloud
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
