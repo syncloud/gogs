@@ -1,8 +1,9 @@
 local name = "gogs";
 local browser = "firefox";
 local go = "1.18.5";
+local dind = "18.06.3-ce-dind";
 
-local build(arch, test_ui, docker) = [{
+local build(arch, test_ui) = [{
     kind: "pipeline",
     type: "docker",
     name: arch,
@@ -40,52 +41,40 @@ local build(arch, test_ui, docker) = [{
         },
         {
             name: "package postgresql",
-            image: "debian:"+docker+"-slim",
+            image: "docker:" + dind,
             commands: [
                 "./postgresql/build.sh"
             ],
             volumes: [
                 {
-                    name: "docker",
-                    path: "/usr/bin/docker"
-                },
-                {
-                    name: "docker.sock",
-                    path: "/var/run/docker.sock"
+                    name: "dockersock",
+                    path: "/var/run"
                 }
             ]
         },
   {
             name: "package git",
-            image: "debian:"+docker+"-slim",
+            image: "docker:" + dind,
             commands: [
                 "./git/build.sh"
             ],
             volumes: [
                 {
-                    name: "docker",
-                    path: "/usr/bin/docker"
-                },
-                {
-                    name: "docker.sock",
-                    path: "/var/run/docker.sock"
+                    name: "dockersock",
+                    path: "/var/run"
                 }
             ]
         },
         {
             name: "package python",
-            image: "debian:"+docker+"-slim",
+            image: "docker:" + dind,
             commands: [
                 "./python/build.sh"
             ],
             volumes: [
                 {
-                    name: "docker",
-                    path: "/usr/bin/docker"
-                },
-                {
-                    name: "docker.sock",
-                    path: "/var/run/docker.sock"
+                    name: "dockersock",
+                    path: "/var/run"
                 }
             ]
         },
@@ -226,6 +215,17 @@ local build(arch, test_ui, docker) = [{
         },
         services: [
             {
+                name: "docker",
+                image: "docker:" + dind,
+                privileged: true,
+                volumes: [
+                    {
+                        name: "dockersock",
+                        path: "/var/run"
+                    }
+                ]
+            },
+            {
                 name: name + ".buster.com",
                 image: "syncloud/platform-buster-" + arch + ":22.01",
                 privileged: true,
@@ -255,6 +255,10 @@ local build(arch, test_ui, docker) = [{
         ] else [] ),
         volumes: [
             {
+                name: "dockersock",
+                temp: {}
+            },
+            {
                 name: "dbus",
                 host: {
                     path: "/var/run/dbus"
@@ -273,18 +277,6 @@ local build(arch, test_ui, docker) = [{
             {
                 name: "videos",
                 temp: {}
-            },
-            {
-                name: "docker",
-                host: {
-                    path: "/usr/bin/docker"
-                }
-            },
-            {
-                name: "docker.sock",
-                host: {
-                    path: "/var/run/docker.sock"
-                }
             }
         ]
     },
@@ -324,6 +316,6 @@ local build(arch, test_ui, docker) = [{
      }
 ];
 
-build("amd64", true, "bookworm") +
-build("arm64", false, "bookworm") +
-build("arm", false, "buster")
+build("amd64", true) +
+build("arm64", false) +
+build("arm", false)

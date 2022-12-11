@@ -1,13 +1,9 @@
-#!/bin/bash -ex
+#!/bin/sh -xe
 
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+DIR=$( cd "$( dirname "$0" )" && pwd )
 cd ${DIR}
 
 MAJOR_VERSION=10
-
-apt update
-apt install -y libltdl7 libnss3
-
 
 BUILD_DIR=${DIR}/../build/snap/postgresql
 
