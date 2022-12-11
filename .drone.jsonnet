@@ -52,7 +52,14 @@ local build(arch, test_ui) = [{
                 }
             ]
         },
-  {
+        {
+            name: "test postgresql",
+            image: "debian:buster-slim",
+            commands: [
+                "./postgresql/test.sh"
+            ]
+        },
+      {
             name: "package git",
             image: "docker:" + dind,
             commands: [

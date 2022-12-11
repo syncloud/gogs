@@ -19,9 +19,7 @@ docker export postgres -o postgres.tar
 tar xf postgres.tar
 rm -rf postgres.tar
 PGBIN=$(echo usr/lib/postgresql/*/bin)
-ldd $PGBIN/initdb || true
 mv $PGBIN/postgres $PGBIN/postgres.bin
 mv $PGBIN/pg_dump $PGBIN/pg_dump.bin
 cp $DIR/bin/* bin
 cp $DIR/pgbin/* $PGBIN
-./bin/initdb.sh --help
