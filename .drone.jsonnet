@@ -1,7 +1,7 @@
 local name = "gogs";
 local browser = "firefox";
 local go = "1.18.5";
-local dind = "18.06.3-ce-dind";
+local dind = "19.03.8-dind";
 
 local build(arch, test_ui) = [{
     kind: "pipeline",
