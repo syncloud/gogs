@@ -1,9 +1,8 @@
 local name = "gogs";
 local browser = "firefox";
 local go = "1.18.5";
-local dind = "19.03.8-dind";
 
-local build(arch, test_ui) = [{
+local build(arch, test_ui, dind) = [{
     kind: "pipeline",
     type: "docker",
     name: arch,
@@ -323,6 +322,6 @@ local build(arch, test_ui) = [{
      }
 ];
 
-build("amd64", true) +
-build("arm64", false) +
-build("arm", false)
+build("amd64", true, "20.10.21-dind") +
+build("arm64", false, "19.03.8-dind") +
+build("arm", false, "19.03.8-dind")
