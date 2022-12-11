@@ -89,11 +89,11 @@ def test_git_cli_https(selenium, device_user, device_password, app_domain, ui_mo
     run("cd init; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
-    selenium.screenshot('cli-commit')
+    selenium.screenshot('cli-https-commit')
 
 
-def test_git_cli_ssh(selenium, device_user, device_password, app_domain, ui_mode):
-    run("ssh-keygen -b 2048 -t rsa -N "" -f /root/.ssh/id_rsa")
+def test_git_cli_ssh(selenium, device_user, ui_mode):
+    run("ssh-keygen -b 2048 -t rsa -N '' -f /root/.ssh/id_rsa")
     key = run("cat /root/.ssh/id_rsa")
     run("rm -rf init")
 
@@ -116,7 +116,7 @@ def test_git_cli_ssh(selenium, device_user, device_password, app_domain, ui_mode
     run("cd init; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
-    selenium.screenshot('cli-commit')
+    selenium.screenshot('cli-ssh-commit')
 
 
 def test_hook_path(device, device_user):
