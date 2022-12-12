@@ -94,7 +94,7 @@ def test_git_cli_https(selenium, device_user, device_password, app_domain, ui_mo
 
 def test_git_cli_ssh(selenium, device_user, ui_mode):
     run("ssh-keygen -b 2048 -t rsa -N '' -f /root/.ssh/id_rsa")
-    key = run("cat /root/.ssh/id_rsa")
+    key = run("cat /root/.ssh/id_rsa.pub")
     run("rm -rf init")
 
     selenium.find_by_xpath("//span[@class='text avatar']").click()
