@@ -185,7 +185,7 @@ local build(arch, test_ui, dind) = [{
         },
         {
             name: "artifact",
-            image: "appleboy/drone-scp:1.6.2",
+            image: "appleboy/drone-scp",
             settings: {
                 host: {
                     from_secret: "artifact_host"
@@ -196,17 +196,9 @@ local build(arch, test_ui, dind) = [{
                 },
                 timeout: "2m",
                 command_timeout: "2m",
-                target: "/home/artifact/repo/" + name + "/${DRONE_BUILD_NUMBER}-" + arch,
-                source: [
-                    "artifact/*"
-                ],
-                strip_components: 1,
-                volumes: [
-                   {
-                        name: "videos",
-                        path: "/drone/src/artifact/videos"
-                    }
-                ]
+                target: "/home/artifact/repo/" + name + "/${DRONE_BUILD_NUMBER}-" + arch ,
+                source: "artifact/*",
+                strip_components: 1
             },
             when: {
               status: [ "failure", "success" ]
