@@ -100,7 +100,7 @@ def test_git_cli_ssh(selenium, device_user, ui_mode):
     selenium.find_by_xpath("//span[@class='text avatar']").click()
     selenium.find_by_xpath("//a[@href='/user/settings']").click()
     selenium.find_by_xpath("//a[@href='/user/settings/ssh']").click()
-    selenium.find_by_xpath("//div[contains(.,'Add Key')]").click()
+    selenium.find_by_xpath("//button[contains(.,'Add Key')]").click()
     selenium.find_by_id("title").send_keys('key1')
     selenium.find_by_id("content").send_keys(key)
     selenium.find_by_xpath("//button[contains(.,'Add Key')]").click()
