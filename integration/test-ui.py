@@ -114,7 +114,7 @@ def test_git_cli_ssh(selenium, device_user, ui_mode, app_domain):
 
     run("rm -rf init")
     assert 'Gogs does not provide shell access' in run("ssh git@{0}".format(app_domain))
-    # run("ssh-keyscan -t rsa {0} > /root/.ssh/known_hosts".format(app_domain))
+    run("ssh-keyscan -t rsa {0} > /root/.ssh/known_hosts".format(app_domain))
 
     run("git clone {0} init".format(url))
     run("cd init; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
