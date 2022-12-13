@@ -109,7 +109,7 @@ def test_git_cli_ssh(selenium, device_user, ui_mode):
 
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
-    url = selenium.find_by_id("epo-clone-url").get_property("value")
+    url = selenium.find_by_id("repo-clone-url").get_property("value")
 
     run("rm -rf init")
     run("git clone {0} init".format(url))
