@@ -17,6 +17,7 @@ def module_setup(request, device, log_dir, ui_mode, artifact_dir):
         
         device.run_ssh('mkdir -p {0}/{1}'.format(tmp_dir, ui_mode), throw=False)
         device.run_ssh('journalctl > {0}/{1}/journalctl.log'.format(tmp_dir, ui_mode), throw=False)
+        device.run_ssh('cp -r /var/snap/gogs/common/log {0}/{1}'.format(tmp_dir, ui_mode), throw=False)
         device.scp_from_device('{0}/*'.format(tmp_dir), artifact_dir)
         check_output('chmod -R a+r {0}'.format(artifact_dir), shell=True)
 
