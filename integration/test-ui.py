@@ -141,6 +141,7 @@ def test_teardown(driver):
 
 def run(cmd):
     try:
+        print(cmd)
         output = check_output(cmd, stderr=STDOUT, shell=True).decode()
         print(output)
         return output.strip()
