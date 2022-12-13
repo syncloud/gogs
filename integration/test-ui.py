@@ -92,7 +92,7 @@ def test_git_cli_https(selenium, device_user, device_password, app_domain, ui_mo
     selenium.screenshot('cli-https-commit')
 
 
-def test_git_cli_ssh(selenium, device_user, ui_mode):
+def test_git_cli_ssh(selenium, device_user, ui_mode, app_domain):
     run("ssh-keygen -b 2048 -t rsa -N '' -f /root/.ssh/id_rsa")
     key = run("cat /root/.ssh/id_rsa.pub")
     run("rm -rf init")
@@ -113,6 +113,8 @@ def test_git_cli_ssh(selenium, device_user, ui_mode):
     url = selenium.find_by_id("repo-clone-url").get_property("value")
 
     run("rm -rf init")
+    run("ssh-keyscan -t rsa {0} >> /root/.ssh/known_hosts".format(app_domain))
+
     run("git clone {0} init".format(url))
     run("cd init; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
