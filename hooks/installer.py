@@ -47,7 +47,7 @@ class Installer:
         home_folder = join('/home', USER_NAME)
         linux.useradd(USER_NAME, home_folder=home_folder, shell='/bin/bash')
         app_config_dir = join(self.app_dir, 'config')
-        shutil.copy(join(app_config_dir, '.bash_profile'), home_folder)
+        shutil.copy(join(app_config_dir, '.bashrc'), home_folder)
         log_path = join(self.app_data_dir, 'log')
         fs.makepath(log_path)
         gogs_repos_path = storage.init_storage(APP_NAME, USER_NAME)
