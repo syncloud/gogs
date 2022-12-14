@@ -113,7 +113,6 @@ def test_git_cli_ssh(selenium, device_user, ui_mode, app_domain):
     url = selenium.find_by_id("repo-clone-url").get_property("value")
 
     run("rm -rf init")
-    assert 'Gogs does not provide shell access' in run("ssh git@{0}".format(app_domain))
     run("ssh-keyscan -t rsa {0} > /root/.ssh/known_hosts".format(app_domain))
 
     run("git clone {0} init".format(url))
@@ -121,6 +120,7 @@ def test_git_cli_ssh(selenium, device_user, ui_mode, app_domain):
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
     selenium.screenshot('cli-ssh-commit')
+    assert 'Gogs does not provide shell access' in run("ssh git@{0}".format(app_domain))
 
 
 def test_hook_path(device, device_user):
