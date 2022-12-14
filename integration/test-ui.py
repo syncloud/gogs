@@ -101,11 +101,11 @@ def test_git_cli_ssh(selenium, device_user, ui_mode, app_domain):
     selenium.find_by_xpath("//a[@href='/user/settings']").click()
     selenium.find_by_xpath("//a[@href='/user/settings/ssh']").click()
     selenium.find_by_xpath("//div[text()='Add Key']").click()
-    key_name = 'key-'.format(ui_mode)
+    key_name = 'key-{0}'.format(ui_mode)
     selenium.find_by_id("title").send_keys(key_name)
     selenium.find_by_id("content").send_keys(key)
     selenium.find_by_xpath("//button[contains(.,'Add Key')]").click()
-    selenium.find_by_xpath("//strong[contains(.,{0})]".format(key_name)).click()
+    #selenium.find_by_xpath("//strong[contains(.,{0})]".format(key_name)).click()
     selenium.screenshot('ssh-keys')
 
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
