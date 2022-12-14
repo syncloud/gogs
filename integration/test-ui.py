@@ -115,11 +115,17 @@ def test_git_cli_ssh(selenium, device_user, ui_mode, app_domain):
     run("rm -rf init")
     run("ssh-keyscan -t rsa {0} > /root/.ssh/known_hosts".format(app_domain))
 
+    # TODO: only works in real env :(
+    # Gogs: Internal error
+    # fatal: Could not read from remote repository.
+    # (may not be related) log/hooks/serv.log: serv.go:48 fail()] Failed to execute git command: exec: "git-upload-pack": executable file not found in $PATH
+
     run("git clone {0} init".format(url))
     run("cd init; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
     selenium.screenshot('cli-ssh-commit')
+
     assert 'Gogs does not provide shell access' in run("ssh git@{0}".format(app_domain))
 
 
