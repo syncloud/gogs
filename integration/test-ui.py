@@ -87,7 +87,7 @@ def test_git_cli_https(selenium, device_user, device_password, app_domain, ui_mo
     run("git config --global http.sslverify false")
     run("rm -rf init")
     run("git clone https://{0}:{1}@{2}/{3}/init init".format(device_user, device_password, app_domain, device_user))
-    run("cd init; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
+    run("cd init; touch https-test-{0}; git add .; git commit -am 'https-test-{0}'; git push;".format(ui_mode))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
     selenium.screenshot('cli-https-commit')
@@ -117,7 +117,7 @@ def test_git_cli_ssh(selenium, device_user, ui_mode, app_domain):
     run("ssh-keyscan -t rsa {0} > /root/.ssh/known_hosts".format(app_domain))
 
     run("git clone {0} init".format(url))
-    run("cd init; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
+    run("cd init; touch ssh-test-{0}; git add .; git commit -am 'ssh-test-{0}'; git push;".format(ui_mode))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
     selenium.screenshot('cli-ssh-commit')
