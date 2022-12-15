@@ -81,9 +81,8 @@ class Installer:
     def post_refresh(self):
         self.log.info('post refresh')
         self.init_config()
-        if self.db.requires_upgrade():
-            self.db.remove()
-            self.db.init()
+        self.db.remove()
+        self.db.init()
         self.db.init_config()
 
     def installed(self):
@@ -98,9 +97,7 @@ class Installer:
 
     def upgrade(self):
         self.log.info('upgrade')
-        if self.db.requires_upgrade():
-            self.log.info('db requires an upgrade, restoring db')
-            self.db.restore()
+        self.db.restore()
 
     def initialize(self):
         self.log.info('initialize')
@@ -257,3 +254,11 @@ class Installer:
             time.sleep(interval)
         raise Exception('Timeout waiting for url: {0}'.format(url))
 
+    def backup_pre_stop(self):
+        self.pre_refresh()
+
+    def restore_pre_start(self):
+        self.post_refresh()
+
+    def restore_post_start(self):
+        self.configure()

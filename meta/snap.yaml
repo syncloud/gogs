@@ -28,6 +28,15 @@ apps:
   access-change:
     command: hooks/access-change
 
+  backup-pre-stop:
+    command: hooks/backup-pre-stop
+
+  restore-pre-start:
+    command: hooks/restore-pre-start
+
+  restore-post-start:
+    command: hooks/restore-post-start
+
   psql:
     command: bin/psql.sh
 
