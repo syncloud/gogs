@@ -45,7 +45,9 @@ class Installer:
 
     def init_config(self):
         home_folder = join('/home', USER_NAME)
-        linux.useradd(USER_NAME, home_folder=home_folder)
+        linux.useradd(USER_NAME, home_folder=home_folder, shell='/bin/bash')
+        app_config_dir = join(self.app_dir, 'config')
+        shutil.copy(join(app_config_dir, '.bashrc'), home_folder)
         log_path = join(self.app_data_dir, 'log')
         fs.makepath(log_path)
         gogs_repos_path = storage.init_storage(APP_NAME, USER_NAME)
@@ -64,8 +66,7 @@ class Installer:
             'web_secret': uuid.uuid4().hex,
             'disable_registration': False
         }
-        templates_path = join(self.app_dir, 'config')
-        gen.generate_files(templates_path, self.config_dir, variables)
+        gen.generate_files(app_config_dir, self.config_dir, variables)
         fs.chownpath(self.app_data_dir, USER_NAME, recursive=True)
         fs.chownpath(self.data_dir, USER_NAME, recursive=True)
 
@@ -236,6 +237,10 @@ class Installer:
 
     def prepare_storage(self):
         storage.init_storage(APP_NAME, USER_NAME)
+
+    def on_domain_change(self):
+        self.log.info('domain change')
+        self.init_config()
 
     def wait_url(self, url, timeout, interval=3):
         t0 = time.time()
