@@ -17,6 +17,7 @@ def module_setup(request, device, log_dir, ui_mode, artifact_dir):
         
         device.run_ssh('mkdir -p {0}/{1}'.format(tmp_dir, ui_mode), throw=False)
         device.run_ssh('journalctl > {0}/{1}/journalctl.log'.format(tmp_dir, ui_mode), throw=False)
+        device.run_ssh('cp -r /var/snap/gogs/common/log {0}/{1}'.format(tmp_dir, ui_mode), throw=False)
         device.scp_from_device('{0}/*'.format(tmp_dir), artifact_dir)
         check_output('chmod -R a+r {0}'.format(artifact_dir), shell=True)
 
@@ -82,14 +83,46 @@ def test_web_commit(selenium, device_user):
     selenium.screenshot('web-commit')
 
 
-def test_git_cli(selenium, device_user, device_password, app_domain, ui_mode):
+def test_git_cli_https(selenium, device_user, device_password, app_domain, ui_mode):
     run("git config --global http.sslverify false")
     run("rm -rf init")
     run("git clone https://{0}:{1}@{2}/{3}/init init".format(device_user, device_password, app_domain, device_user))
-    run("cd init; touch {0}; git add .; git commit -am 'test-{0}'; git push;".format(ui_mode))
+    run("cd init; touch https-test-{0}; git add .; git commit -am 'https-test-{0}'; git push;".format(ui_mode))
     selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
     selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
-    selenium.screenshot('cli-commit')
+    selenium.screenshot('cli-https-commit')
+
+
+def test_git_cli_ssh(selenium, device_user, ui_mode, app_domain):
+    run("ssh-keygen -b 2048 -t rsa -N '' -f /root/.ssh/id_rsa")
+    key = run("cat /root/.ssh/id_rsa.pub")
+
+    selenium.find_by_xpath("//span[@class='text avatar']").click()
+    selenium.find_by_xpath("//a[@href='/user/settings']").click()
+    selenium.find_by_xpath("//a[@href='/user/settings/ssh']").click()
+    selenium.find_by_xpath("//div[text()='Add Key']").click()
+    key_name = 'key-{0}'.format(ui_mode)
+    selenium.find_by_id("title").send_keys(key_name)
+    selenium.find_by_id("content").send_keys(key)
+    selenium.find_by_xpath("//button[contains(.,'Add Key')]").click()
+    #selenium.find_by_xpath("//strong[contains(.,{0})]".format(key_name)).click()
+    selenium.screenshot('ssh-keys')
+
+    selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
+    selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
+    selenium.find_by_id("repo-clone-ssh").click()
+    url = selenium.find_by_id("repo-clone-url").get_property("value")
+
+    run("rm -rf init")
+    run("ssh-keyscan -t rsa {0} > /root/.ssh/known_hosts".format(app_domain))
+
+    run("git clone {0} init".format(url))
+    run("cd init; touch ssh-test-{0}; git add .; git commit -am 'ssh-test-{0}'; git push;".format(ui_mode))
+    selenium.find_by_xpath("//a[contains(.,'Dashboard')]").click()
+    selenium.find_by_xpath("//a[@href='/{0}/init']".format(device_user)).click()
+    selenium.screenshot('cli-ssh-commit')
+
+    assert 'Gogs does not provide shell access' in run("ssh git@{0}".format(app_domain))
 
 
 def test_hook_path(device, device_user):
@@ -111,8 +144,10 @@ def test_teardown(driver):
 
 def run(cmd):
     try:
+        print(cmd)
         output = check_output(cmd, stderr=STDOUT, shell=True).decode()
         print(output)
+        return output.strip()
     except CalledProcessError as e:
         print("error: " + e.output.decode())
         raise e

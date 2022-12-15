@@ -1,0 +1,1 @@
+export PATH=/snap/gogs/current/git/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

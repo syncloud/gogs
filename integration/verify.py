@@ -111,5 +111,9 @@ def test_storage_change_event(device):
     device.run_ssh('snap run gogs.storage-change > {0}/storage-change.log'.format(TMP_DIR))
 
 
+def test_access_change_event(device):
+    device.run_ssh('snap run gogs.access-change > {0}/access-change.log'.format(TMP_DIR))
+
+
 def test_reinstall(app_archive_path, app_domain, device_password):
     local_install(app_domain, device_password, app_archive_path)
