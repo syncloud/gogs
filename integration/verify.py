@@ -120,6 +120,7 @@ def test_access_change_event(device):
 
 def test_backup_restore(device, artifact_dir):
     app_log_dir = join(artifact_dir, 'app')
+    os.mkdir(app_log_dir)
     device.run_ssh("snap run platform.cli backup create gogs")
     response = device.run_ssh("snap run platform.cli backup list")
     open('{0}/cli.backup.list.json'.format(app_log_dir), 'w').write(response)
