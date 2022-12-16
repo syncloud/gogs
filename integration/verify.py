@@ -46,7 +46,6 @@ def module_setup(request, data_dir, platform_data_dir, app_dir, device, artifact
         device.run_ssh('ls -la /data/gogs > {0}/data.gogs.ls.log'.format(TMP_DIR), throw=False)
 
         app_log_dir = join(artifact_dir, 'app')
-        os.mkdir(app_log_dir)
         device.scp_from_device('{0}/log/*.log'.format(data_dir), app_log_dir)
         device.scp_from_device('{0}/*.log'.format(TMP_DIR), app_log_dir)
         check_output('chmod -R a+r {0}'.format(artifact_dir), shell=True)
@@ -54,11 +53,13 @@ def module_setup(request, data_dir, platform_data_dir, app_dir, device, artifact
     request.addfinalizer(module_teardown)
 
 
-def test_start(module_setup, device, app, domain, device_host):
+def test_start(module_setup, device, app, domain, device_host, artifact_dir):
     add_host_alias(app, device_host, domain)
     device.run_ssh('date', retries=100, throw=True)
     device.run_ssh('mkdir {0}'.format(TMP_DIR), throw=False)
-        
+    app_log_dir = join(artifact_dir, 'app')
+    os.mkdir(app_log_dir)
+
 
 def test_activate_device(device):
     response = device.activate_custom()
@@ -120,7 +121,6 @@ def test_access_change_event(device):
 
 def test_backup_restore(device, artifact_dir):
     app_log_dir = join(artifact_dir, 'app')
-    os.mkdir(app_log_dir)
     device.run_ssh("snap run platform.cli backup create gogs")
     response = device.run_ssh("snap run platform.cli backup list")
     open('{0}/cli.backup.list.json'.format(app_log_dir), 'w').write(response)
