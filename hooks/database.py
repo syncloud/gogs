@@ -37,7 +37,8 @@ class Database:
         if not isfile(self.backup_file):
             raise Exception("Backup file does not exist: {0}".format(self.backup_file))
 
-        shutil.rmtree(self.database_dir)
+        if isdir(self.database_dir):
+            shutil.rmtree(self.database_dir)
 
     def restore(self):
         self.run('snap run gogs.psql -f {0} postgres'.format(self.backup_file))
@@ -45,13 +46,6 @@ class Database:
     def backup(self):
         self.run('snap run gogs.pgdumpall -f {0}'.format(self.backup_file))
         shutil.copy(self.new_major_version_file, self.old_major_version_file)
-
-    def requires_upgrade(self):
-        if not isfile(self.old_major_version_file):
-            return True
-        old_version = open(self.old_major_version_file).read().strip()
-        new_version = open(self.new_major_version_file).read().strip()
-        return old_version != new_version
 
     def run(self, cmd):
         try:
