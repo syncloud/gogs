@@ -33,3 +33,4 @@ def test_upgrade(device, device_user, device_password, device_host, app_archive_
     local_install(device_host, device_password, app_archive_path)
     wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 10)
 
+
