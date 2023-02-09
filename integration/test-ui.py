@@ -141,9 +141,11 @@ def test_profile_avatar(selenium, device_user):
     selenium.find_by_xpath("//span[@class='text avatar']").click()
     selenium.find_by_xpath("//a[contains(.,'Your Profile')]").click()
     selenium.find_by_id("profile-avatar").click()   
-    selenium.find_by_id('account_avatar').send_keys(join(DIR, 'images', 'profile.jpeg'))
+    selenium.find_by_xpath("//label[contains(.,'Use Custom Avatar')]").click()
+    selenium.find_by_name('avatar').send_keys(join(DIR, 'images', 'profile.jpeg'))
     selenium.screenshot('profile-file')
-    selenium.find_by_xpath("//button[text()='Save changes']").click()    
+    selenium.find_by_xpath("//button[text()='Update Avatar Setting']").click()    
+    selenium.find_by_xpath("//span[contains(.,'successful')]")
     selenium.screenshot('profile-avatar')
     
 def test_teardown(driver):
