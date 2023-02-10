@@ -65,7 +65,7 @@ class Installer:
             'app_domain': urls.get_app_domain_name(APP_NAME),
             'web_secret': uuid.uuid4().hex,
             'disable_registration': False,
-            'data_dir": self.data_dir
+            'data_dir': self.data_dir
         }
         gen.generate_files(app_config_dir, self.config_dir, variables)
         fs.chownpath(self.app_data_dir, USER_NAME, recursive=True)
