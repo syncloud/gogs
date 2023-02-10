@@ -15,8 +15,6 @@ from database import Database
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
-SYSTEMD_GOGS = 'gogs'
-SYSTEMD_POSTGRESQL = 'gogs-postgresql'
 PSQL_PATH = 'postgresql/bin/psql.sh'
 PSQL_DATA_PATH = 'database'
 PSQL_PORT = 5433

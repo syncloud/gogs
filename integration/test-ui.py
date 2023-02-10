@@ -145,7 +145,7 @@ def test_profile_avatar(selenium, device_user):
     selenium.find_by_name('avatar').send_keys(join(DIR, 'images', 'profile.jpeg'))
     selenium.screenshot('profile-file')
     selenium.find_by_xpath("//button[text()='Update Avatar Setting']").click()    
-    selenium.find_by_xpath("//span[contains(.,'successful')]")
+    selenium.find_by_xpath("//p[contains(.,'updated successfully')]")
     selenium.screenshot('profile-avatar')
     
 def test_teardown(driver):
