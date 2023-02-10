@@ -15,8 +15,6 @@ from database import Database
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
-SYSTEMD_GOGS = 'gogs'
-SYSTEMD_POSTGRESQL = 'gogs-postgresql'
 PSQL_PATH = 'postgresql/bin/psql.sh'
 PSQL_DATA_PATH = 'database'
 PSQL_PORT = 5433
@@ -64,7 +62,8 @@ class Installer:
             'app_url': urls.get_app_url(APP_NAME),
             'app_domain': urls.get_app_domain_name(APP_NAME),
             'web_secret': uuid.uuid4().hex,
-            'disable_registration': False
+            'disable_registration': False,
+            'data_dir': self.data_dir
         }
         gen.generate_files(app_config_dir, self.config_dir, variables)
         fs.chownpath(self.app_data_dir, USER_NAME, recursive=True)
@@ -81,9 +80,8 @@ class Installer:
     def post_refresh(self):
         self.log.info('post refresh')
         self.init_config()
-        if self.db.requires_upgrade():
-            self.db.remove()
-            self.db.init()
+        self.db.remove()
+        self.db.init()
         self.db.init_config()
 
     def installed(self):
@@ -98,9 +96,7 @@ class Installer:
 
     def upgrade(self):
         self.log.info('upgrade')
-        if self.db.requires_upgrade():
-            self.log.info('db requires an upgrade, restoring db')
-            self.db.restore()
+        self.db.restore()
 
     def initialize(self):
         self.log.info('initialize')
@@ -257,3 +253,11 @@ class Installer:
             time.sleep(interval)
         raise Exception('Timeout waiting for url: {0}'.format(url))
 
+    def backup_pre_stop(self):
+        self.pre_refresh()
+
+    def restore_pre_start(self):
+        self.post_refresh()
+
+    def restore_post_start(self):
+        self.configure()
