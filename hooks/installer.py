@@ -15,8 +15,6 @@ from database import Database
 
 APP_NAME = 'gogs'
 USER_NAME = 'git'
-SYSTEMD_GOGS = 'gogs'
-SYSTEMD_POSTGRESQL = 'gogs-postgresql'
 PSQL_PATH = 'postgresql/bin/psql.sh'
 PSQL_DATA_PATH = 'database'
 PSQL_PORT = 5433
@@ -64,7 +62,8 @@ class Installer:
             'app_url': urls.get_app_url(APP_NAME),
             'app_domain': urls.get_app_domain_name(APP_NAME),
             'web_secret': uuid.uuid4().hex,
-            'disable_registration': False
+            'disable_registration': False,
+            'data_dir': self.data_dir
         }
         gen.generate_files(app_config_dir, self.config_dir, variables)
         fs.chownpath(self.app_data_dir, USER_NAME, recursive=True)

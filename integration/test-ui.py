@@ -137,6 +137,16 @@ def test_ldap_auth(selenium, device_user):
     selenium.find_by_xpath("//h4[contains(.,'Edit Authentication Setting')]")
     selenium.screenshot('ldap-auth')
 
+def test_profile_avatar(selenium, device_user):
+    selenium.find_by_xpath("//span[@class='text avatar']").click()
+    selenium.find_by_xpath("//a[contains(.,'Your Profile')]").click()
+    selenium.find_by_id("profile-avatar").click()   
+    selenium.find_by_xpath("//label[contains(.,'Use Custom Avatar')]").click()
+    selenium.find_by_name('avatar').send_keys(join(DIR, 'images', 'profile.jpeg'))
+    selenium.screenshot('profile-file')
+    selenium.find_by_xpath("//button[text()='Update Avatar Setting']").click()    
+    selenium.find_by_xpath("//p[contains(.,'updated successfully')]")
+    selenium.screenshot('profile-avatar')
     
 def test_teardown(driver):
     driver.quit()
