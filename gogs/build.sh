@@ -9,4 +9,6 @@ mkdir -p ${BUILD_DIR}/lib
 
 cp -r /app/gogs ${BUILD_DIR}/app/
 cp -r /lib/. ${BUILD_DIR}/lib/
+mkdir -p ${BUILD_DIR}/usr/lib
+cp -r /usr/lib/. ${BUILD_DIR}/usr/lib/
 cp ${DIR}/bin/gogs.sh ${BUILD_DIR}/bin/gogs
