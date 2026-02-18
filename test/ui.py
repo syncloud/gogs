@@ -29,6 +29,12 @@ def test_start(module_setup, app, domain, device_host, device):
     add_host_alias(app, device_host, domain)
 
 
+def test_no_registration(selenium, app_domain):
+    selenium.driver.get("https://{0}/user/sign_up".format(app_domain))
+    selenium.screenshot('no-registration')
+    assert len(selenium.driver.find_elements(By.ID, 'user_name')) == 0
+
+
 def test_login(selenium, device_user, device_password):
     lib.login(selenium, device_user, device_password)
 
