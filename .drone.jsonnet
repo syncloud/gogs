@@ -1,8 +1,15 @@
 local name = "gogs";
 local browser = "firefox";
-local go = "1.18.5";
+local gogs_ver = "0.14.1";
+local nginx = "1.24.0";
+local python = '3.12-slim-bookworm';
+local debian = 'bookworm-slim';
+local distro = "bookworm";
+local platform = '25.09';
+local selenium_ver = '4.35.0-20250828';
+local dind = '20.10.21-dind';
 
-local build(arch, test_ui, dind) = [{
+local build(arch, test_ui) = [{
     kind: "pipeline",
     type: "docker",
     name: arch,
@@ -13,29 +20,37 @@ local build(arch, test_ui, dind) = [{
     steps: [
         {
             name: "version",
-            image: "debian:buster-slim",
+            image: "debian:" + debian,
             commands: [
                 "echo $DRONE_BUILD_NUMBER > version"
             ]
         },
         {
-            name: "download",
-            image: "debian:buster-slim",
+            name: "gogs",
+            image: "gogs/gogs:" + gogs_ver,
             commands: [
-                "./download.sh"
+                "./gogs/build.sh"
             ]
         },
-       {
-            name: "build",
-            image: "golang:" + go,
+        {
+            name: "gogs test",
+            image: "syncloud/platform-" + distro + "-" + arch + ":" + platform,
             commands: [
-                "mkdir build/snap/bin",
-                "cd build/gogs",
-                "go build -ldflags '-linkmode external -extldflags -static' -o ../snap/bin/gogs",
-                "chmod +x ../snap/bin/gogs",
-                "mkdir ../snap/gogs",
-                "cp -r public ../snap/gogs",
-                "cp -r templates ../snap/gogs"
+                "./gogs/test.sh"
+            ]
+        },
+        {
+            name: "nginx",
+            image: "nginx:" + nginx,
+            commands: [
+                "./nginx/build.sh"
+            ]
+        },
+        {
+            name: "nginx test",
+            image: "syncloud/platform-" + distro + "-" + arch + ":" + platform,
+            commands: [
+                "./nginx/test.sh"
             ]
         },
         {
@@ -53,7 +68,7 @@ local build(arch, test_ui, dind) = [{
         },
         {
             name: "test postgresql",
-            image: "debian:buster-slim",
+            image: "debian:" + debian,
             commands: [
                 "./postgresql/test.sh"
             ]
@@ -86,20 +101,20 @@ local build(arch, test_ui, dind) = [{
         },
         {
             name: "package",
-            image: "debian:buster-slim",
+            image: "debian:" + debian,
             commands: [
                 "VERSION=$(cat version)",
                 "./package.sh " + name + " $VERSION "
             ]
         },
         {
-            name: "test-integration-buster",
-            image: "python:3.8-slim-buster",
+            name: "test-integration-bookworm",
+            image: "python:" + python,
             commands: [
               "APP_ARCHIVE_PATH=$(realpath $(cat package.name))",
-              "cd integration",
+              "cd test",
               "./deps.sh",
-              "py.test -x -s verify.py --distro=buster --domain=buster.com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + ".buster.com --app="  + name + " --device-user=gogs --arch=" + arch
+              "py.test -x -s test.py --distro=" + distro + " --domain=" + distro + ".com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + "." + distro + ".com --app="  + name + " --device-user=gogs --arch=" + arch
             ]
         }] +
         ( if test_ui then ([
@@ -124,25 +139,25 @@ local build(arch, test_ui, dind) = [{
        }] +
         [{
             name: "test-ui-" + mode,
-            image: "python:3.8-slim-buster",
+            image: "python:" + python,
             commands: [
-              "cd integration",
+              "cd test",
               "./deps.sh",
               "pip install -r requirements.txt",
-              "py.test -x -s test-ui.py --distro=buster --ui-mode=" + mode + " --domain=buster.com --device-host=" + name + ".buster.com --app=" + name + " --device-user=gogs --browser=" + browser,
+              "py.test -x -s ui.py --distro=" + distro + " --ui-mode=" + mode + " --domain=" + distro + ".com --device-host=" + name + "." + distro + ".com --app=" + name + " --device-user=gogs --browser=" + browser,
             ]
-        } for mode in ["desktop", "mobile"] 
+        } for mode in ["desktop", "mobile"]
        ]
         +
        [
         {
             name: "test-upgrade",
-            image: "python:3.8-slim-buster",
+            image: "python:" + python,
             commands: [
               "APP_ARCHIVE_PATH=$(realpath $(cat package.name))",
-              "cd integration",
+              "cd test",
               "./deps.sh",
-              "py.test -x -s test-upgrade.py --distro=buster --ui-mode=desktop --domain=buster.com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + ".buster.com --app=" + name + " --device-user=gogs --browser=" + browser,
+              "py.test -x -s upgrade.py --distro=" + distro + " --ui-mode=desktop --domain=" + distro + ".com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + "." + distro + ".com --app=" + name + " --device-user=gogs --browser=" + browser,
             ],
             privileged: true,
             volumes: [{
@@ -152,18 +167,18 @@ local build(arch, test_ui, dind) = [{
         } ] +
         [{
             name: "test-ui-upgrade",
-            image: "python:3.8-slim-buster",
+            image: "python:" + python,
             commands: [
-              "cd integration",
+              "cd test",
               "./deps.sh",
               "pip install -r requirements.txt",
-              "py.test -x -s test-ui.py --distro=buster --ui-mode=" + mode + " --domain=buster.com --device-host=" + name + ".buster.com --app=" + name + " --device-user=gogs --browser=" + browser,
+              "py.test -x -s ui.py --distro=" + distro + " --ui-mode=" + mode + " --domain=" + distro + ".com --device-host=" + name + "." + distro + ".com --app=" + name + " --device-user=gogs --browser=" + browser,
             ]
-        } for mode in ["desktop"] 
+        } for mode in ["desktop"]
        ]) else [] ) + [
         {
             name: "upload",
-            image: "debian:buster-slim",
+            image: "debian:" + debian,
             environment: {
                 AWS_ACCESS_KEY_ID: {
                     from_secret: "AWS_ACCESS_KEY_ID"
@@ -224,8 +239,8 @@ local build(arch, test_ui, dind) = [{
                 ]
             },
             {
-                name: name + ".buster.com",
-                image: "syncloud/platform-buster-" + arch + ":22.01",
+                name: name + "." + distro + ".com",
+                image: "syncloud/platform-" + distro + "-" + arch + ":" + platform,
                 privileged: true,
                 volumes: [
                     {
@@ -241,7 +256,7 @@ local build(arch, test_ui, dind) = [{
         ] + ( if test_ui then [
             {
                 name: "selenium",
-                image: "selenium/standalone-" + browser + ":4.1.2-20220208",
+                image: "selenium/standalone-" + browser + ":" + selenium_ver,
                 environment: {
                     SE_NODE_SESSION_TIMEOUT: "999999"
                 },
@@ -289,7 +304,7 @@ local build(arch, test_ui, dind) = [{
          steps: [
          {
                  name: "promote",
-                 image: "debian:buster-slim",
+                 image: "debian:" + debian,
                  environment: {
                      AWS_ACCESS_KEY_ID: {
                          from_secret: "AWS_ACCESS_KEY_ID"
@@ -314,6 +329,6 @@ local build(arch, test_ui, dind) = [{
      }
 ];
 
-build("amd64", true, "20.10.21-dind") +
-build("arm64", false, "19.03.8-dind") +
-build("arm", false, "19.03.8-dind")
+build("amd64", true) +
+build("arm64", false) +
+build("arm", false)
