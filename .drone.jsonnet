@@ -70,15 +70,16 @@ local build(arch, test_ui) = [{
         },
       {
             name: "package git",
-            image: "docker:" + dind,
+            image: "alpine/git:v2.36.2",
             commands: [
                 "./git/build.sh"
-            ],
-            volumes: [
-                {
-                    name: "dockersock",
-                    path: "/var/run"
-                }
+            ]
+        },
+        {
+            name: "git test",
+            image: "syncloud/platform-" + distro + "-" + arch + ":" + platform,
+            commands: [
+                "./git/test.sh"
             ]
         },
         {
