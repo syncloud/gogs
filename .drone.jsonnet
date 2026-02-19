@@ -8,6 +8,7 @@ local distro = "bookworm";
 local platform = '25.09';
 local selenium_ver = '4.35.0-20250828';
 local dind = '20.10.21-dind';
+local postgresql = '14-bookworm';
 
 local build(arch, test_ui) = [{
     kind: "pipeline",
@@ -54,21 +55,15 @@ local build(arch, test_ui) = [{
             ]
         },
         {
-            name: "package postgresql",
-            image: "docker:" + dind,
+            name: "postgresql",
+            image: "postgres:" + postgresql,
             commands: [
                 "./postgresql/build.sh"
-            ],
-            volumes: [
-                {
-                    name: "dockersock",
-                    path: "/var/run"
-                }
             ]
         },
         {
-            name: "test postgresql",
-            image: "debian:" + debian,
+            name: "postgresql test",
+            image: "syncloud/platform-" + distro + "-" + arch + ":" + platform,
             commands: [
                 "./postgresql/test.sh"
             ]

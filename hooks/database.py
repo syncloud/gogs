@@ -16,8 +16,6 @@ class Database:
         self.database_dir = database_path
         self.port = port
         self.postgresql_config = join(self.config_dir, 'postgresql.conf')
-        self.old_major_version_file = join(self.data_dir, 'db.major.version')
-        self.new_major_version_file = join(self.app_dir, 'db.major.version')
         self.backup_file = join(self.data_dir, 'database.dump')
 
     def execute(self, database, sql):
@@ -45,7 +43,6 @@ class Database:
 
     def backup(self):
         self.run('snap run gogs.pgdumpall -f {0}'.format(self.backup_file))
-        shutil.copy(self.new_major_version_file, self.old_major_version_file)
 
     def run(self, cmd):
         try:
