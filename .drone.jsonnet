@@ -108,13 +108,13 @@ local build(arch, test_ui) = [{
             ]
         },
         {
-            name: "test-integration-bookworm",
+            name: "test bookworm",
             image: "python:" + python,
             commands: [
               "APP_ARCHIVE_PATH=$(realpath $(cat package.name))",
               "cd test",
               "./deps.sh",
-              "py.test -x -s test.py --distro=" + distro + " --domain=" + distro + ".com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + "." + distro + ".com --app="  + name + " --device-user=gogs --arch=" + arch
+              "py.test -x -s test.py --distro=" + distro + " --app-archive-path=$APP_ARCHIVE_PATH --app=" + name + " --device-user=gogs --arch=" + arch
             ]
         }] +
         ( if test_ui then ([
@@ -138,16 +138,15 @@ local build(arch, test_ui) = [{
         ]
        }] +
         [{
-            name: "test-ui-" + mode,
+            name: "test-ui",
             image: "python:" + python,
             commands: [
               "cd test",
               "./deps.sh",
               "pip install -r requirements.txt",
-              "py.test -x -s ui.py --distro=" + distro + " --ui-mode=" + mode + " --domain=" + distro + ".com --device-host=" + name + "." + distro + ".com --app=" + name + " --device-user=gogs --browser=" + browser,
+              "py.test -x -s ui.py --distro=" + distro + " --app=" + name + " --device-user=gogs --browser=" + browser,
             ]
-        } for mode in ["desktop", "mobile"]
-       ]
+        }]
         +
        [
         {
@@ -157,7 +156,7 @@ local build(arch, test_ui) = [{
               "APP_ARCHIVE_PATH=$(realpath $(cat package.name))",
               "cd test",
               "./deps.sh",
-              "py.test -x -s upgrade.py --distro=" + distro + " --ui-mode=desktop --domain=" + distro + ".com --app-archive-path=$APP_ARCHIVE_PATH --device-host=" + name + "." + distro + ".com --app=" + name + " --device-user=gogs --browser=" + browser,
+              "py.test -x -s upgrade.py --distro=" + distro + " --app-archive-path=$APP_ARCHIVE_PATH --app=" + name + " --device-user=gogs --browser=" + browser,
             ],
             privileged: true,
             volumes: [{
@@ -172,10 +171,9 @@ local build(arch, test_ui) = [{
               "cd test",
               "./deps.sh",
               "pip install -r requirements.txt",
-              "py.test -x -s ui.py --distro=" + distro + " --ui-mode=" + mode + " --domain=" + distro + ".com --device-host=" + name + "." + distro + ".com --app=" + name + " --device-user=gogs --browser=" + browser,
+              "py.test -x -s ui.py --distro=" + distro + " --app=" + name + " --device-user=gogs --browser=" + browser,
             ]
-        } for mode in ["desktop"]
-       ]) else [] ) + [
+        }]) else [] ) + [
         {
             name: "upload",
             image: "debian:" + debian,
