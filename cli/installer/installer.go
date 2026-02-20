@@ -82,6 +82,9 @@ func (i *Installer) UpdateConfigs() error {
 	if err := createGitUser(UserName, homeFolder); err != nil {
 		return err
 	}
+	if err := linux.CreateUser(App); err != nil {
+		return err
+	}
 	if err := copyFile(path.Join(i.appDir, "config", ".bashrc"), path.Join(homeFolder, ".bashrc")); err != nil {
 		return err
 	}
