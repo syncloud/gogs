@@ -48,6 +48,7 @@ type Variables struct {
 
 type Installer struct {
 	appDir         string
+	commonDir      string
 	dataDir        string
 	configDir      string
 	installFile    string
@@ -59,16 +60,18 @@ type Installer struct {
 
 func New(logger *zap.Logger) *Installer {
 	appDir := fmt.Sprintf("/snap/%s/current", App)
+	commonDir := fmt.Sprintf("/var/snap/%s/common", App)
 	dataDir := fmt.Sprintf("/var/snap/%s/current", App)
 	configDir := path.Join(dataDir, "config")
 	executor := NewExecutor(logger)
 	return &Installer{
 		appDir:         appDir,
+		commonDir:      commonDir,
 		dataDir:        dataDir,
 		configDir:      configDir,
-		installFile:    path.Join(dataDir, "installed"),
+		installFile:    path.Join(commonDir, "installed"),
 		platformClient: platform.New(),
-		database:       NewDatabase(appDir, dataDir, configDir, DbUser, PsqlPort, executor, logger),
+		database:       NewDatabase(appDir, commonDir, dataDir, configDir, DbUser, PsqlPort, executor, logger),
 		executor:       executor,
 		logger:         logger,
 	}
@@ -82,7 +85,7 @@ func (i *Installer) UpdateConfigs() error {
 	if err := copyFile(path.Join(i.appDir, "config", ".bashrc"), path.Join(homeFolder, ".bashrc")); err != nil {
 		return err
 	}
-	logPath := path.Join(i.dataDir, "log")
+	logPath := path.Join(i.commonDir, "log")
 	if err := os.MkdirAll(logPath, 0755); err != nil {
 		return err
 	}
@@ -100,7 +103,7 @@ func (i *Installer) UpdateConfigs() error {
 	}
 	variables := Variables{
 		AppDir:              i.appDir,
-		AppDataDir:          i.dataDir,
+		AppDataDir:          i.commonDir,
 		DatabaseDir:         i.database.DatabaseDir(),
 		DbPsqlPort:          PsqlPort,
 		DbName:              DbName,
@@ -120,6 +123,9 @@ func (i *Installer) UpdateConfigs() error {
 		variables,
 	)
 	if err != nil {
+		return err
+	}
+	if err := linux.Chown(i.commonDir, UserName); err != nil {
 		return err
 	}
 	return linux.Chown(i.dataDir, UserName)
@@ -163,7 +169,7 @@ func (i *Installer) Initialize() error {
 		return err
 	}
 
-	socketPath := path.Join(i.dataDir, "web.socket")
+	socketPath := path.Join(i.commonDir, "web.socket")
 
 	signupSession := newGogsSession(socketPath, i.logger)
 	if err := signupSession.WaitURL(60 * time.Second); err != nil {

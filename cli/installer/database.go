@@ -23,15 +23,15 @@ type Database struct {
 	logger      *zap.Logger
 }
 
-func NewDatabase(appDir, dataDir, configDir, user string, port int, executor *Executor, logger *zap.Logger) *Database {
+func NewDatabase(appDir, commonDir, dataDir, configDir, user string, port int, executor *Executor, logger *zap.Logger) *Database {
 	return &Database{
 		appDir:      appDir,
 		dataDir:     dataDir,
 		configDir:   configDir,
 		user:        user,
-		databaseDir: path.Join(dataDir, "database"),
+		databaseDir: path.Join(commonDir, "database"),
 		port:        port,
-		backupFile:  path.Join(dataDir, "database.dump"),
+		backupFile:  path.Join(commonDir, "database.dump"),
 		executor:    executor,
 		logger:      logger,
 	}
