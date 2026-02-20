@@ -7,7 +7,7 @@ local debian = 'bookworm-slim';
 local distro = "bookworm";
 local platform = '25.09';
 local selenium_ver = '4.35.0-20250828';
-local dind = '20.10.21-dind';
+local golang = '1.24.0';
 local postgresql = '14-bookworm';
 
 local build(arch, test_ui) = [{
@@ -83,16 +83,16 @@ local build(arch, test_ui) = [{
             ]
         },
         {
-            name: "package python",
-            image: "docker:" + dind,
+            name: "cli",
+            image: "golang:" + golang,
             commands: [
-                "./python/build.sh"
-            ],
-            volumes: [
-                {
-                    name: "dockersock",
-                    path: "/var/run"
-                }
+                "cd cli",
+                "mkdir -p ../build/snap/meta/hooks",
+                "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/install ./cmd/install",
+                "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/configure ./cmd/configure",
+                "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/pre-refresh ./cmd/pre-refresh",
+                "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/post-refresh ./cmd/post-refresh",
+                "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/bin/cli ./cmd/cli",
             ]
         },
         {
@@ -222,17 +222,6 @@ local build(arch, test_ui) = [{
         },
         services: [
             {
-                name: "docker",
-                image: "docker:" + dind,
-                privileged: true,
-                volumes: [
-                    {
-                        name: "dockersock",
-                        path: "/var/run"
-                    }
-                ]
-            },
-            {
                 name: name + "." + distro + ".com",
                 image: "syncloud/platform-" + distro + "-" + arch + ":" + platform,
                 privileged: true,
@@ -261,10 +250,6 @@ local build(arch, test_ui) = [{
             }
         ] else [] ),
         volumes: [
-            {
-                name: "dockersock",
-                temp: {}
-            },
             {
                 name: "dbus",
                 host: {

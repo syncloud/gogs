@@ -8,17 +8,6 @@
    },
    "services": [
       {
-         "image": "docker:20.10.21-dind",
-         "name": "docker",
-         "privileged": true,
-         "volumes": [
-            {
-               "name": "dockersock",
-               "path": "/var/run"
-            }
-         ]
-      },
-      {
          "image": "syncloud/platform-bookworm-amd64:25.09",
          "name": "gogs.bookworm.com",
          "privileged": true,
@@ -113,16 +102,16 @@
       },
       {
          "commands": [
-            "./python/build.sh"
+            "cd cli",
+            "mkdir -p ../build/snap/meta/hooks",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/install ./cmd/install",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/configure ./cmd/configure",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/pre-refresh ./cmd/pre-refresh",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/post-refresh ./cmd/post-refresh",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/bin/cli ./cmd/cli"
          ],
-         "image": "docker:20.10.21-dind",
-         "name": "package python",
-         "volumes": [
-            {
-               "name": "dockersock",
-               "path": "/var/run"
-            }
-         ]
+         "image": "golang:1.24.0",
+         "name": "cli"
       },
       {
          "commands": [
@@ -257,10 +246,6 @@
    "type": "docker",
    "volumes": [
       {
-         "name": "dockersock",
-         "temp": { }
-      },
-      {
          "host": {
             "path": "/var/run/dbus"
          },
@@ -326,17 +311,6 @@
       "os": "linux"
    },
    "services": [
-      {
-         "image": "docker:20.10.21-dind",
-         "name": "docker",
-         "privileged": true,
-         "volumes": [
-            {
-               "name": "dockersock",
-               "path": "/var/run"
-            }
-         ]
-      },
       {
          "image": "syncloud/platform-bookworm-arm64:25.09",
          "name": "gogs.bookworm.com",
@@ -419,16 +393,16 @@
       },
       {
          "commands": [
-            "./python/build.sh"
+            "cd cli",
+            "mkdir -p ../build/snap/meta/hooks",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/install ./cmd/install",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/configure ./cmd/configure",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/pre-refresh ./cmd/pre-refresh",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/post-refresh ./cmd/post-refresh",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/bin/cli ./cmd/cli"
          ],
-         "image": "docker:20.10.21-dind",
-         "name": "package python",
-         "volumes": [
-            {
-               "name": "dockersock",
-               "path": "/var/run"
-            }
-         ]
+         "image": "golang:1.24.0",
+         "name": "cli"
       },
       {
          "commands": [
@@ -507,10 +481,6 @@
    "type": "docker",
    "volumes": [
       {
-         "name": "dockersock",
-         "temp": { }
-      },
-      {
          "host": {
             "path": "/var/run/dbus"
          },
@@ -576,17 +546,6 @@
       "os": "linux"
    },
    "services": [
-      {
-         "image": "docker:20.10.21-dind",
-         "name": "docker",
-         "privileged": true,
-         "volumes": [
-            {
-               "name": "dockersock",
-               "path": "/var/run"
-            }
-         ]
-      },
       {
          "image": "syncloud/platform-bookworm-arm:25.09",
          "name": "gogs.bookworm.com",
@@ -669,16 +628,16 @@
       },
       {
          "commands": [
-            "./python/build.sh"
+            "cd cli",
+            "mkdir -p ../build/snap/meta/hooks",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/install ./cmd/install",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/configure ./cmd/configure",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/pre-refresh ./cmd/pre-refresh",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/post-refresh ./cmd/post-refresh",
+            "CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/bin/cli ./cmd/cli"
          ],
-         "image": "docker:20.10.21-dind",
-         "name": "package python",
-         "volumes": [
-            {
-               "name": "dockersock",
-               "path": "/var/run"
-            }
-         ]
+         "image": "golang:1.24.0",
+         "name": "cli"
       },
       {
          "commands": [
@@ -756,10 +715,6 @@
    },
    "type": "docker",
    "volumes": [
-      {
-         "name": "dockersock",
-         "temp": { }
-      },
       {
          "host": {
             "path": "/var/run/dbus"
