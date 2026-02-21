@@ -154,9 +154,6 @@ def test_profile_avatar(selenium, device_user):
     selenium.find_by_xpath("//p[contains(.,'updated successfully')]")
     selenium.screenshot('profile-avatar')
     
-def test_teardown(driver):
-    driver.quit()
-
 
 def run(cmd):
     try:
