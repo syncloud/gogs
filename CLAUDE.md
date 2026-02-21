@@ -54,7 +54,8 @@ drone exec --pipeline amd64 --trusted \
   --include postgresql \
   --include "postgresql test" \
   --include "package git" \
-  --include "package python" \
+  --include "git test" \
+  --include cli \
   --include package \
   --include "test bookworm" \
   .drone.yml
@@ -64,3 +65,20 @@ Notes:
 - `--trusted` is required for privileged/volume steps
 - `--include` selects only listed steps (in pipeline order); omit to run all steps
 - `drone jsonnet --stdout --stream` sends stderr to stderr (proto warnings are harmless)
+- `test bookworm` requires the `gogs.bookworm.com` platform service container to be reachable; `drone exec` does not start services, so run `test-local.sh` instead for a full end-to-end run
+
+# Running locally (full end-to-end)
+
+`test-local.sh` runs the complete pipeline locally without pushing to CI:
+```
+./test-local.sh
+```
+
+It:
+1. Cleans previous build output (via Docker, since build steps run as root)
+2. Regenerates `.drone.yml` from jsonnet
+3. Creates a Docker network (`gogs-local`) and starts the `gogs.bookworm.com` platform service container
+4. Runs all build steps via `drone exec` (version → package)
+5. Runs `test bookworm` in a Python container connected to the platform network
+6. Streams all output to `test-local.log` and stdout
+7. Cleans up the platform container and network on exit
