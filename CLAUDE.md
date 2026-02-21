@@ -7,6 +7,35 @@ CI is Drone CI (JS SPA). Check builds via API:
 curl -s "http://ci.syncloud.org:8080/api/repos/syncloud/gogs/builds?limit=5"
 ```
 
+## CI Artifacts
+
+Artifacts are served at `http://ci.syncloud.org:8081` (nginx file browser SPA).
+Browse via API with `curl -s "http://ci.syncloud.org:8081/files/{repo}/{build}-{arch}/{suite}/desktop/"`.
+
+Example for build 272, amd64, bookworm:
+```
+curl -s "http://ci.syncloud.org:8081/files/gogs/272-amd64/bookworm/desktop/"
+```
+
+Directory structure:
+```
+desktop/
+  journalctl.log              # systemd journal from the UI test run
+  screenshot/
+    {test-name}.png           # screenshot taken during the test
+    {test-name}.html.log      # page source at the time of the screenshot
+  log/
+    gogs.log
+    gorm.log
+    xorm.log
+```
+
+Download a file directly:
+```
+curl -O "http://ci.syncloud.org:8081/files/gogs/272-amd64/bookworm/desktop/screenshot/no-registration-desktop.png"
+curl -O "http://ci.syncloud.org:8081/files/gogs/272-amd64/bookworm/desktop/journalctl.log"
+```
+
 # Running Drone builds locally
 
 Generate `.drone.yml` from jsonnet (run from project root):

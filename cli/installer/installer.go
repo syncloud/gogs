@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -117,7 +116,7 @@ func (i *Installer) UpdateConfigs() error {
 		AppUrl:              appUrl,
 		AppDomain:           appDomain,
 		WebSecret:           uuid.New().String(),
-		DisableRegistration: false,
+		DisableRegistration: i.IsInstalled(),
 		DataDir:             i.dataDir,
 	}
 	err = config.Generate(
@@ -201,10 +200,13 @@ func (i *Installer) Initialize() error {
 	if err := i.database.Execute(DbName, "select * from login_source;"); err != nil {
 		return err
 	}
-	if err := i.disableRegistration(); err != nil {
+	if err := os.WriteFile(i.installFile, []byte("installed\n"), 0644); err != nil {
 		return err
 	}
-	return os.WriteFile(i.installFile, []byte("installed\n"), 0644)
+	if err := i.UpdateConfigs(); err != nil {
+		return err
+	}
+	return i.executor.Run("snapctl", "restart", "gogs.server")
 }
 
 func (i *Installer) Upgrade() error {
@@ -249,16 +251,6 @@ func (i *Installer) RestorePreStart() error {
 
 func (i *Installer) RestorePostStart() error {
 	return i.Configure()
-}
-
-func (i *Installer) disableRegistration() error {
-	configPath := path.Join(i.configDir, "gogs.ini")
-	content, err := os.ReadFile(configPath)
-	if err != nil {
-		return err
-	}
-	newContent := strings.Replace(string(content), "DISABLE_REGISTRATION = false", "DISABLE_REGISTRATION = true", 1)
-	return os.WriteFile(configPath, []byte(newContent), 0644)
 }
 
 func createGitUser(username, homeFolder string) error {
