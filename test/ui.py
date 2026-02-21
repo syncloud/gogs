@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from syncloudlib.integration.hosts import add_host_alias
 from subprocess import check_output, CalledProcessError, STDOUT
-from integration import lib
+from test import lib
 
 DIR = dirname(__file__)
 
