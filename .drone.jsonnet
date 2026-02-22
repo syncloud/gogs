@@ -1,6 +1,6 @@
 local name = "gogs";
 local browser = "firefox";
-local gogs_ver = "0.14.1";
+local gogs_ver = "0.14.2";
 local nginx = "1.24.0";
 local python = '3.12-slim-bookworm';
 local debian = 'bookworm-slim';
