@@ -7,6 +7,7 @@ local debian = 'bookworm-slim';
 local distro_default = 'buster';
 local distros = ['bookworm', 'buster'];
 local platform = '25.09';
+local platform_buster = '25.02';
 local selenium_ver = '4.35.0-20250828';
 local golang = '1.24.0';
 local postgresql = '14-bookworm';
@@ -36,7 +37,7 @@ local build(arch, test_ui) = [{
         },
         {
             name: "gogs test",
-            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform,
+            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform_buster,
             commands: [
                 "./gogs/test.sh"
             ]
@@ -50,7 +51,7 @@ local build(arch, test_ui) = [{
         },
         {
             name: "nginx test",
-            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform,
+            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform_buster,
             commands: [
                 "./nginx/test.sh"
             ]
@@ -64,7 +65,7 @@ local build(arch, test_ui) = [{
         },
         {
             name: "postgresql test",
-            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform,
+            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform_buster,
             commands: [
                 "./postgresql/test.sh"
             ]
@@ -78,7 +79,7 @@ local build(arch, test_ui) = [{
         },
         {
             name: "git test",
-            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform,
+            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform_buster,
             commands: [
                 "./git/test.sh"
             ]
@@ -227,7 +228,7 @@ local build(arch, test_ui) = [{
         services: [
             {
                 name: name + "." + distro + ".com",
-                image: "syncloud/platform-" + distro + "-" + arch + ":" + platform,
+                image: "syncloud/platform-" + distro + "-" + arch + ":" + (if distro == 'buster' then platform_buster else platform),
                 privileged: true,
                 volumes: [
                     {

@@ -1,5 +1,3 @@
-2026/02/22 09:32:48 proto: duplicate proto type registered: PluginSpec
-2026/02/22 09:32:48 proto: duplicate proto type registered: PluginPrivilege
 ---
 {
    "kind": "pipeline",
@@ -25,7 +23,7 @@
          ]
       },
       {
-         "image": "syncloud/platform-buster-amd64:25.09",
+         "image": "syncloud/platform-buster-amd64:25.02",
          "name": "gogs.buster.com",
          "privileged": true,
          "volumes": [
@@ -72,7 +70,7 @@
          "commands": [
             "./gogs/test.sh"
          ],
-         "image": "syncloud/platform-buster-amd64:25.09",
+         "image": "syncloud/platform-buster-amd64:25.02",
          "name": "gogs test"
       },
       {
@@ -86,7 +84,7 @@
          "commands": [
             "./nginx/test.sh"
          ],
-         "image": "syncloud/platform-buster-amd64:25.09",
+         "image": "syncloud/platform-buster-amd64:25.02",
          "name": "nginx test"
       },
       {
@@ -100,7 +98,7 @@
          "commands": [
             "./postgresql/test.sh"
          ],
-         "image": "syncloud/platform-buster-amd64:25.09",
+         "image": "syncloud/platform-buster-amd64:25.02",
          "name": "postgresql test"
       },
       {
@@ -114,7 +112,7 @@
          "commands": [
             "./git/test.sh"
          ],
-         "image": "syncloud/platform-buster-amd64:25.09",
+         "image": "syncloud/platform-buster-amd64:25.02",
          "name": "git test"
       },
       {
@@ -354,7 +352,7 @@
          ]
       },
       {
-         "image": "syncloud/platform-buster-arm64:25.09",
+         "image": "syncloud/platform-buster-arm64:25.02",
          "name": "gogs.buster.com",
          "privileged": true,
          "volumes": [
@@ -388,7 +386,7 @@
          "commands": [
             "./gogs/test.sh"
          ],
-         "image": "syncloud/platform-buster-arm64:25.09",
+         "image": "syncloud/platform-buster-arm64:25.02",
          "name": "gogs test"
       },
       {
@@ -402,7 +400,7 @@
          "commands": [
             "./nginx/test.sh"
          ],
-         "image": "syncloud/platform-buster-arm64:25.09",
+         "image": "syncloud/platform-buster-arm64:25.02",
          "name": "nginx test"
       },
       {
@@ -416,7 +414,7 @@
          "commands": [
             "./postgresql/test.sh"
          ],
-         "image": "syncloud/platform-buster-arm64:25.09",
+         "image": "syncloud/platform-buster-arm64:25.02",
          "name": "postgresql test"
       },
       {
@@ -430,7 +428,7 @@
          "commands": [
             "./git/test.sh"
          ],
-         "image": "syncloud/platform-buster-arm64:25.09",
+         "image": "syncloud/platform-buster-arm64:25.02",
          "name": "git test"
       },
       {
@@ -614,7 +612,7 @@
          ]
       },
       {
-         "image": "syncloud/platform-buster-arm:25.09",
+         "image": "syncloud/platform-buster-arm:25.02",
          "name": "gogs.buster.com",
          "privileged": true,
          "volumes": [
@@ -648,7 +646,7 @@
          "commands": [
             "./gogs/test.sh"
          ],
-         "image": "syncloud/platform-buster-arm:25.09",
+         "image": "syncloud/platform-buster-arm:25.02",
          "name": "gogs test"
       },
       {
@@ -662,7 +660,7 @@
          "commands": [
             "./nginx/test.sh"
          ],
-         "image": "syncloud/platform-buster-arm:25.09",
+         "image": "syncloud/platform-buster-arm:25.02",
          "name": "nginx test"
       },
       {
@@ -676,7 +674,7 @@
          "commands": [
             "./postgresql/test.sh"
          ],
-         "image": "syncloud/platform-buster-arm:25.09",
+         "image": "syncloud/platform-buster-arm:25.02",
          "name": "postgresql test"
       },
       {
@@ -690,7 +688,7 @@
          "commands": [
             "./git/test.sh"
          ],
-         "image": "syncloud/platform-buster-arm:25.09",
+         "image": "syncloud/platform-buster-arm:25.02",
          "name": "git test"
       },
       {
