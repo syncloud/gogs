@@ -14,7 +14,7 @@ def module_setup(request, device, artifact_dir):
         device.run_ssh('journalctl > {0}/refresh.journalctl.log'.format(TMP_DIR), throw=False)
         device.run_ssh('cp /var/snap/gogs/current/database.dump {0}'.format(TMP_DIR), throw=False)
         device.scp_from_device('{0}/*'.format(TMP_DIR), artifact_dir)
-        check_output('cp /videos/* {0}'.format(artifact_dir), shell=True)
+        check_output('cp /videos/* {0} || true'.format(artifact_dir), shell=True)
         check_output('chmod -R a+r {0}'.format(artifact_dir), shell=True)
 
     request.addfinalizer(module_teardown)
