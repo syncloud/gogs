@@ -4,7 +4,8 @@ local gogs_ver = "0.14.1";
 local nginx = "1.24.0";
 local python = '3.12-slim-bookworm';
 local debian = 'bookworm-slim';
-local distro = "bookworm";
+local distro_default = 'buster';
+local distros = ['bookworm', 'buster'];
 local platform = '25.09';
 local selenium_ver = '4.35.0-20250828';
 local golang = '1.24.0';
@@ -35,7 +36,7 @@ local build(arch, test_ui) = [{
         },
         {
             name: "gogs test",
-            image: "syncloud/platform-" + distro + "-" + arch + ":" + platform,
+            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform,
             commands: [
                 "./gogs/test.sh"
             ]
@@ -49,7 +50,7 @@ local build(arch, test_ui) = [{
         },
         {
             name: "nginx test",
-            image: "syncloud/platform-" + distro + "-" + arch + ":" + platform,
+            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform,
             commands: [
                 "./nginx/test.sh"
             ]
@@ -63,7 +64,7 @@ local build(arch, test_ui) = [{
         },
         {
             name: "postgresql test",
-            image: "syncloud/platform-" + distro + "-" + arch + ":" + platform,
+            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform,
             commands: [
                 "./postgresql/test.sh"
             ]
@@ -77,7 +78,7 @@ local build(arch, test_ui) = [{
         },
         {
             name: "git test",
-            image: "syncloud/platform-" + distro + "-" + arch + ":" + platform,
+            image: "syncloud/platform-" + distro_default + "-" + arch + ":" + platform,
             commands: [
                 "./git/test.sh"
             ]
@@ -103,8 +104,9 @@ local build(arch, test_ui) = [{
                 "./package.sh " + name + " $VERSION "
             ]
         },
+        ] + [
         {
-            name: "test bookworm",
+            name: "test " + distro,
             image: "python:" + python,
             commands: [
               "APP_ARCHIVE_PATH=$(realpath $(cat package.name))",
@@ -112,7 +114,9 @@ local build(arch, test_ui) = [{
               "./deps.sh",
               "py.test -x -s test.py --distro=" + distro + " --app-archive-path=$APP_ARCHIVE_PATH --app=" + name + " --device-user=gogs --arch=" + arch
             ]
-        }] +
+        }
+        for distro in distros
+        ] +
         ( if test_ui then ([
         {
             name: "selenium-video",
@@ -140,7 +144,7 @@ local build(arch, test_ui) = [{
               "cd test",
               "./deps.sh",
               "pip install -r requirements.txt",
-              "py.test -x -s ui.py --distro=" + distro + " --app=" + name + " --device-user=gogs --browser=" + browser,
+              "py.test -x -s ui.py --distro=" + distro_default + " --app=" + name + " --device-user=gogs --browser=" + browser,
             ]
         }]
         +
@@ -152,7 +156,7 @@ local build(arch, test_ui) = [{
               "APP_ARCHIVE_PATH=$(realpath $(cat package.name))",
               "cd test",
               "./deps.sh",
-              "py.test -x -s upgrade.py --distro=" + distro + " --app-archive-path=$APP_ARCHIVE_PATH --app=" + name + " --device-user=gogs --browser=" + browser,
+              "py.test -x -s upgrade.py --distro=" + distro_default + " --app-archive-path=$APP_ARCHIVE_PATH --app=" + name + " --device-user=gogs --browser=" + browser,
             ],
             privileged: true,
             volumes: [{
@@ -167,7 +171,7 @@ local build(arch, test_ui) = [{
               "cd test",
               "./deps.sh",
               "pip install -r requirements.txt",
-              "py.test -x -s ui.py --distro=" + distro + " --app=" + name + " --device-user=gogs --browser=" + browser,
+              "py.test -x -s ui.py --distro=" + distro_default + " --app=" + name + " --device-user=gogs --browser=" + browser,
             ]
         }]) else [] ) + [
         {
@@ -236,6 +240,7 @@ local build(arch, test_ui) = [{
                     }
                 ]
             }
+            for distro in distros
         ] + ( if test_ui then [
             {
                 name: "selenium",
