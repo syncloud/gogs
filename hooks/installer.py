@@ -109,6 +109,7 @@ class Installer:
         self.activate_ldap(GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         self.delete_install_user(GOGS_ADMIN_USER, GOGS_ADMIN_PASSWORD)
         self.db.execute(DB_NAME, "select * from login_source;")
+        self.disable_registration()
         with open(install_file, 'w') as f:
             f.write('installed\n')
 
@@ -230,6 +231,13 @@ class Installer:
         first = found[0]
         self.log.info('first: {0}'.format(first))
         return first['content']
+
+    def disable_registration(self):
+        config_path = join(self.config_dir, 'gogs.ini')
+        with open(config_path) as f:
+            content = f.read()
+        with open(config_path, 'w') as f:
+            f.write(content.replace('DISABLE_REGISTRATION = False', 'DISABLE_REGISTRATION = True'))
 
     def prepare_storage(self):
         storage.init_storage(APP_NAME, USER_NAME)

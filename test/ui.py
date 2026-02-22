@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from syncloudlib.integration.hosts import add_host_alias
 from subprocess import check_output, CalledProcessError, STDOUT
-from integration import lib
+from test import lib
 
 DIR = dirname(__file__)
 
@@ -27,6 +27,12 @@ def module_setup(request, device, log_dir, ui_mode, artifact_dir):
 def test_start(module_setup, app, domain, device_host, device):
     device.activated()
     add_host_alias(app, device_host, domain)
+
+
+def test_no_registration(selenium, app_domain):
+    selenium.driver.get("https://{0}/user/sign_up".format(app_domain))
+    selenium.screenshot('no-registration')
+    assert len(selenium.driver.find_elements(By.ID, 'user_name')) == 0
 
 
 def test_login(selenium, device_user, device_password):
@@ -148,9 +154,6 @@ def test_profile_avatar(selenium, device_user):
     selenium.find_by_xpath("//p[contains(.,'updated successfully')]")
     selenium.screenshot('profile-avatar')
     
-def test_teardown(driver):
-    driver.quit()
-
 
 def run(cmd):
     try:
