@@ -38,7 +38,7 @@ def web_edit_readme(selenium, device_user, content, mode):
     edit = selenium.find_by_css(".CodeMirror")
     selenium.driver.execute_script("arguments[0].CodeMirror.setValue(arguments[1]);", edit, content)
     selenium.screenshot('upgrade-{0}-web-edit'.format(mode))
-    selenium.find_by_css("button.ui").click()
+    selenium.find_by_xpath("//button[contains(.,'Commit Changes')]").click()
     selenium.screenshot('upgrade-{0}-web-commit'.format(mode))
 
 
