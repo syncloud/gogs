@@ -5,6 +5,7 @@ from test import lib
 from syncloudlib.integration.installer import local_install, wait_for_installer
 from syncloudlib.http import wait_for_rest
 import requests
+
 TMP_DIR = '/tmp/syncloud'
 
 
@@ -27,9 +28,37 @@ def test_start(module_setup, app, device_host, domain, device):
     device.run_ssh('mkdir {0}'.format(TMP_DIR), throw=False)
 
 
-def test_upgrade(device, device_user, device_password, device_host, app_archive_path, app_domain):
+def test_install_from_store(device, app_domain):
     device.run_ssh('snap remove gogs')
-    device.run_ssh('snap install gogs')
-    local_install(device_host, device_password, app_archive_path)
-    wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 10)
+    device.run_ssh('snap install gogs', retries=10)
+    device.run_ssh('while [ ! -f /var/snap/gogs/common/installed ]; do sleep 2; done')
+    wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 100)
 
+
+def test_login_pre_upgrade(selenium, device_user, device_password):
+    lib.login(selenium, device_user, device_password)
+
+
+def test_create_repo(selenium, device_user):
+    lib.create_repo(selenium, device_user)
+
+
+def test_edit_readme_pre_upgrade(selenium, device_user):
+    lib.web_edit_readme(selenium, device_user, 'pre-upgrade content', 'pre')
+
+
+def test_upgrade(device_host, device_password, app_archive_path, app_domain):
+    local_install(device_host, device_password, app_archive_path)
+    wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 100)
+
+
+def test_login_post_upgrade(selenium, device_user, device_password):
+    lib.login(selenium, device_user, device_password)
+
+
+def test_check_pre_upgrade_data(selenium, device_user):
+    lib.check_readme_content(selenium, device_user, 'pre-upgrade content')
+
+
+def test_edit_readme_post_upgrade(selenium, device_user):
+    lib.web_edit_readme(selenium, device_user, 'post-upgrade content', 'post')
