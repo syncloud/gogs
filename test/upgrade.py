@@ -31,7 +31,7 @@ def test_start(module_setup, app, device_host, domain, device):
 def test_install_from_store(device, app_domain):
     device.run_ssh('snap remove gogs')
     device.run_ssh('snap install gogs', retries=10)
-    device.run_ssh('while [ ! -f /var/snap/gogs/common/installed ]; do sleep 2; done')
+    device.run_ssh('test -f /var/snap/gogs/common/installed', retries=100)
     wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 100)
 
 

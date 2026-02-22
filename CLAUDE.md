@@ -1,3 +1,24 @@
+# Debugging CI failures
+
+When a CI build fails, always start by identifying the failing step:
+```
+curl -s "http://ci.syncloud.org:8080/api/repos/syncloud/gogs/builds/{N}" | python3 -c "
+import json,sys
+b=json.load(sys.stdin)
+for stage in b.get('stages',[]):
+    for step in stage.get('steps',[]):
+        if step.get('status') == 'failure':
+            print(step.get('name'), '-', step.get('status'))
+"
+```
+
+Then get the step log (stage=pipeline index, step=step number):
+```
+curl -s "http://ci.syncloud.org:8080/api/repos/syncloud/gogs/builds/{N}/logs/{stage}/{step}" | python3 -c "
+import json,sys; [print(l.get('out',''), end='') for l in json.load(sys.stdin)]
+" | tail -80
+```
+
 # CI
 
 http://ci.syncloud.org:8080/syncloud/gogs
