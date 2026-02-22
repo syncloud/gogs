@@ -8,3 +8,4 @@ artifacts
 *.snap
 package.name
 *.log
+.drone.yml
