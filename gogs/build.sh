@@ -1,20 +1,17 @@
 #!/bin/bash -ex
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-cd ${DIR}
-apt update
-apt install -y libltdl7 libnss3
-APP=gogs
-BUILD_DIR=${DIR}/../build/snap/$APP
-docker ps -a -q --filter ancestor=$APP:syncloud --format="{{.ID}}" | xargs docker stop | xargs docker rm || true
-docker rmi $APP:syncloud || true
-docker build -t $APP:syncloud .
-docker create --name=$APP $APP:syncloud
-mkdir -p ${BUILD_DIR}
-cd ${BUILD_DIR}
-docker export $APP -o app.tar
-docker ps -a -q --filter ancestor=$APP:syncloud --format="{{.ID}}" | xargs docker stop | xargs docker rm || true
-docker rmi $APP:syncloud || true
-tar xf app.tar
-rm -rf app.tar
-cp ${DIR}/bin/* ${BUILD_DIR}/bin
+BUILD_DIR=${DIR}/../build/snap
+
+mkdir -p ${BUILD_DIR}/app
+mkdir -p ${BUILD_DIR}/bin
+mkdir -p ${BUILD_DIR}/lib
+
+cp -r /app/gogs ${BUILD_DIR}/app/
+mv ${BUILD_DIR}/app/gogs/gogs ${BUILD_DIR}/app/gogs/gogs.bin
+cp -r /lib/. ${BUILD_DIR}/lib/
+mkdir -p ${BUILD_DIR}/usr/lib
+cp -r /usr/lib/. ${BUILD_DIR}/usr/lib/
+cp ${DIR}/bin/gogs.sh ${BUILD_DIR}/bin/gogs
+cp ${DIR}/app/gogs.sh ${BUILD_DIR}/app/gogs/gogs
+chmod +x ${BUILD_DIR}/app/gogs/gogs

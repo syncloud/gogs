@@ -3,11 +3,12 @@ import json
 from os.path import dirname, join
 from subprocess import check_output
 
+import re
 import pytest
 import requests
-from bs4 import BeautifulSoup
 from syncloudlib.integration.hosts import add_host_alias
 from syncloudlib.integration.installer import local_install, wait_for_installer
+from syncloudlib.http import wait_for_rest
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 DIR = dirname(__file__)
@@ -66,8 +67,9 @@ def test_activate_device(device):
     assert response.status_code == 200, response.text
 
 
-def test_install(app_archive_path, device_host, device_password):
+def test_install(app_archive_path, device_host, device_password, app_domain):
     local_install(device_host, device_password, app_archive_path)
+    wait_for_rest(requests.session(), 'https://{0}'.format(app_domain), 200, 10)
 
 
 def test_storage_dir(device):
@@ -85,8 +87,7 @@ def test_psql(device):
 def test_install_user_disabled(app_domain):
     session = requests.session()
     main_response = session.get('https://{0}/user/login'.format(app_domain), allow_redirects=False, verify=False)
-    soup = BeautifulSoup(main_response.text, "html.parser")
-    csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
+    csrf = re.search(r'<meta name="_csrf" content="([^"]+)"', main_response.text).group(1)
     login_response = session.post('https://{0}/user/login'.format(app_domain),
                                   data={'user_name': 'gogs', 'password': 'gogs', '_csrf': csrf},
                                   allow_redirects=False, verify=False)
@@ -98,8 +99,7 @@ def test_install_user_disabled(app_domain):
 def test_login(app_domain, device_user, device_password):
     session = requests.session()
     main_response = session.get('https://{0}/user/login'.format(app_domain), allow_redirects=False, verify=False)
-    soup = BeautifulSoup(main_response.text, "html.parser")
-    csrf = soup.find_all('meta', {'name': '_csrf'})[0]['content']
+    csrf = re.search(r'<meta name="_csrf" content="([^"]+)"', main_response.text).group(1)
     login_response = session.post('https://{0}/user/login'.format(app_domain),
                                   data={'user_name': device_user,
                                         'password': device_password,
@@ -126,9 +126,10 @@ def test_backup_restore(device, artifact_dir):
     open('{0}/cli.backup.list.json'.format(app_log_dir), 'w').write(response)
     print(response)
     backup = json.loads(response)[0]
-    device.run_ssh('tar tvf {0}/{1}'.format(backup['path'], backup['file']))
+    device.run_ssh('tar tf {0}/{1}'.format(backup['path'], backup['file']))
     device.run_ssh("snap run platform.cli backup restore {0}".format(backup['file']))
 
 
 def test_reinstall(app_archive_path, app_domain, device_password):
     local_install(app_domain, device_password, app_archive_path)
+

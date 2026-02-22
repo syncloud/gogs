@@ -17,7 +17,6 @@ apt -y install squashfs-tools
 
 cp -r ${DIR}/bin ${SNAP_DIR}
 cp -r ${DIR}/config ${SNAP_DIR}
-cp -r ${DIR}/hooks ${SNAP_DIR}
 cp -r ${DIR}/meta ${SNAP_DIR}
 
 echo "version: $VERSION" >> ${SNAP_DIR}/meta/snap.yaml
