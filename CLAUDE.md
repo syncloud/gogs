@@ -9,31 +9,46 @@ curl -s "http://ci.syncloud.org:8080/api/repos/syncloud/gogs/builds?limit=5"
 
 ## CI Artifacts
 
-Artifacts are served at `http://ci.syncloud.org:8081` (nginx file browser SPA).
-Browse via API with `curl -s "http://ci.syncloud.org:8081/files/{repo}/{build}-{arch}/{suite}/desktop/"`.
+Artifacts are served at `http://ci.syncloud.org:8081` (returns JSON directory listings).
 
-Example for build 272, amd64, bookworm:
+Browse the top level for a build (returns distro subdirs + snap file):
 ```
-curl -s "http://ci.syncloud.org:8081/files/gogs/272-amd64/bookworm/desktop/"
+curl -s "http://ci.syncloud.org:8081/files/gogs/{build}-{arch}/"
+```
+
+Each distro dir contains `app/`, `platform/`, and for upgrade/UI tests also `desktop/`, `refresh.journalctl.log`, `video.mkv`:
+```
+curl -s "http://ci.syncloud.org:8081/files/gogs/{build}-{arch}/{distro}/"
+curl -s "http://ci.syncloud.org:8081/files/gogs/{build}-{arch}/{distro}/app/"
+curl -s "http://ci.syncloud.org:8081/files/gogs/{build}-{arch}/{distro}/desktop/"
 ```
 
 Directory structure:
 ```
-desktop/
-  journalctl.log              # systemd journal from the UI test run
-  screenshot/
-    {test-name}.png           # screenshot taken during the test
-    {test-name}.html.log      # page source at the time of the screenshot
-  log/
-    gogs.log
-    gorm.log
-    xorm.log
+{build}-{arch}/
+  {distro}/
+    app/
+      journalctl.log          # full journal from integration test teardown
+      gogs.log, gorm.log      # app logs
+      ps.log, netstat.log     # process/network state at teardown
+    platform/                 # platform logs
+    desktop/                  # UI test artifacts (amd64 only)
+      journalctl.log
+      screenshot/
+        {test-name}.png
+        {test-name}.html.log
+      log/
+        gogs.log
+    refresh.journalctl.log    # full journal from upgrade test (pre/post-refresh)
+    database.dump             # pg_dumpall captured during upgrade test teardown
+    video.mkv                 # selenium recording
 ```
 
 Download a file directly:
 ```
-curl -O "http://ci.syncloud.org:8081/files/gogs/272-amd64/bookworm/desktop/screenshot/no-registration-desktop.png"
-curl -O "http://ci.syncloud.org:8081/files/gogs/272-amd64/bookworm/desktop/journalctl.log"
+curl -O "http://ci.syncloud.org:8081/files/gogs/282-amd64/buster/refresh.journalctl.log"
+curl -O "http://ci.syncloud.org:8081/files/gogs/282-amd64/buster/app/journalctl.log"
+curl -O "http://ci.syncloud.org:8081/files/gogs/282-amd64/bookworm/desktop/journalctl.log"
 ```
 
 # Running Drone builds locally
