@@ -44,7 +44,7 @@ apps:
     command: bin/pg_dumpall.sh
 
 confinement: strict
-description: GOGS
+description: Distributed version control system
 grade: stable
 name: gogs
-summary: GOGS
+summary: GOGS git server
