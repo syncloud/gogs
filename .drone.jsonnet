@@ -1,4 +1,5 @@
 local name = "gogs";
+local store_publisher = "stable-346";
 local browser = "firefox";
 local gogs_ver = "0.14.2";
 local nginx = "1.24.0";
@@ -176,49 +177,14 @@ local build(arch, test_ui) = [{
             ]
         }]) else [] ) + [
         {
-            name: "upload",
-            image: "debian:" + debian,
+            name: "publish",
+            image: "syncloud/store-publisher:" + store_publisher,
             environment: {
-                AWS_ACCESS_KEY_ID: {
-                    from_secret: "AWS_ACCESS_KEY_ID"
-                },
-                AWS_SECRET_ACCESS_KEY: {
-                    from_secret: "AWS_SECRET_ACCESS_KEY"
-                }
+                SYNCLOUD_TOKEN: { from_secret: "SYNCLOUD_TOKEN" }
             },
-            commands: [
-                "PACKAGE=$(cat package.name)",
-                "apt update && apt install -y wget",
-                "wget https://github.com/syncloud/snapd/releases/download/1/syncloud-release-" + arch + " -O release --progress=dot:giga",
-                "chmod +x release",
-                "./release publish -f $PACKAGE -b $DRONE_BRANCH"
-            ],
+            command: ["snap", "-c", "${DRONE_BRANCH}"],
             when: {
-                branch: ["stable", "master"]
-            }
-        },
-        {
-            name: "promote",
-            image: "debian:" + debian,
-            environment: {
-                AWS_ACCESS_KEY_ID: {
-                    from_secret: "AWS_ACCESS_KEY_ID"
-                },
-                AWS_SECRET_ACCESS_KEY: {
-                    from_secret: "AWS_SECRET_ACCESS_KEY"
-                },
-                SYNCLOUD_TOKEN: {
-                    from_secret: "SYNCLOUD_TOKEN"
-                }
-            },
-            commands: [
-              "apt update && apt install -y wget",
-              "wget https://github.com/syncloud/snapd/releases/download/1/syncloud-release-" + arch + " -O release --progress=dot:giga",
-              "chmod +x release",
-              "./release promote -n " + name + " -a $(dpkg --print-architecture)"
-            ],
-            when: {
-                branch: ["stable"],
+                branch: ["master", "stable"],
                 event: ["push"]
             }
         },
